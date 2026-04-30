@@ -1,0 +1,15 @@
+{
+  "name": "layout-for-xhs",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "remote:start": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy Bypass -File scripts/start-remote.ps1",
+    "remote:named:start": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy Bypass -File scripts/start-named-remote.ps1",
+    "remote:named:stop": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy Bypass -File scripts/stop-named-tunnel.ps1",
+    "remote:stop": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy Bypass -File scripts/stop-local-server.ps1"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^5.7.284",
+    "playwright-core": "^1.59.1"
+  }
+}

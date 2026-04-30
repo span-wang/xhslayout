@@ -1,0 +1,28 @@
+# Dependencies and package manager cache
+node_modules/
+.npm-cache/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+.access-password.json
+deploy/cloudflare/config.yml
+
+# Runtime output
+*.log
+*.pid
+
+# Generated visual check screenshots
+*-check*.png
+current-layout-check.png
+layout-*.png
+preview-*.png
+knowledge-preview*.png
+numeric-scrubber-check.png
+ribbon-ui-check.png
+paged-preview-check.png
+
+# Locally copied package assets
+vendor/pdfjs/
+vendor/katex/

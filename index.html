@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 自动排版工具</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="oat">
+  <div class="app-shell">
+    <section class="control-panel">
+      <section class="panel-card control-card">
+        <div class="control-topbar">
+          <div class="control-brand">
+            <p class="eyebrow">Layout For XHS</p>
+            <h1>Markdown 自动排版工具</h1>
+            <p class="panel-intro">原文与预览对照</p>
+          </div>
+
+          <div class="toolbar">
+            <button id="loadSampleBtn" type="button">示例</button>
+            <label class="file-trigger" for="fileInput">导入 MD</label>
+            <input id="fileInput" type="file" accept=".md,.markdown,text/markdown">
+            <label id="pdfImportLabel" class="file-trigger" for="pdfInput">导入 PDF</label>
+            <input id="pdfInput" type="file" accept=".pdf,application/pdf">
+            <button id="downloadHtmlBtn" type="button">导 HTML</button>
+            <button id="downloadWordBtn" type="button">导 Word</button>
+            <button id="printBtn" type="button">导 PDF</button>
+          </div>
+        </div>
+
+        <div class="ribbon-tabs" role="tablist" aria-label="功能区">
+          <button id="ribbonTabHome" type="button" class="ribbon-tab is-active" data-ribbon-tab="home" role="tab" aria-selected="true">
+            开始
+          </button>
+          <button id="ribbonTabLayout" type="button" class="ribbon-tab" data-ribbon-tab="layout" role="tab" aria-selected="false" tabindex="-1">
+            页面布局
+          </button>
+          <button id="ribbonTabDesign" type="button" class="ribbon-tab" data-ribbon-tab="design" role="tab" aria-selected="false" tabindex="-1">
+            设计与重点
+          </button>
+        </div>
+
+        <div class="settings-grid" id="settingsRibbon">
+          <section class="option-panel option-panel-mode" data-ribbon-panel="home">
+            <div class="option-heading">
+              <p class="option-label">版式模式</p>
+            </div>
+            <div id="modePicker" class="segmented-control" role="group" aria-label="选择排版模式">
+              <button type="button" class="segmented-chip is-active" data-mode-option="knowledge">知识卡片</button>
+              <button type="button" class="segmented-chip" data-mode-option="question">题目模式</button>
+              <button type="button" class="segmented-chip" data-mode-option="article">文章模式</button>
+            </div>
+            <div class="mode-benefit-card" aria-live="polite">
+              <p class="mode-benefit-tag">Mode Focus</p>
+              <h2 id="modeBenefitTitle" class="mode-benefit-title"></h2>
+              <p id="modeBenefitSummary" class="mode-benefit-summary"></p>
+              <ul id="modeBenefitList" class="mode-benefit-list"></ul>
+            </div>
+          </section>
+
+          <section class="option-panel option-panel-type" data-ribbon-panel="home">
+            <div class="option-heading">
+              <p class="option-label">阅读节奏</p>
+              <p class="option-note">再调字号和间距。</p>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">字号调节</p>
+                <p class="cluster-note">左侧看调整对象，右侧输入数值；0 表示跟随默认。</p>
+              </div>
+              <div class="font-grid" role="group" aria-label="全局字体设置">
+                <label class="font-field font-field-global" for="globalFontFamilySelect">
+                  <span class="font-title">全文字体</span>
+                  <select id="globalFontFamilySelect">
+                    <option value="">分别设置</option>
+                    <option value="sans">雅黑</option>
+                    <option value="serif">宋体</option>
+                    <option value="kaiti">楷体</option>
+                    <option value="rounded">圆体</option>
+                    <option value="xingkai">行楷</option>
+                    <option value="wenkai">文楷</option>
+                    <option value="pen">钢笔</option>
+                    <option value="notehand">手札</option>
+                    <option value="xinwei">新魏</option>
+                    <option value="shuti">舒体</option>
+                    <option value="yaoti">姚体</option>
+                    <option value="handwriting">手写</option>
+                  </select>
+                </label>
+                <label class="font-field" for="bodyFontFamilySelect">
+                  <span class="font-title">正文</span>
+                  <select id="bodyFontFamilySelect">
+                    <option value="sans">雅黑</option>
+                    <option value="serif">宋体</option>
+                    <option value="kaiti">楷体</option>
+                    <option value="rounded">圆体</option>
+                    <option value="xingkai">行楷</option>
+                    <option value="wenkai">文楷</option>
+                    <option value="pen">钢笔</option>
+                    <option value="notehand">手札</option>
+                    <option value="xinwei">新魏</option>
+                    <option value="shuti">舒体</option>
+                    <option value="yaoti">姚体</option>
+                    <option value="handwriting">手写</option>
+                  </select>
+                </label>
+                <label class="font-field" for="headingFontFamilySelect">
+                  <span class="font-title">标题</span>
+                  <select id="headingFontFamilySelect">
+                    <option value="sans">雅黑</option>
+                    <option value="serif">宋体</option>
+                    <option value="kaiti">楷体</option>
+                    <option value="rounded">圆体</option>
+                    <option value="xingkai">行楷</option>
+                    <option value="wenkai">文楷</option>
+                    <option value="pen">钢笔</option>
+                    <option value="notehand">手札</option>
+                    <option value="xinwei">新魏</option>
+                    <option value="shuti">舒体</option>
+                    <option value="yaoti">姚体</option>
+                    <option value="handwriting">手写</option>
+                  </select>
+                </label>
+              </div>
+              <div class="font-import-row">
+                <label class="font-import-button" for="customFontInput">导入 TTF</label>
+                <input id="customFontInput" type="file" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" multiple hidden>
+                <span id="customFontStatus" class="font-import-status">支持 TTF / OTF / WOFF</span>
+              </div>
+              <div class="range-grid range-grid-scale">
+                <label class="range-field" for="fontSizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">正文字号</span>
+                    <span class="range-help">普通段落文字</span>
+                    <span id="fontSizeValue" class="range-value">16 px</span>
+                  </span>
+                  <input id="fontSizeRange" type="range" min="0" max="24" step="1" value="16">
+                </label>
+                <label class="range-field" for="heading1SizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">一级标题</span>
+                    <span class="range-help">最大标题</span>
+                    <span id="heading1SizeValue" class="range-value">34 px</span>
+                  </span>
+                  <input id="heading1SizeRange" type="range" min="0" max="64" step="1" value="34">
+                </label>
+                <label class="range-field" for="heading2SizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">二级标题</span>
+                    <span class="range-help">章节标题</span>
+                    <span id="heading2SizeValue" class="range-value">21 px</span>
+                  </span>
+                  <input id="heading2SizeRange" type="range" min="0" max="42" step="1" value="21">
+                </label>
+                <label class="range-field" for="heading3SizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">三级标题</span>
+                    <span class="range-help">小节标题</span>
+                    <span id="heading3SizeValue" class="range-value">17 px</span>
+                  </span>
+                  <input id="heading3SizeRange" type="range" min="0" max="34" step="1" value="17">
+                </label>
+                <label class="range-field" for="heading4SizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">四级标题</span>
+                    <span class="range-help">细分标题</span>
+                    <span id="heading4SizeValue" class="range-value">16 px</span>
+                  </span>
+                  <input id="heading4SizeRange" type="range" min="0" max="28" step="1" value="16">
+                </label>
+                <label class="range-field" for="tableFontSizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">表格字号</span>
+                    <span class="range-help">表格内容</span>
+                    <span id="tableFontSizeValue" class="range-value">14 px</span>
+                  </span>
+                  <input id="tableFontSizeRange" type="range" min="0" max="22" step="1" value="14">
+                </label>
+                <label class="range-field" for="accentFontSizeRange">
+                  <span class="range-title-row">
+                    <span class="range-title">辅助字号</span>
+                    <span class="range-help">注释/标签</span>
+                    <span id="accentFontSizeValue" class="range-value">14 px</span>
+                  </span>
+                  <input id="accentFontSizeRange" type="range" min="0" max="24" step="1" value="14">
+                </label>
+                <label class="range-field" for="mindmapNodeWidthRange">
+                  <span class="range-title-row">
+                    <span class="range-title">脑图节点宽</span>
+                    <span class="range-help">思维导图框</span>
+                    <span id="mindmapNodeWidthValue" class="range-value">220 px</span>
+                  </span>
+                  <input id="mindmapNodeWidthRange" type="range" min="90" max="320" step="2" value="220">
+                </label>
+              </div>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">正文间距</p>
+                <p class="cluster-note">行距 / 字距</p>
+              </div>
+              <div class="range-grid range-grid-space">
+                <label class="range-field range-field-body-line" for="lineHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">正文行距</span>
+                    <span id="lineHeightValue" class="range-value">1.62</span>
+                  </span>
+                  <input id="lineHeightRange" type="range" min="1.1" max="2.4" step="0.05" value="1.62">
+                </label>
+                <label class="range-field range-field-body-letter" for="letterSpacingRange">
+                  <span class="range-title-row">
+                    <span class="range-title">正文字距</span>
+                    <span id="letterSpacingValue" class="range-value">0 px</span>
+                  </span>
+                  <input id="letterSpacingRange" type="range" min="-0.5" max="2" step="0.1" value="0">
+                </label>
+              </div>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">标题行高</p>
+                <p class="cluster-note">H1 / H2 / H3 / H4</p>
+              </div>
+              <div class="range-grid range-grid-space">
+                <label class="range-field" for="heading1LineHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">H1 行高</span>
+                    <span id="heading1LineHeightValue" class="range-value">1.18</span>
+                  </span>
+                  <input id="heading1LineHeightRange" type="range" min="0.8" max="2.2" step="0.05" value="1.18">
+                </label>
+                <label class="range-field" for="heading2LineHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">H2 行高</span>
+                    <span id="heading2LineHeightValue" class="range-value">1.28</span>
+                  </span>
+                  <input id="heading2LineHeightRange" type="range" min="0.8" max="2.2" step="0.05" value="1.28">
+                </label>
+                <label class="range-field" for="heading3LineHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">H3 行高</span>
+                    <span id="heading3LineHeightValue" class="range-value">1.34</span>
+                  </span>
+                  <input id="heading3LineHeightRange" type="range" min="0.8" max="2.2" step="0.05" value="1.34">
+                </label>
+                <label class="range-field" for="heading4LineHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">H4 行高</span>
+                    <span id="heading4LineHeightValue" class="range-value">1.38</span>
+                  </span>
+                  <input id="heading4LineHeightRange" type="range" min="0.8" max="2.2" step="0.05" value="1.38">
+                </label>
+              </div>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">标题间距</p>
+                <p class="cluster-note">H1 / H2 / H3 / H4</p>
+              </div>
+              <div class="range-grid range-grid-space">
+                <label class="range-field" for="headingSpaceH1Range">
+                  <span class="range-title-row">
+                    <span class="range-title">H1 间距</span>
+                    <span id="headingSpaceH1Value" class="range-value">16 px</span>
+                  </span>
+                  <input id="headingSpaceH1Range" type="range" min="0" max="44" step="2" value="16">
+                </label>
+                <label class="range-field" for="headingSpaceH2Range">
+                  <span class="range-title-row">
+                    <span class="range-title">H2 间距</span>
+                    <span id="headingSpaceH2Value" class="range-value">10 px</span>
+                  </span>
+                  <input id="headingSpaceH2Range" type="range" min="0" max="36" step="2" value="10">
+                </label>
+                <label class="range-field" for="headingSpaceH3Range">
+                  <span class="range-title-row">
+                    <span class="range-title">H3 间距</span>
+                    <span id="headingSpaceH3Value" class="range-value">8 px</span>
+                  </span>
+                  <input id="headingSpaceH3Range" type="range" min="0" max="28" step="2" value="8">
+                </label>
+                <label class="range-field" for="headingSpaceH4Range">
+                  <span class="range-title-row">
+                    <span class="range-title">H4 间距</span>
+                    <span id="headingSpaceH4Value" class="range-value">6 px</span>
+                  </span>
+                  <input id="headingSpaceH4Range" type="range" min="0" max="24" step="2" value="6">
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="option-panel option-panel-page" data-ribbon-panel="layout" hidden>
+            <div class="option-heading">
+              <p class="option-label">页面设置</p>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">纸张尺寸</p>
+                <p class="cluster-note">纸张 / 边距</p>
+              </div>
+              <div class="range-grid range-grid-page">
+                <label class="range-field" for="pageWidthRange">
+                  <span class="range-title-row">
+                    <span class="range-title">页面宽度</span>
+                    <span id="pageWidthValue" class="range-value">210 mm</span>
+                  </span>
+                  <input id="pageWidthRange" type="range" min="148" max="240" step="1" value="210">
+                </label>
+                <label class="range-field" for="pageHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">页面高度</span>
+                    <span id="pageHeightValue" class="range-value">297 mm</span>
+                  </span>
+                  <input id="pageHeightRange" type="range" min="210" max="340" step="1" value="297">
+                </label>
+                <label class="range-field" for="pageMarginTopRange">
+                  <span class="range-title-row">
+                    <span class="range-title">上边距</span>
+                    <span id="pageMarginTopValue" class="range-value">14 mm</span>
+                  </span>
+                  <input id="pageMarginTopRange" type="range" min="0" max="36" step="1" value="14">
+                </label>
+                <label class="range-field" for="pageMarginRightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">右边距</span>
+                    <span id="pageMarginRightValue" class="range-value">12 mm</span>
+                  </span>
+                  <input id="pageMarginRightRange" type="range" min="0" max="32" step="1" value="12">
+                </label>
+                <label class="range-field" for="pageMarginBottomRange">
+                  <span class="range-title-row">
+                    <span class="range-title">下边距</span>
+                    <span id="pageMarginBottomValue" class="range-value">14 mm</span>
+                  </span>
+                  <input id="pageMarginBottomRange" type="range" min="0" max="36" step="1" value="14">
+                </label>
+                <label class="range-field" for="pageMarginLeftRange">
+                  <span class="range-title-row">
+                    <span class="range-title">左边距</span>
+                    <span id="pageMarginLeftValue" class="range-value">12 mm</span>
+                  </span>
+                  <input id="pageMarginLeftRange" type="range" min="0" max="32" step="1" value="12">
+                </label>
+              </div>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">页眉与水印</p>
+                <p class="cluster-note">页眉 / 水印 / 透明</p>
+              </div>
+              <div class="page-inline-tools">
+                <label class="page-inline-item page-inline-toggle" for="pageHeaderToggle">
+                  <span class="page-inline-title">页眉</span>
+                  <input id="pageHeaderToggle" type="checkbox" checked>
+                </label>
+                <label class="page-inline-item page-inline-text" for="pageHeaderInput">
+                  <span class="page-inline-title">页眉文字</span>
+                  <input id="pageHeaderInput" type="text" maxlength="80" placeholder="默认标题">
+                </label>
+                <label class="page-inline-item page-inline-toggle" for="watermarkToggle">
+                  <span class="page-inline-title">水印</span>
+                  <input id="watermarkToggle" type="checkbox">
+                </label>
+                <label class="page-inline-item page-inline-text" for="watermarkInput">
+                  <span class="page-inline-title">水印文字</span>
+                  <input id="watermarkInput" type="text" maxlength="80" placeholder="内部 / Draft">
+                </label>
+                <label class="page-inline-item page-inline-range" for="watermarkOpacityRange">
+                  <span class="page-inline-title">透明</span>
+                  <span id="watermarkOpacityValue" class="range-value">12%</span>
+                  <input id="watermarkOpacityRange" type="range" min="0" max="0.24" step="0.01" value="0.12">
+                </label>
+              </div>
+            </div>
+            <div class="panel-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">导出背景</p>
+                <p class="cluster-note">上传后预览直接可见，按页面铺满裁切，空白处保留底色。</p>
+              </div>
+              <div class="page-inline-tools page-inline-tools-background">
+                <label class="page-inline-item page-inline-upload" for="exportBackgroundInput">
+                  <span class="page-inline-title">背景图</span>
+                  <span class="page-inline-action">上传图片</span>
+                </label>
+                <input id="exportBackgroundInput" type="file" accept="image/*" hidden>
+                <div class="page-inline-item page-inline-file" aria-live="polite">
+                  <span class="page-inline-title">当前</span>
+                  <span id="exportBackgroundName" class="page-inline-file-name">未上传</span>
+                </div>
+                <button id="clearExportBackgroundBtn" type="button" class="page-inline-item page-inline-button">
+                  清除背景
+                </button>
+              </div>
+              <div id="exportBackgroundPresetGrid" class="background-preset-grid" role="group" aria-label="小红书热门背景"></div>
+            </div>
+          </section>
+
+          <section class="option-panel option-panel-theme" data-ribbon-panel="design" hidden>
+            <div class="option-heading">
+              <p class="option-label">配色主题</p>
+              <p class="option-note">控制纸张底色。</p>
+            </div>
+            <div id="themePicker" class="theme-grid" role="group" aria-label="选择配色">
+              <button type="button" class="theme-chip is-active" data-theme-option="oat">
+                <span class="theme-swatch theme-swatch-oat"></span>
+                <span class="theme-copy">
+                  <strong>奶油杏</strong>
+                  <small>暖米纸张感</small>
+                </span>
+              </button>
+              <button type="button" class="theme-chip" data-theme-option="blush">
+                <span class="theme-swatch theme-swatch-blush"></span>
+                <span class="theme-copy">
+                  <strong>雾粉桃</strong>
+                  <small>柔雾粉调</small>
+                </span>
+              </button>
+              <button type="button" class="theme-chip" data-theme-option="sage">
+                <span class="theme-swatch theme-swatch-sage"></span>
+                <span class="theme-copy">
+                  <strong>鼠尾草</strong>
+                  <small>安静绿灰调</small>
+                </span>
+              </button>
+              <button type="button" class="theme-chip" data-theme-option="mist">
+                <span class="theme-swatch theme-swatch-mist"></span>
+                <span class="theme-copy">
+                  <strong>灰雾蓝</strong>
+                  <small>清淡冷静感</small>
+                </span>
+              </button>
+            </div>
+          </section>
+
+          <section class="option-panel option-panel-brush" data-ribbon-panel="design" hidden>
+            <div class="option-heading">
+              <p class="option-label">重点笔刷</p>
+              <p class="option-note">先选中，再点笔刷。</p>
+            </div>
+            <div id="brushPicker" class="brush-grid" role="group" aria-label="选择重点笔刷">
+              <button type="button" class="brush-chip brush-chip-glow" data-brush-style="glow">柔光刷</button>
+              <button type="button" class="brush-chip brush-chip-mist" data-brush-style="mist">雾面刷</button>
+              <button type="button" class="brush-chip brush-chip-underline" data-brush-style="underline">下划刷</button>
+              <button type="button" class="brush-chip brush-chip-tag" data-brush-style="tag">题签刷</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+
+    <div class="workspace-shell">
+      <section class="editor-panel">
+        <section class="panel-card editor-card">
+          <div class="editor-heading">
+            <label class="input-label" for="markdownInput">Markdown 源文档</label>
+            <p class="editor-note">左改右看，实时刷新</p>
+          </div>
+          <section class="ai-note-panel" aria-label="AI 学习笔记生成">
+            <div class="ai-note-grid">
+              <label class="ai-note-field" for="aiSubjectInput">
+                <span>考试/学科</span>
+                <input id="aiSubjectInput" type="text" maxlength="80" placeholder="CPA经济法">
+              </label>
+              <label class="ai-note-field" for="aiTopicInput">
+                <span>章节/主题</span>
+                <input id="aiTopicInput" type="text" maxlength="120" placeholder="第一章">
+              </label>
+            </div>
+            <label class="ai-note-field ai-note-source" for="aiSourceInput">
+              <span>原始资料</span>
+              <textarea id="aiSourceInput" rows="4" spellcheck="false" placeholder="粘贴CPA经济法教材原文，例如第一章内容"></textarea>
+            </label>
+            <div class="ai-note-actions">
+              <button id="generateStudyNotesBtn" type="button">生成学习笔记</button>
+              <p id="aiNoteStatus" class="ai-note-status" aria-live="polite"></p>
+            </div>
+          </section>
+          <textarea
+            id="markdownInput"
+            spellcheck="false"
+            placeholder="在这里粘贴 Markdown 文档。"
+          ></textarea>
+
+          <details class="syntax-guide">
+            <summary>
+              <span>扩展语法速查</span>
+              <span class="syntax-guide-meta">颜色/笔刷/标签/提示/导图</span>
+            </summary>
+            <p class="syntax-guide-note">这里只列工具新增写法，普通 Markdown 语法照常可用。</p>
+            <div class="guide-grid">
+              <article class="guide-item">
+                <div class="guide-item-head">
+                  <h2>行内强调</h2>
+                  <p>适合术语、重点、短句。</p>
+                </div>
+                <ul class="syntax-list">
+                  <li><code>{{red:重点}}</code><span>红色强调</span></li>
+                  <li><code>{{blue:术语}}</code><span>蓝色术语</span></li>
+                  <li><code>{{green:提示}}</code><span>绿色提示</span></li>
+                  <li><code>{{gold:结论}}</code><span>金色结论</span></li>
+                  <li><code>==荧光笔==</code><span>通用高亮</span></li>
+                </ul>
+              </article>
+              <article class="guide-item">
+                <div class="guide-item-head">
+                  <h2>笔刷语法</h2>
+                  <p>行内一句或整段重点都能用。</p>
+                </div>
+                <ul class="syntax-list">
+                  <li><code>{{brush-glow:重点句}}</code><span>柔光刷</span></li>
+                  <li><code>{{brush-mist:补充}}</code><span>雾面刷</span></li>
+                  <li><code>{{brush-underline:易错点}}</code><span>下划刷</span></li>
+                  <li><code>{{brush-tag:关键词}}</code><span>题签刷</span></li>
+                  <li><code>:::brush-tip</code><span>备考建议</span></li>
+                </ul>
+                <pre><code>:::brush-tag 高频考点
+这里是一整段重点知识
+:::</code></pre>
+              </article>
+              <article class="guide-item">
+                <div class="guide-item-head">
+                  <h2>块级容器</h2>
+                  <p>适合标签、提示框、复盘块。</p>
+                </div>
+                <ul class="syntax-list">
+                  <li><code>{{block id=summary}}</code><span>给下一块绑定定位 ID</span></li>
+                  <li><code>{{#point-a}}</code><span>短写法，定位下一块内容</span></li>
+                  <li><code>:::label 高频考点</code><span>单行标签</span></li>
+                  <li><code>:::stamp 必背</code><span>章节印章</span></li>
+                  <li><code>:::note 复盘</code><span>提示框标题写在首行</span></li>
+                  <li><code>:::</code><span>块内容结束行，需单独占一行</span></li>
+                </ul>
+                <pre><code>:::note 复盘
+- 概念先记定义
+- 做题再看易错点
+:::</code></pre>
+              </article>
+              <article class="guide-item">
+                <div class="guide-item-head">
+                  <h2>树状导图</h2>
+                  <p>用缩进和列表符表示层级。</p>
+                </div>
+                <ul class="syntax-list syntax-list-plain">
+                  <li>首行写 <code>:::mindmap 标题</code></li>
+                  <li>内部用 <code>-</code> 或 <code>1.</code> 列表，缩进 2 个空格表示下一级</li>
+                  <li>末尾单独写 <code>:::</code> 结束</li>
+                </ul>
+                <pre><code>:::mindmap 会计职能
+- 基本职能
+  - 核算职能
+  - 监督职能
+- 拓展职能
+  - 预测经济前景
+:::</code></pre>
+              </article>
+            </div>
+          </details>
+        </section>
+      </section>
+
+      <main class="preview-panel">
+        <div class="preview-toolbar">
+          <div class="preview-toolbar-meta">
+            <p class="preview-label">排版预览</p>
+            <p id="statusText" class="status-text">等待输入</p>
+          </div>
+          <div class="preview-actions preview-actions-editor" role="toolbar" aria-label="预览编辑工具">
+            <div class="preview-toolbar-group" role="group" aria-label="文字强调">
+              <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="bold">粗</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="italic">斜</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="underline">下</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="strikethrough">删</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="code">码</button>
+              <button id="formulaEditorBtn" type="button" class="preview-action-button preview-action-button-mini">LaTeX</button>
+            </div>
+            <div class="preview-toolbar-group preview-toolbar-group-fields" role="group" aria-label="文字样式">
+              <select id="previewFontFamilySelect" class="preview-select" title="选中文本字体">
+                <option value="">字体</option>
+                <option value="sans">雅黑</option>
+                <option value="serif">宋体</option>
+                <option value="kaiti">楷体</option>
+                <option value="rounded">圆体</option>
+                <option value="xingkai">行楷</option>
+                <option value="wenkai">文楷</option>
+                <option value="pen">钢笔</option>
+                <option value="notehand">手札</option>
+                <option value="xinwei">新魏</option>
+                <option value="shuti">舒体</option>
+                <option value="yaoti">姚体</option>
+                <option value="handwriting">手写</option>
+              </select>
+              <select id="previewFontSizeSelect" class="preview-select preview-select-size" title="选中文本字号">
+                <option value="">字号</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+              </select>
+              <label class="preview-color-field" title="文字颜色">
+                <input id="previewTextColorInput" class="preview-color-input" type="color" value="#1f2933">
+              </label>
+              <div class="preview-color-swatches" role="group" aria-label="快捷颜色">
+                <button type="button" class="preview-color-chip" data-text-color="#1f2933" style="--swatch:#1f2933;"></button>
+                <button type="button" class="preview-color-chip" data-text-color="#204a73" style="--swatch:#204a73;"></button>
+                <button type="button" class="preview-color-chip" data-text-color="#9f3f36" style="--swatch:#9f3f36;"></button>
+                <button type="button" class="preview-color-chip" data-text-color="#355d4d" style="--swatch:#355d4d;"></button>
+              </div>
+              <button id="clearTextStyleBtn" type="button" class="preview-action-button preview-action-button-mini">清字</button>
+            </div>
+            <div class="preview-toolbar-group" role="group" aria-label="段落样式">
+              <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="left">左</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="justify">两</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="center">中</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="right">右</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="indent-decrease">缩-</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="indent-increase">缩+</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="spacing-decrease">距-</button>
+              <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="spacing-increase">距+</button>
+              <button id="clearParagraphStyleBtn" type="button" class="preview-action-button preview-action-button-mini">清段</button>
+            </div>
+            <div class="preview-toolbar-group" role="group" aria-label="表格工具">
+              <button id="mergeCellsBtn" type="button" class="preview-action-button preview-action-button-mini">并格</button>
+              <button id="splitCellBtn" type="button" class="preview-action-button preview-action-button-mini">拆格</button>
+            </div>
+            <div class="preview-toolbar-group" role="group" aria-label="分页工具">
+              <button id="forcePageBreakBtn" type="button" class="preview-action-button preview-action-button-mini" title="在光标位置强制分页">分页</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-stage">
+          <div id="articleCanvas" class="live-preview-canvas page-preview" data-mode="knowledge"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="vendor/katex/katex.min.js" defer></script>
+  <script src="vendor/katex/contrib/mhchem.min.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
