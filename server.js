@@ -24,6 +24,9 @@ const LLM_CHAT_COMPLETIONS_URL = process.env.LLM_CHAT_COMPLETIONS_URL || buildCh
 const LLM_MODEL = process.env.LLM_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini";
 const LLM_MAX_TOKENS = Number(process.env.LLM_MAX_TOKENS || 6500);
 const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS || 90000);
+const LLM_PROMPT_CACHE_KEY = String(process.env.LLM_PROMPT_CACHE_KEY || process.env.OPENAI_PROMPT_CACHE_KEY || "").trim();
+const LLM_PROMPT_CACHE_RETENTION = String(process.env.LLM_PROMPT_CACHE_RETENTION || process.env.OPENAI_PROMPT_CACHE_RETENTION || "").trim();
+const LLM_ENABLE_PROMPT_CACHE = parseEnvBoolean(process.env.LLM_ENABLE_PROMPT_CACHE || process.env.OPENAI_ENABLE_PROMPT_CACHE);
 const EDGE_CANDIDATES = [
   "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -163,6 +166,40 @@ function loadLocalEnvFile(filePath) {
 function buildChatCompletionsUrl(baseUrl) {
   const normalized = String(baseUrl || "").trim().replace(/\/+$/, "");
   return `${normalized || "https://api.openai.com/v1"}/chat/completions`;
+}
+
+function parseEnvBoolean(value) {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
+}
+
+function shouldAttachPromptCacheOptions() {
+  return LLM_ENABLE_PROMPT_CACHE && (
+    /^https:\/\/api\.openai\.com(?:\/|$)/i.test(LLM_BASE_URL)
+    || /^https:\/\/api\.openai\.com(?:\/|$)/i.test(LLM_CHAT_COMPLETIONS_URL)
+  );
+}
+
+function buildPromptCacheOptions() {
+  if (!shouldAttachPromptCacheOptions()) {
+    return {};
+  }
+
+  const options = {};
+
+  if (LLM_PROMPT_CACHE_KEY) {
+    options.prompt_cache_key = LLM_PROMPT_CACHE_KEY;
+  }
+
+  if (LLM_PROMPT_CACHE_RETENTION) {
+    options.prompt_cache_retention = LLM_PROMPT_CACHE_RETENTION;
+  }
+
+  return options;
 }
 
 function loadAccessConfig() {
@@ -957,6 +994,7 @@ async function callStudyNotesModel({ subject, topic, sourceText }) {
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), LLM_TIMEOUT_MS);
+  const promptCacheOptions = buildPromptCacheOptions();
 
   try {
     const response = await fetch(LLM_CHAT_COMPLETIONS_URL, {
@@ -970,6 +1008,7 @@ async function callStudyNotesModel({ subject, topic, sourceText }) {
         messages: buildStudyNotesMessages({ subject, topic, sourceText }),
         temperature: 0.25,
         max_tokens: LLM_MAX_TOKENS,
+        ...promptCacheOptions,
       }),
       signal: controller.signal,
     });

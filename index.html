@@ -24,9 +24,14 @@
             <input id="fileInput" type="file" accept=".md,.markdown,text/markdown">
             <label id="pdfImportLabel" class="file-trigger" for="pdfInput">导入 PDF</label>
             <input id="pdfInput" type="file" accept=".pdf,application/pdf">
+            <button id="toolbarExportToggle" class="toolbar-menu-toggle" type="button" aria-expanded="false" aria-controls="toolbarExportMenu">导出</button>
+            <div id="toolbarExportMenu" class="toolbar-export-menu" hidden>
             <button id="downloadHtmlBtn" type="button">导 HTML</button>
             <button id="downloadWordBtn" type="button">导 Word</button>
             <button id="printBtn" type="button">导 PDF</button>
+            <button id="downloadPngBtn" type="button">导 PNG</button>
+            <button id="downloadImageGroupBtn" type="button">导图片组</button>
+            </div>
           </div>
         </div>
 
@@ -65,7 +70,7 @@
               <p class="option-label">阅读节奏</p>
               <p class="option-note">再调字号和间距。</p>
             </div>
-            <div class="panel-cluster">
+            <div class="panel-cluster layout-page-size-cluster">
               <div class="cluster-head">
                 <p class="cluster-title">字号调节</p>
                 <p class="cluster-note">左侧看调整对象，右侧输入数值；0 表示跟随默认。</p>
@@ -196,7 +201,7 @@
                 </label>
               </div>
             </div>
-            <div class="panel-cluster">
+            <div class="panel-cluster layout-page-meta-cluster">
               <div class="cluster-head">
                 <p class="cluster-title">正文间距</p>
                 <p class="cluster-note">行距 / 字距</p>
@@ -216,9 +221,16 @@
                   </span>
                   <input id="letterSpacingRange" type="range" min="-0.5" max="2" step="0.1" value="0">
                 </label>
+                <label class="range-field" for="blockSpacingRange">
+                  <span class="range-title-row">
+                    <span class="range-title">块间距</span>
+                    <span id="blockSpacingValue" class="range-value">10 px</span>
+                  </span>
+                  <input id="blockSpacingRange" type="range" min="0" max="28" step="1" value="10">
+                </label>
               </div>
             </div>
-            <div class="panel-cluster">
+            <div class="panel-cluster layout-background-cluster">
               <div class="cluster-head">
                 <p class="cluster-title">标题行高</p>
                 <p class="cluster-note">H1 / H2 / H3 / H4</p>
@@ -296,6 +308,17 @@
             <div class="option-heading">
               <p class="option-label">页面设置</p>
             </div>
+            <div class="panel-cluster layout-data-preset-cluster">
+              <div class="cluster-head">
+                <p class="cluster-title">排版数据预设</p>
+                <p class="cluster-note">保存字号、间距、页面、分页和精调排版参数，之后一键套用。</p>
+              </div>
+              <div class="page-inline-tools layout-data-preset-tools">
+                <button id="layoutDataPresetBtn" type="button" class="page-inline-item page-inline-button layout-data-preset-button" aria-haspopup="dialog" aria-expanded="false">
+                  管理预设
+                </button>
+              </div>
+            </div>
             <div class="panel-cluster">
               <div class="cluster-head">
                 <p class="cluster-title">纸张尺寸</p>
@@ -372,6 +395,13 @@
                   <span class="page-inline-title">透明</span>
                   <span id="watermarkOpacityValue" class="range-value">12%</span>
                   <input id="watermarkOpacityRange" type="range" min="0" max="0.24" step="0.01" value="0.12">
+                </label>
+                <label class="page-inline-item page-inline-select" for="paginationStrategySelect">
+                  <span class="page-inline-title">分页策略</span>
+                  <select id="paginationStrategySelect">
+                    <option value="split-first">贴线分割</option>
+                    <option value="block-first">整块优先</option>
+                  </select>
                 </label>
               </div>
             </div>
@@ -451,7 +481,12 @@
       </section>
     </section>
 
-    <div class="workspace-shell">
+    <div class="workspace-shell" data-workspace-view="preview">
+      <nav class="workspace-tabs" aria-label="工作区视图">
+        <button type="button" class="workspace-tab" data-workspace-view="editor" aria-pressed="false">编辑</button>
+        <button type="button" class="workspace-tab is-active" data-workspace-view="preview" aria-pressed="true">预览</button>
+        <button type="button" class="workspace-tab" data-workspace-view="inspector" aria-pressed="false">参数</button>
+      </nav>
       <section class="editor-panel">
         <section class="panel-card editor-card">
           <div class="editor-heading">
@@ -562,12 +597,16 @@
       </section>
 
       <main class="preview-panel">
-        <div class="preview-toolbar">
-          <div class="preview-toolbar-meta">
-            <p class="preview-label">排版预览</p>
-            <p id="statusText" class="status-text">等待输入</p>
+          <div class="preview-toolbar">
+            <div class="preview-toolbar-meta">
+              <p class="preview-label">排版预览</p>
+              <p id="statusText" class="status-text">等待输入</p>
+            </div>
+          <div class="preview-toolbar-controls" aria-label="预览面板">
+            <button id="previewToolsToggle" type="button" class="preview-drawer-toggle" aria-controls="previewEditorTools" aria-expanded="false">工具</button>
+            <button id="inspectorToggle" type="button" class="preview-drawer-toggle" aria-controls="elementStylePanel" aria-expanded="false">参数</button>
           </div>
-          <div class="preview-actions preview-actions-editor" role="toolbar" aria-label="预览编辑工具">
+          <div id="previewEditorTools" class="preview-actions preview-actions-editor" role="toolbar" aria-label="预览编辑工具">
             <div class="preview-toolbar-group" role="group" aria-label="文字强调">
               <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="bold">粗</button>
               <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="italic">斜</button>
@@ -632,6 +671,46 @@
             </div>
             <div class="preview-toolbar-group" role="group" aria-label="分页工具">
               <button id="forcePageBreakBtn" type="button" class="preview-action-button preview-action-button-mini" title="在光标位置强制分页">分页</button>
+              <label class="preview-strategy-field" for="previewPaginationStrategySelect" title="分页策略">
+                <span>分页</span>
+                <select id="previewPaginationStrategySelect">
+                  <option value="split-first">贴线分割</option>
+                  <option value="block-first">整块优先</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div id="elementStylePanel" class="element-style-panel preview-drawer-panel" hidden>
+            <div class="element-style-head">
+              <p class="element-style-title">元素参数</p>
+              <p class="element-style-note">选中预览文字或把光标放入段落后调节。</p>
+            </div>
+            <div class="element-style-grid" role="toolbar" aria-label="元素参数调节">
+              <div class="preview-toolbar-group" role="group" aria-label="文字样式快捷调节">
+                <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="bold">粗</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="italic">斜</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="underline">下</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="strikethrough">删</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-inline-style="code">码</button>
+              </div>
+              <div class="preview-toolbar-group preview-toolbar-group-fields" role="group" aria-label="文字颜色快捷调节">
+                <div class="preview-color-swatches" role="group" aria-label="快捷颜色">
+                  <button type="button" class="preview-color-chip" data-text-color="#1f2933" style="--swatch:#1f2933;"></button>
+                  <button type="button" class="preview-color-chip" data-text-color="#204a73" style="--swatch:#204a73;"></button>
+                  <button type="button" class="preview-color-chip" data-text-color="#9f3f36" style="--swatch:#9f3f36;"></button>
+                  <button type="button" class="preview-color-chip" data-text-color="#355d4d" style="--swatch:#355d4d;"></button>
+                </div>
+              </div>
+              <div class="preview-toolbar-group" role="group" aria-label="段落参数快捷调节">
+                <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="left">左</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="justify">两</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="center">中</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-selection-align="right">右</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="indent-decrease">缩-</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="indent-increase">缩+</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="spacing-decrease">距-</button>
+                <button type="button" class="preview-action-button preview-action-button-mini" data-paragraph-step="spacing-increase">距+</button>
+              </div>
             </div>
           </div>
         </div>
@@ -644,6 +723,7 @@
   </div>
   <script src="vendor/katex/katex.min.js" defer></script>
   <script src="vendor/katex/contrib/mhchem.min.js" defer></script>
+  <script src="vendor/html2canvas.min.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

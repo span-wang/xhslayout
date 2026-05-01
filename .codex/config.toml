@@ -1,0 +1,5 @@
+developer_instructions = """
+Project guidance is maintained in AGENTS.md and .codex/instructions.md.
+Keep changes narrow, avoid node_modules during normal work, preserve Chinese
+copy unless asked, and use the lightest useful verification.
+"""

@@ -13,6 +13,10 @@ deploy/cloudflare/config.yml
 *.log
 *.pid
 
+# Local IDE and Codex working files
+.idea/
+.codex/layout-audit/
+
 # Generated visual check screenshots
 *-check*.png
 current-layout-check.png

@@ -39,10 +39,14 @@ const STORAGE_KEYS = {
   watermarkOpacity: "layout-for-xhs-watermark-opacity",
   exportBackgroundSrc: "layout-for-xhs-export-background-src",
   exportBackgroundName: "layout-for-xhs-export-background-name",
+  elementStyles: "layout-for-xhs-element-styles",
+  paginationStrategy: "layout-for-xhs-pagination-strategy",
   ribbonTab: "layout-for-xhs-ribbon-tab",
   layoutPreset: "layout-for-xhs-layout-preset",
   layoutPresetByMode: "layout-for-xhs-layout-preset-by-mode",
   tableLayouts: "layout-for-xhs-table-layouts",
+  cardLayouts: "layout-for-xhs-card-layouts",
+  cardOrder: "layout-for-xhs-card-order",
   typographyVersion: "layout-for-xhs-typography-version",
 };
 
@@ -454,6 +458,7 @@ const DEFAULT_WATERMARK_TEXT = "CONFIDENTIAL";
 const DEFAULT_WATERMARK_OPACITY = 0.12;
 const DEFAULT_EXPORT_BACKGROUND_SRC = "";
 const DEFAULT_EXPORT_BACKGROUND_NAME = "";
+const DEFAULT_PAGINATION_STRATEGY = "split-first";
 const TYPOGRAPHY_BASELINE_VERSION = "2026-04-controlled-readable-scale";
 const MAX_PERSISTED_BACKGROUND_LENGTH = 1500000;
 const CUSTOM_FONT_DB_NAME = "layout-for-xhs-custom-fonts";
@@ -462,6 +467,16 @@ const CUSTOM_FONT_STORE_NAME = "fonts";
 const CUSTOM_FONT_KEY_PREFIX = "custom-font-";
 const EXPORT_BACKGROUND_PRESETS = Object.freeze(createExportBackgroundPresets());
 const DEFAULT_RIBBON_TAB = "home";
+const PAGINATION_STRATEGIES = Object.freeze({
+  "split-first": Object.freeze({
+    label: "贴线分割",
+    summary: "越线后先分割当前元素，只有手动分页符可提前分页。",
+  }),
+  "block-first": Object.freeze({
+    label: "整块优先",
+    summary: "越线后先尝试整块换页，整块仍放不下再分割。",
+  }),
+});
 const LEGACY_COMPACT_DEFAULTS = Object.freeze({
   lineHeight: [1.48, 1.55],
   headingSpaceH1: 20,
@@ -500,6 +515,18 @@ const PAGE_FOOTER_LOGO_HEIGHT_PX = 30;
 const PAGE_FOOTER_LOGO_GAP_PX = 4;
 const PARAGRAPH_PAGINATION_MIN_TEXT_LENGTH = 36;
 const PARAGRAPH_PAGINATION_MIN_FRAGMENT_CHARS = 12;
+const QUESTION_PAGINATION_FRAGMENT_END_CLASSES = Object.freeze([
+  "question-card-fragment-end",
+  "question-answer-item-fragment-end",
+  "question-answer-box-fragment-end",
+]);
+const QUESTION_PAGINATION_FRAGMENT_START_CLASSES = Object.freeze([
+  "question-card-fragment-start",
+  "question-card-fragment-heading",
+  "question-answer-item-fragment-start",
+  "question-answer-item-fragment-heading",
+  "question-answer-box-fragment-start",
+]);
 const MIN_TABLE_COLUMN_WIDTH = 72;
 const MAX_TABLE_ROW_HEIGHT = 320;
 
@@ -923,6 +950,187 @@ const HEADING_SPACE_CONTROLS = [
   },
 ];
 
+const ELEMENT_STYLE_SCHEMA = Object.freeze([
+  Object.freeze({
+    id: "heading1",
+    label: "一级标题",
+    selector: "h1",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-h1-font-size", min: 18, max: 64, step: 1, defaultValue: DEFAULT_HEADING1_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-h1-line-height", min: 0.9, max: 2.2, step: 0.05, defaultValue: DEFAULT_HEADING1_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "spaceBefore", label: "上间距", cssVar: "--element-h1-space-before", min: 0, max: 48, step: 1, defaultValue: 0, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-h1-space-after", min: 0, max: 52, step: 1, defaultValue: DEFAULT_HEADING_SPACE_H1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingBottom", label: "下内距", cssVar: "--element-h1-padding-bottom", min: 0, max: 30, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "heading2",
+    label: "二级标题",
+    selector: "h2",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-h2-font-size", min: 16, max: 48, step: 1, defaultValue: DEFAULT_HEADING2_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-h2-line-height", min: 0.9, max: 2.2, step: 0.05, defaultValue: DEFAULT_HEADING2_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "spaceBefore", label: "上间距", cssVar: "--element-h2-space-before", min: 0, max: 44, step: 1, defaultValue: DEFAULT_HEADING_SPACE_H2, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-h2-space-after", min: 0, max: 36, step: 1, defaultValue: Math.round(DEFAULT_HEADING_SPACE_H2 * 0.46), unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingLeft", label: "左内距", cssVar: "--element-h2-padding-left", min: 0, max: 28, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingBottom", label: "下内距", cssVar: "--element-h2-padding-bottom", min: 0, max: 24, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "heading3",
+    label: "三级标题",
+    selector: "h3",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-h3-font-size", min: 14, max: 38, step: 1, defaultValue: DEFAULT_HEADING3_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-h3-line-height", min: 0.9, max: 2.2, step: 0.05, defaultValue: DEFAULT_HEADING3_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "spaceBefore", label: "上间距", cssVar: "--element-h3-space-before", min: 0, max: 36, step: 1, defaultValue: DEFAULT_HEADING_SPACE_H3, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-h3-space-after", min: 0, max: 30, step: 1, defaultValue: Math.round(DEFAULT_HEADING_SPACE_H3 * 0.5), unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingLeft", label: "左内距", cssVar: "--element-h3-padding-left", min: 0, max: 24, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "heading4",
+    label: "四级标题",
+    selector: "h4",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-h4-font-size", min: 12, max: 30, step: 1, defaultValue: DEFAULT_HEADING4_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-h4-line-height", min: 0.9, max: 2.2, step: 0.05, defaultValue: DEFAULT_HEADING4_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "spaceBefore", label: "上间距", cssVar: "--element-h4-space-before", min: 0, max: 28, step: 1, defaultValue: DEFAULT_HEADING_SPACE_H4, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-h4-space-after", min: 0, max: 24, step: 1, defaultValue: 4, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingLeft", label: "左内距", cssVar: "--element-h4-padding-left", min: 0, max: 20, step: 1, defaultValue: 0, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "paragraph",
+    label: "正文",
+    selector: "p, li, blockquote",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-p-font-size", min: 10, max: 28, step: 1, defaultValue: DEFAULT_FONT_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-p-line-height", min: 1.05, max: 2.6, step: 0.05, defaultValue: DEFAULT_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "spaceBefore", label: "上间距", cssVar: "--element-p-space-before", min: 0, max: 30, step: 1, defaultValue: 0, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-p-space-after", min: 0, max: 36, step: 1, defaultValue: DEFAULT_PARAGRAPH_SPACING, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "indent", label: "首行缩进", cssVar: "--element-p-indent", min: 0, max: 64, step: 1, defaultValue: DEFAULT_PARAGRAPH_INDENT, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "list",
+    label: "列表",
+    selector: "ul, ol, li",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-list-font-size", min: 10, max: 28, step: 1, defaultValue: DEFAULT_FONT_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-list-line-height", min: 1.05, max: 2.6, step: 0.05, defaultValue: DEFAULT_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "itemGap", label: "项间距", cssVar: "--element-list-item-gap", min: 0, max: 24, step: 1, defaultValue: 4, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-list-space-after", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "markerWidth", label: "标记宽", cssVar: "--element-list-marker-width", min: 16, max: 60, step: 1, defaultValue: 34, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "callout",
+    label: "强调块",
+    selector: ".callout-box, .note-quote, .brush-block, blockquote",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-callout-font-size", min: 10, max: 28, step: 1, defaultValue: DEFAULT_FONT_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-callout-line-height", min: 1.05, max: 2.6, step: 0.05, defaultValue: DEFAULT_LINE_HEIGHT, formatValue: formatLineHeight }),
+      Object.freeze({ key: "paddingX", label: "横内距", cssVar: "--element-callout-padding-x", min: 0, max: 42, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingY", label: "纵内距", cssVar: "--element-callout-padding-y", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "radius", label: "圆角", cssVar: "--element-callout-radius", min: 0, max: 28, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-callout-space-after", min: 0, max: 40, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "table",
+    label: "表格",
+    selector: "table, .article-table-editor",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "字号", cssVar: "--element-table-font-size", min: 9, max: 24, step: 1, defaultValue: DEFAULT_TABLE_FONT_SIZE, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "lineHeight", label: "行高", cssVar: "--element-table-line-height", min: 1, max: 2.2, step: 0.05, defaultValue: 1.2, formatValue: formatLineHeight }),
+      Object.freeze({ key: "cellPaddingX", label: "单元格横", cssVar: "--element-table-cell-padding-x", min: 2, max: 30, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "cellPaddingY", label: "单元格纵", cssVar: "--element-table-cell-padding-y", min: 2, max: 24, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-table-space-after", min: 0, max: 44, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "card",
+    label: "卡片",
+    selector: ".knowledge-cluster, .question-card, .question-panel, .mindmap-card, figure",
+    fields: Object.freeze([
+      Object.freeze({ key: "paddingX", label: "横内距", cssVar: "--element-card-padding-x", min: 0, max: 48, step: 1, defaultValue: 18, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingY", label: "纵内距", cssVar: "--element-card-padding-y", min: 0, max: 44, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "radius", label: "圆角", cssVar: "--element-card-radius", min: 0, max: 32, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "gap", label: "内部间距", cssVar: "--element-card-gap", min: 0, max: 32, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-card-space-after", min: 0, max: 48, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+]);
+
+const CARD_LAYOUT_DEFAULTS = Object.freeze({
+  width: 0,
+  height: 0,
+  paddingX: 0,
+  paddingY: 0,
+  textScale: 100,
+});
+const CARD_LAYOUT_LIMITS = Object.freeze({
+  width: Object.freeze({ min: 0, max: 1200, defaultValue: CARD_LAYOUT_DEFAULTS.width }),
+  height: Object.freeze({ min: 0, max: 1600, defaultValue: CARD_LAYOUT_DEFAULTS.height }),
+  paddingX: Object.freeze({ min: 0, max: 96, defaultValue: CARD_LAYOUT_DEFAULTS.paddingX }),
+  paddingY: Object.freeze({ min: 0, max: 96, defaultValue: CARD_LAYOUT_DEFAULTS.paddingY }),
+  textScale: Object.freeze({ min: 60, max: 140, defaultValue: CARD_LAYOUT_DEFAULTS.textScale }),
+});
+const CARD_LAYOUT_MAX_ENTRIES = 240;
+const CARD_LAYOUT_FIELD_SCHEMA = Object.freeze([
+  Object.freeze({
+    key: "width",
+    label: "宽度",
+    unit: "px",
+    min: CARD_LAYOUT_LIMITS.width.min,
+    max: CARD_LAYOUT_LIMITS.width.max,
+    step: 2,
+    defaultValue: CARD_LAYOUT_LIMITS.width.defaultValue,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动"),
+  }),
+  Object.freeze({
+    key: "height",
+    label: "高度",
+    unit: "px",
+    min: CARD_LAYOUT_LIMITS.height.min,
+    max: CARD_LAYOUT_LIMITS.height.max,
+    step: 2,
+    defaultValue: CARD_LAYOUT_LIMITS.height.defaultValue,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动"),
+  }),
+  Object.freeze({
+    key: "paddingX",
+    label: "左右边距",
+    unit: "px",
+    min: CARD_LAYOUT_LIMITS.paddingX.min,
+    max: CARD_LAYOUT_LIMITS.paddingX.max,
+    step: 1,
+    defaultValue: CARD_LAYOUT_LIMITS.paddingX.defaultValue,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "全局"),
+  }),
+  Object.freeze({
+    key: "paddingY",
+    label: "上下边距",
+    unit: "px",
+    min: CARD_LAYOUT_LIMITS.paddingY.min,
+    max: CARD_LAYOUT_LIMITS.paddingY.max,
+    step: 1,
+    defaultValue: CARD_LAYOUT_LIMITS.paddingY.defaultValue,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "全局"),
+  }),
+  Object.freeze({
+    key: "textScale",
+    label: "文字比例",
+    unit: "%",
+    min: CARD_LAYOUT_LIMITS.textScale.min,
+    max: CARD_LAYOUT_LIMITS.textScale.max,
+    step: 1,
+    defaultValue: CARD_LAYOUT_LIMITS.textScale.defaultValue,
+    formatValue: (value) => `${Math.round(Number(value) || 100)}%`,
+  }),
+]);
+
 const PAGE_STYLE_CONTROLS = [
   {
     key: "pageWidth",
@@ -1104,6 +1312,7 @@ const PDF_JPEG_QUALITY = 0.94;
 const PDF_MAX_CANVAS_PIXELS = 28000000;
 const PDF_CAPTURE_PADDING = 24;
 const PDF_EXPORT_API_URL = "/api/export-pdf";
+const PNG_EXPORT_SCALE = 2;
 const PDF_INLINE_IMAGE_MAX_DIMENSION = 2200;
 const PDF_INLINE_IMAGE_JPEG_QUALITY = 0.86;
 const PDF_INLINE_IMAGE_OPTIMIZE_MIN_CHARS = 900000;
@@ -3482,6 +3691,466 @@ function enforceTypeScale(target) {
   return target;
 }
 
+function getElementStyleSourceValue(source, groupId, field) {
+  const sourceGroup = source[groupId] && typeof source[groupId] === "object" ? source[groupId] : {};
+  const topLevelMappings = {
+    heading1: {
+      fontSize: "heading1Size",
+      lineHeight: "heading1LineHeight",
+      spaceAfter: "headingSpaceH1",
+    },
+    heading2: {
+      fontSize: "heading2Size",
+      lineHeight: "heading2LineHeight",
+      spaceBefore: "headingSpaceH2",
+    },
+    heading3: {
+      fontSize: "heading3Size",
+      lineHeight: "heading3LineHeight",
+      spaceBefore: "headingSpaceH3",
+    },
+    heading4: {
+      fontSize: "heading4Size",
+      lineHeight: "heading4LineHeight",
+      spaceBefore: "headingSpaceH4",
+    },
+    paragraph: {
+      fontSize: "fontSize",
+      lineHeight: "lineHeight",
+      spaceAfter: "paragraphSpacing",
+      indent: "paragraphIndent",
+    },
+    list: {
+      fontSize: "fontSize",
+      lineHeight: "lineHeight",
+    },
+    callout: {
+      fontSize: "fontSize",
+      lineHeight: "lineHeight",
+    },
+    table: {
+      fontSize: "tableFontSize",
+    },
+  };
+
+  if (sourceGroup[field.key] != null) {
+    return sourceGroup[field.key];
+  }
+
+  const mappedKey = topLevelMappings[groupId]?.[field.key];
+  return mappedKey && source[mappedKey] != null ? source[mappedKey] : field.defaultValue;
+}
+
+function getElementStyleDefaults(source = {}) {
+  return ELEMENT_STYLE_SCHEMA.reduce((result, group) => {
+    result[group.id] = group.fields.reduce((groupResult, field) => {
+      groupResult[field.key] = clampNumber(
+        getElementStyleSourceValue(source, group.id, field),
+        field.min,
+        field.max,
+        field.defaultValue,
+      );
+      return groupResult;
+    }, {});
+    return result;
+  }, {});
+}
+
+function normalizeElementStyles(rawValue) {
+  if (!rawValue) {
+    return getElementStyleDefaults();
+  }
+
+  if (typeof rawValue === "string") {
+    try {
+      return getElementStyleDefaults(JSON.parse(rawValue));
+    } catch (_error) {
+      return getElementStyleDefaults();
+    }
+  }
+
+  return getElementStyleDefaults(rawValue);
+}
+
+function resolveElementStyles(options = {}, resolvedOptions = {}) {
+  if (options.elementStyles) {
+    return normalizeElementStyles(options.elementStyles);
+  }
+
+  return getElementStyleDefaults({ ...options, ...resolvedOptions });
+}
+
+function getElementStyleGroup(groupId) {
+  return ELEMENT_STYLE_SCHEMA.find((group) => group.id === groupId) || ELEMENT_STYLE_SCHEMA[0];
+}
+
+function getElementStyleField(groupId, fieldKey) {
+  const group = getElementStyleGroup(groupId);
+  return group.fields.find((field) => field.key === fieldKey) || null;
+}
+
+function formatElementStyleCssValue(field, value) {
+  const normalizedValue = clampNumber(value, field.min, field.max, field.defaultValue);
+  return field.unit === "px" ? `${normalizedValue}px` : String(normalizedValue);
+}
+
+function forEachElementStyleDeclaration(elementStyles, callback) {
+  const normalized = normalizeElementStyles(elementStyles);
+
+  ELEMENT_STYLE_SCHEMA.forEach((group) => {
+    group.fields.forEach((field) => {
+      callback(field.cssVar, formatElementStyleCssValue(field, normalized[group.id][field.key]), group, field);
+    });
+  });
+}
+
+function buildElementStyleDeclarations(elementStyles) {
+  const declarations = [];
+
+  forEachElementStyleDeclaration(elementStyles, (cssVar, cssValue) => {
+    declarations.push(`${cssVar}:${cssValue}`);
+  });
+
+  return declarations;
+}
+
+function applyElementStyleProperties(target, elementStyles) {
+  if (!target || !target.style) {
+    return;
+  }
+
+  forEachElementStyleDeclaration(elementStyles, (cssVar, cssValue) => {
+    target.style.setProperty(cssVar, cssValue);
+  });
+}
+
+function syncElementStylesFromGlobalControl(elementStyles, controlKey, value) {
+  const nextStyles = normalizeElementStyles(elementStyles);
+  const mappings = {
+    fontSize: [["paragraph", "fontSize"], ["list", "fontSize"], ["callout", "fontSize"]],
+    heading1Size: [["heading1", "fontSize"]],
+    heading2Size: [["heading2", "fontSize"]],
+    heading3Size: [["heading3", "fontSize"]],
+    heading4Size: [["heading4", "fontSize"]],
+    tableFontSize: [["table", "fontSize"]],
+    lineHeight: [["paragraph", "lineHeight"], ["list", "lineHeight"], ["callout", "lineHeight"]],
+    paragraphSpacing: [["paragraph", "spaceAfter"]],
+    paragraphIndent: [["paragraph", "indent"]],
+    heading1LineHeight: [["heading1", "lineHeight"]],
+    heading2LineHeight: [["heading2", "lineHeight"]],
+    heading3LineHeight: [["heading3", "lineHeight"]],
+    heading4LineHeight: [["heading4", "lineHeight"]],
+    headingSpaceH1: [["heading1", "spaceAfter"]],
+    headingSpaceH2: [["heading2", "spaceBefore"]],
+    headingSpaceH3: [["heading3", "spaceBefore"]],
+    headingSpaceH4: [["heading4", "spaceBefore"]],
+  };
+
+  (mappings[controlKey] || []).forEach(([groupId, fieldKey]) => {
+    const field = getElementStyleField(groupId, fieldKey);
+    if (!field) {
+      return;
+    }
+
+    nextStyles[groupId][fieldKey] = clampNumber(value, field.min, field.max, field.defaultValue);
+  });
+
+  return nextStyles;
+}
+
+function normalizeCardLayoutEntry(rawValue = {}) {
+  const source = rawValue && typeof rawValue === "object" ? rawValue : {};
+  return {
+    width: clampNumber(source.width, CARD_LAYOUT_LIMITS.width.min, CARD_LAYOUT_LIMITS.width.max, CARD_LAYOUT_DEFAULTS.width),
+    height: clampNumber(source.height, CARD_LAYOUT_LIMITS.height.min, CARD_LAYOUT_LIMITS.height.max, CARD_LAYOUT_DEFAULTS.height),
+    paddingX: clampNumber(source.paddingX, CARD_LAYOUT_LIMITS.paddingX.min, CARD_LAYOUT_LIMITS.paddingX.max, CARD_LAYOUT_DEFAULTS.paddingX),
+    paddingY: clampNumber(source.paddingY, CARD_LAYOUT_LIMITS.paddingY.min, CARD_LAYOUT_LIMITS.paddingY.max, CARD_LAYOUT_DEFAULTS.paddingY),
+    textScale: clampNumber(source.textScale, CARD_LAYOUT_LIMITS.textScale.min, CARD_LAYOUT_LIMITS.textScale.max, CARD_LAYOUT_DEFAULTS.textScale),
+  };
+}
+
+function hasCustomCardLayout(entry) {
+  const normalized = normalizeCardLayoutEntry(entry);
+  return normalized.width !== CARD_LAYOUT_DEFAULTS.width
+    || normalized.height !== CARD_LAYOUT_DEFAULTS.height
+    || normalized.paddingX !== CARD_LAYOUT_DEFAULTS.paddingX
+    || normalized.paddingY !== CARD_LAYOUT_DEFAULTS.paddingY
+    || normalized.textScale !== CARD_LAYOUT_DEFAULTS.textScale;
+}
+
+function normalizeCardLayouts(rawValue) {
+  let source = rawValue;
+
+  if (typeof source === "string") {
+    try {
+      source = JSON.parse(source);
+    } catch (_error) {
+      source = {};
+    }
+  }
+
+  if (!source || typeof source !== "object" || Array.isArray(source)) {
+    return {};
+  }
+
+  const normalized = {};
+  Object.entries(source).slice(0, CARD_LAYOUT_MAX_ENTRIES).forEach(([rawKey, rawEntry]) => {
+    const key = sanitizeBlockToken(rawKey, "");
+    const entry = normalizeCardLayoutEntry(rawEntry);
+
+    if (key && hasCustomCardLayout(entry)) {
+      normalized[key] = entry;
+    }
+  });
+
+  return normalized;
+}
+
+function normalizeCardOrder(rawValue) {
+  let source = rawValue;
+
+  if (typeof source === "string") {
+    try {
+      source = JSON.parse(source);
+    } catch (_error) {
+      source = [];
+    }
+  }
+
+  if (!Array.isArray(source)) {
+    return [];
+  }
+
+  const seen = new Set();
+  return source
+    .map((key) => sanitizeBlockToken(key, ""))
+    .filter((key) => {
+      if (!key || seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    })
+    .slice(0, CARD_LAYOUT_MAX_ENTRIES);
+}
+
+function setCardLayoutEntry(cardLayouts, cardKey, patch) {
+  const key = sanitizeBlockToken(cardKey, "");
+  const nextLayouts = normalizeCardLayouts(cardLayouts);
+
+  if (!key) {
+    return nextLayouts;
+  }
+
+  const nextEntry = normalizeCardLayoutEntry({
+    ...nextLayouts[key],
+    ...(patch || {}),
+  });
+
+  if (hasCustomCardLayout(nextEntry)) {
+    nextLayouts[key] = nextEntry;
+  } else {
+    delete nextLayouts[key];
+  }
+
+  return nextLayouts;
+}
+
+function getCardLayoutKey(card) {
+  return card?.dataset ? String(card.dataset.cardLayoutKey || "") : "";
+}
+
+function getCardLayoutEntry(cardLayouts, cardKey) {
+  const key = sanitizeBlockToken(cardKey, "");
+  const normalizedLayouts = normalizeCardLayouts(cardLayouts);
+  return normalizeCardLayoutEntry(key ? normalizedLayouts[key] : {});
+}
+
+function getCardLayoutTargets(root) {
+  if (!root || !root.querySelectorAll) {
+    return [];
+  }
+
+  return Array.from(root.querySelectorAll(":scope > .knowledge-cluster, :scope > .question-card, :scope > .question-answer-item"))
+    .filter((card) => card.classList && !card.classList.contains("question-card-fragment"));
+}
+
+function getAllCardLayoutTargets(root) {
+  if (!root || !root.querySelectorAll) {
+    return [];
+  }
+
+  return Array.from(root.querySelectorAll(".knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item"));
+}
+
+function getInteractiveCardLayoutTargets(root) {
+  if (!root || !root.querySelectorAll) {
+    return [];
+  }
+
+  const cards = [];
+  const seen = new Set();
+
+  getAllCardLayoutTargets(root).forEach((card) => {
+    const key = getCardLayoutKey(card);
+
+    if (!key || seen.has(key)) {
+      return;
+    }
+
+    seen.add(key);
+    cards.push(card);
+  });
+
+  return cards;
+}
+
+function getStableCardBaseKey(card, mode, index) {
+  const title = card.querySelector?.(":scope .knowledge-cluster-title, :scope .question-card-title, :scope .question-answer-item-title");
+  const tracked = title?.dataset?.mdBlockId || card.dataset?.mdBlockId || "";
+  const text = (title?.textContent || card.textContent || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 48);
+
+  return sanitizeBlockToken(`${mode || "card"}-${tracked || text || index + 1}`, `card-${index + 1}`);
+}
+
+function syncDescendantCardLayoutKeys(card, key) {
+  if (!card || !key || !card.querySelectorAll) {
+    return;
+  }
+
+  Array.from(card.querySelectorAll(".question-card, .question-answer-item")).forEach((nestedCard) => {
+    nestedCard.dataset.cardLayoutKey = key;
+  });
+}
+
+function assignCardLayoutKeys(root, mode) {
+  const seen = {};
+
+  getCardLayoutTargets(root).forEach((card, index) => {
+    const baseKey = getStableCardBaseKey(card, mode, index);
+    const usedCount = seen[baseKey] || 0;
+    seen[baseKey] = usedCount + 1;
+    const key = usedCount ? `${baseKey}-${usedCount + 1}` : baseKey;
+
+    card.dataset.cardLayoutKey = key;
+    syncDescendantCardLayoutKeys(card, key);
+  });
+}
+
+function applyCardOrder(root, order) {
+  if (!root || !Array.isArray(order) || !order.length) {
+    return;
+  }
+
+  const orderList = normalizeCardOrder(order);
+  const orderIndex = new Map(orderList.map((key, index) => [key, index]));
+  const children = Array.from(root.children || []);
+  const runs = [];
+  let currentRun = [];
+
+  const flushRun = () => {
+    if (currentRun.length > 1) {
+      runs.push(currentRun);
+    }
+    currentRun = [];
+  };
+
+  children.forEach((child) => {
+    if (child.matches?.(".knowledge-cluster, .question-card, .question-answer-item")) {
+      currentRun.push(child);
+      return;
+    }
+
+    flushRun();
+  });
+  flushRun();
+
+  runs.forEach((run) => {
+    const sortedRun = run
+      .map((card, index) => ({
+        card,
+        index,
+        key: getCardLayoutKey(card),
+      }))
+      .sort((left, right) => {
+        const leftOrder = orderIndex.has(left.key) ? orderIndex.get(left.key) : Number.MAX_SAFE_INTEGER;
+        const rightOrder = orderIndex.has(right.key) ? orderIndex.get(right.key) : Number.MAX_SAFE_INTEGER;
+
+        if (leftOrder !== rightOrder) {
+          return leftOrder - rightOrder;
+        }
+
+        return left.index - right.index;
+      });
+
+    if (!sortedRun.some((entry, index) => entry.card !== run[index])) {
+      return;
+    }
+
+    const anchor = run[run.length - 1].nextSibling;
+    sortedRun.forEach((entry) => {
+      root.insertBefore(entry.card, anchor);
+    });
+  });
+}
+
+function compactCardOrder(root, order) {
+  const cards = getCardLayoutTargets(root);
+  const availableKeys = new Set(cards.map(getCardLayoutKey).filter(Boolean));
+  const nextOrder = normalizeCardOrder(order).filter((key) => availableKeys.has(key));
+
+  cards.forEach((card) => {
+    const key = getCardLayoutKey(card);
+    if (key && !nextOrder.includes(key)) {
+      nextOrder.push(key);
+    }
+  });
+
+  return nextOrder;
+}
+
+function applyCardLayouts(root, cardLayouts = {}) {
+  const normalizedLayouts = normalizeCardLayouts(cardLayouts);
+
+  getAllCardLayoutTargets(root).forEach((card) => {
+    const layout = getCardLayoutEntry(normalizedLayouts, getCardLayoutKey(card));
+
+    card.classList.add("layout-editable-card");
+    card.style.removeProperty("--card-text-scale");
+    card.style.removeProperty("--card-auto-text-scale");
+    card.style.removeProperty("--card-padding-x");
+    card.style.removeProperty("--card-padding-y");
+    card.style.removeProperty("width");
+    card.style.removeProperty("max-width");
+    card.style.removeProperty("min-height");
+
+    if (layout.width > 0) {
+      card.style.width = `${layout.width}px`;
+      card.style.maxWidth = "100%";
+    }
+
+    if (layout.height > 0) {
+      card.style.minHeight = `${layout.height}px`;
+    }
+
+    if (layout.paddingX > 0) {
+      card.style.setProperty("--card-padding-x", `${layout.paddingX}px`);
+    }
+
+    if (layout.paddingY > 0) {
+      card.style.setProperty("--card-padding-y", `${layout.paddingY}px`);
+    }
+
+    if (layout.textScale !== CARD_LAYOUT_DEFAULTS.textScale) {
+      card.style.setProperty("--card-text-scale", String(layout.textScale / 100));
+    }
+  });
+}
+
 function formatLineHeight(value) {
   return Number(value).toFixed(2).replace(/0$/, "").replace(/\.0$/, "");
 }
@@ -3612,6 +4281,47 @@ function updateNumericDisplay(display, value, formatter, step = 1, disabled = fa
   }
   display.title = formattedValue;
   display.classList.toggle("is-disabled", disabled);
+}
+
+function getRangeControlField(rangeInput) {
+  return rangeInput?.closest?.(".range-field, .page-inline-item") || null;
+}
+
+function updateRangeControlVisual(rangeInput) {
+  if (!rangeInput) {
+    return;
+  }
+
+  const min = Number(rangeInput.min);
+  const max = Number(rangeInput.max);
+  const value = Number(rangeInput.value);
+  const progress = Number.isFinite(min) && Number.isFinite(max) && max > min && Number.isFinite(value)
+    ? ((value - min) / (max - min)) * 100
+    : 0;
+  const normalizedProgress = Math.max(0, Math.min(100, progress));
+  const field = getRangeControlField(rangeInput);
+
+  rangeInput.style.setProperty("--range-progress", `${normalizedProgress}%`);
+  if (field) {
+    field.style.setProperty("--range-progress", `${normalizedProgress}%`);
+    field.classList.toggle("is-range-disabled", Boolean(rangeInput.disabled));
+  }
+}
+
+function setRangeControlTuning(rangeInput, isTuning) {
+  const field = getRangeControlField(rangeInput);
+
+  rangeInput?.classList.toggle("is-tuning", Boolean(isTuning));
+  field?.classList.toggle("is-tuning", Boolean(isTuning));
+}
+
+function syncRangeControlVisuals(root = document) {
+  if (!root?.querySelectorAll) {
+    return;
+  }
+
+  root.querySelectorAll(".range-field input[type='range'], .page-inline-item input[type='range']")
+    .forEach(updateRangeControlVisual);
 }
 
 function initNumericScrubberLegacy({ rangeInput, display, min, max, step, defaultValue, formatValue }) {
@@ -3789,7 +4499,7 @@ function initNumericScrubber({ rangeInput, display, min, max, step, defaultValue
   display.classList.remove("range-value-scrubber");
   display.append(editor);
 
-  rangeInput.classList.add("range-native-input");
+  rangeInput.classList.add("range-native-input", "precision-range");
 
   let pendingCommitTimer = null;
 
@@ -3797,9 +4507,45 @@ function initNumericScrubber({ rangeInput, display, min, max, step, defaultValue
     window.clearTimeout(pendingCommitTimer);
     const normalized = snapValueToStep(clampNumber(nextValue, min, max, defaultValue), min, resolvedStep);
     rangeInput.value = formatNumericInputValue(normalized, resolvedStep);
+    updateRangeControlVisual(rangeInput);
     rangeInput.dispatchEvent(new Event("input", { bubbles: true }));
     updateNumericDisplay(display, normalized, formatValue, resolvedStep, Boolean(rangeInput.disabled));
   };
+
+  rangeInput.addEventListener("input", () => {
+    updateRangeControlVisual(rangeInput);
+  });
+
+  rangeInput.addEventListener("pointerdown", (event) => {
+    if (rangeInput.disabled) {
+      return;
+    }
+
+    setRangeControlTuning(rangeInput, true);
+
+    const finishTuning = () => {
+      setRangeControlTuning(rangeInput, false);
+    };
+
+    window.addEventListener("pointerup", finishTuning, { once: true });
+    window.addEventListener("pointercancel", finishTuning, { once: true });
+    event.stopPropagation();
+  });
+
+  rangeInput.addEventListener("focus", () => setRangeControlTuning(rangeInput, true));
+  rangeInput.addEventListener("blur", () => setRangeControlTuning(rangeInput, false));
+
+  rangeInput.addEventListener("wheel", (event) => {
+    if (rangeInput.disabled) {
+      return;
+    }
+
+    event.preventDefault();
+    const direction = event.deltaY < 0 ? 1 : -1;
+    const multiplier = event.shiftKey ? 5 : 1;
+    const currentValue = Number(rangeInput.value || defaultValue);
+    commitValue(currentValue + direction * resolvedStep * multiplier);
+  }, { passive: false });
 
   numberInput.addEventListener("input", () => {
     const nextValue = String(numberInput.value || "").trim();
@@ -3824,6 +4570,15 @@ function initNumericScrubber({ rangeInput, display, min, max, step, defaultValue
   });
 
   numberInput.addEventListener("keydown", (event) => {
+    if (["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) {
+      event.preventDefault();
+      const direction = event.key === "ArrowUp" || event.key === "PageUp" ? 1 : -1;
+      const multiplier = event.key.startsWith("Page") || event.shiftKey ? 5 : 1;
+      const currentValue = Number(numberInput.value || rangeInput.value || defaultValue);
+      commitValue(currentValue + direction * resolvedStep * multiplier);
+      return;
+    }
+
     if (event.key !== "Enter") {
       return;
     }
@@ -3833,6 +4588,19 @@ function initNumericScrubber({ rangeInput, display, min, max, step, defaultValue
     numberInput.blur();
   });
 
+  numberInput.addEventListener("wheel", (event) => {
+    if (document.activeElement !== numberInput || rangeInput.disabled) {
+      return;
+    }
+
+    event.preventDefault();
+    const direction = event.deltaY < 0 ? 1 : -1;
+    const multiplier = event.shiftKey ? 5 : 1;
+    const currentValue = Number(numberInput.value || rangeInput.value || defaultValue);
+    commitValue(currentValue + direction * resolvedStep * multiplier);
+  }, { passive: false });
+
+  updateRangeControlVisual(rangeInput);
   updateNumericDisplay(display, rangeInput.value, formatValue, resolvedStep, Boolean(rangeInput.disabled));
 }
 
@@ -3911,6 +4679,9 @@ function resolveArticleOptions(options = {}) {
   });
 
   enforceTypeScale(resolved);
+  resolved.elementStyles = resolveElementStyles(options, resolved);
+  resolved.cardLayouts = normalizeCardLayouts(options.cardLayouts);
+  resolved.cardOrder = normalizeCardOrder(options.cardOrder);
   return resolved;
 }
 
@@ -3921,6 +4692,7 @@ function buildArticleStyleAttribute(options, articleWidth) {
     ...ARTICLE_PARAGRAPH_CONTROLS.map((control) => `${control.cssVar}:${resolved[control.key]}px`),
     ...HEADING_LINE_HEIGHT_CONTROLS.map((control) => `${control.cssVar}:${resolved[control.key]}`),
     ...HEADING_SPACE_CONTROLS.map((control) => `${control.cssVar}:${resolved[control.key]}px`),
+    ...buildElementStyleDeclarations(resolved.elementStyles),
     `--user-body-font-family:${resolveFontFamilyStack(resolved.bodyFontFamily, DEFAULT_BODY_FONT_FAMILY)}`,
     `--user-heading-font-family:${resolveFontFamilyStack(resolved.headingFontFamily, DEFAULT_HEADING_FONT_FAMILY)}`,
     `--user-paragraph-align:${resolved.paragraphAlign}`,
@@ -3956,6 +4728,7 @@ function applyArticleStyleProperties(target, options, articleWidth) {
   HEADING_SPACE_CONTROLS.forEach((control) => {
     target.style.setProperty(control.cssVar, `${resolved[control.key]}px`);
   });
+  applyElementStyleProperties(target, resolved.elementStyles);
 
   target.style.setProperty("--user-body-font-family", resolveFontFamilyStack(resolved.bodyFontFamily, DEFAULT_BODY_FONT_FAMILY));
   target.style.setProperty("--user-heading-font-family", resolveFontFamilyStack(resolved.headingFontFamily, DEFAULT_HEADING_FONT_FAMILY));
@@ -3984,6 +4757,9 @@ function getArticleExportOptions(state) {
     paragraphAlign: state.paragraphAlign,
     lineHeight: state.lineHeight,
     letterSpacing: state.letterSpacing,
+    elementStyles: normalizeElementStyles(state.elementStyles),
+    cardLayouts: normalizeCardLayouts(state.cardLayouts),
+    cardOrder: normalizeCardOrder(state.cardOrder),
   };
 
   ARTICLE_STYLE_CONTROLS.forEach((control) => {
@@ -4017,6 +4793,11 @@ function resolvePageOptions(options = {}) {
     watermarkOpacity: clampNumber(options.watermarkOpacity, 0, 0.24, DEFAULT_WATERMARK_OPACITY),
     exportBackgroundSrc: normalizeBackgroundSource(options.exportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC),
     exportBackgroundName: normalizeBackgroundName(options.exportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME),
+    paginationStrategy: sanitizeChoice(
+      options.paginationStrategy,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    ),
   };
 }
 
@@ -4035,6 +4816,7 @@ function getPageLayoutOptions(state) {
     watermarkOpacity: state.watermarkOpacity,
     exportBackgroundSrc: state.exportBackgroundSrc,
     exportBackgroundName: state.exportBackgroundName,
+    paginationStrategy: state.paginationStrategy,
   };
 }
 
@@ -5273,8 +6055,10 @@ function shouldKeepPaginatedBlockWithNext(block) {
     || classList.contains("knowledge-cluster-title")
     || classList.contains("knowledge-subtitle")
     || classList.contains("question-card-title")
+    || classList.contains("question-card-fragment-heading")
     || classList.contains("question-answer-bank-title")
     || classList.contains("question-answer-item-title")
+    || classList.contains("question-answer-item-fragment-heading")
     || classList.contains("question-body-title")
   ));
 }
@@ -5430,6 +6214,11 @@ function replaceTableInClonedBlock(originalBlock, originalTable, tableSlice, isL
   blockClone.dataset.tableSplitFragment = "true";
   if (!isLastSlice) {
     blockClone.classList.remove("knowledge-group-fragment-end", "knowledge-cluster-fragment-end");
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_END_CLASSES);
+  }
+  if (getTableBodyRowOffset(tableSlice) > 0) {
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_START_CLASSES);
+    markQuestionAnswerBoxNestedContinuation(blockClone);
   }
   return blockClone;
 }
@@ -5546,6 +6335,11 @@ function replaceListInClonedBlock(originalBlock, originalList, listSlice, isLast
   blockClone.dataset.listSplitFragment = "true";
   if (!isLastSlice) {
     blockClone.classList.remove("knowledge-group-fragment-end", "knowledge-cluster-fragment-end");
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_END_CLASSES);
+  }
+  if (getPaginatedListItemOffset(listSlice) > 0) {
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_START_CLASSES);
+    markQuestionAnswerBoxNestedContinuation(blockClone);
   }
   return blockClone;
 }
@@ -5560,6 +6354,13 @@ function createPaginatedListBlockSlice(block, list, startItemIndex, itemCount, i
 }
 
 function createKeepWithNextPaginationProbeBlock(block) {
+  if (block?.classList?.contains("question-answer-box")) {
+    const fragments = expandQuestionAnswerBoxForPagination(block);
+    if (fragments.length > 1) {
+      return fragments[0];
+    }
+  }
+
   const list = getSingleSplittableListFromBlock(block);
 
   if (list) {
@@ -5761,6 +6562,11 @@ function replaceParagraphInClonedBlock(originalBlock, originalParagraph, paragra
   blockClone.dataset.paragraphSplitFragment = "true";
   if (!isLastSlice) {
     blockClone.classList.remove("knowledge-group-fragment-end", "knowledge-cluster-fragment-end");
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_END_CLASSES);
+  }
+  if (getPaginatedParagraphOffset(paragraphSlice) > 0) {
+    blockClone.classList.remove(...QUESTION_PAGINATION_FRAGMENT_START_CLASSES);
+    markQuestionAnswerBoxNestedContinuation(blockClone);
   }
   return blockClone;
 }
@@ -5826,18 +6632,30 @@ function expandKnowledgeClusterForPagination(cluster) {
   const body = cluster.querySelector(":scope > .knowledge-cluster-body");
 
   if (header) {
-    fragments.push(cloneBlockWithClasses(header, ["knowledge-cluster-fragment", "knowledge-cluster-fragment-header"]));
+    const headerFragment = cloneBlockWithClasses(header, ["knowledge-cluster-fragment", "knowledge-cluster-fragment-header"]);
+    if (cluster.dataset?.cardLayoutKey) {
+      headerFragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
+    }
+    fragments.push(headerFragment);
   }
 
   if (body) {
     Array.from(body.children).forEach((child) => {
       if (child.classList && child.classList.contains("knowledge-group")) {
-        fragments.push(...expandKnowledgeGroupForPagination(child));
+        expandKnowledgeGroupForPagination(child).forEach((fragment) => {
+          if (cluster.dataset?.cardLayoutKey) {
+            fragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
+          }
+          fragments.push(fragment);
+        });
         return;
       }
 
       const fragment = cloneBlockWithClasses(child, ["knowledge-cluster-fragment"]);
       if (fragment) {
+        if (cluster.dataset?.cardLayoutKey) {
+          fragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
+        }
         fragments.push(fragment);
       }
     });
@@ -5852,7 +6670,545 @@ function expandKnowledgeClusterForPagination(cluster) {
     lastFragment.classList.add("knowledge-cluster-fragment-end");
   }
 
+  if (cluster.dataset?.cardLayoutKey) {
+    fragments.forEach((fragment) => {
+      fragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
+    });
+  }
+
   return fragments;
+}
+
+function removePaginationFragmentIdentity(fragment) {
+  if (!fragment || fragment.nodeType !== Node.ELEMENT_NODE) {
+    return;
+  }
+
+  fragment.removeAttribute("id");
+  if (fragment.dataset) {
+    delete fragment.dataset.mdBlockId;
+    delete fragment.dataset.mdBlockIndex;
+  }
+}
+
+function markQuestionAnswerBoxNestedContinuation(fragment) {
+  if (!fragment || fragment.nodeType !== Node.ELEMENT_NODE) {
+    return;
+  }
+
+  const rows = [];
+  if (fragment.classList && fragment.classList.contains("question-answer-box-row")) {
+    rows.push(fragment);
+  }
+  rows.push(...Array.from(fragment.querySelectorAll(".question-answer-box-row")));
+
+  rows.forEach((row) => {
+    row.classList.add("question-answer-box-row-continuation");
+    const label = row.querySelector(":scope > .question-answer-box-label");
+    if (label) {
+      label.remove();
+    }
+  });
+}
+
+function markQuestionPaginationFragmentBoundaries(fragments, startClass, endClass) {
+  const filteredFragments = fragments.filter(Boolean);
+
+  filteredFragments.forEach((fragment, index) => {
+    if (!fragment.classList) {
+      return;
+    }
+
+    if (index === 0) {
+      fragment.classList.add(startClass);
+    } else {
+      fragment.classList.add("question-pagination-fragment-continuation");
+      removePaginationFragmentIdentity(fragment);
+    }
+
+    if (index === filteredFragments.length - 1) {
+      fragment.classList.add(endClass);
+    }
+  });
+
+  return filteredFragments;
+}
+
+function cloneQuestionPaginationContainer(source, tagName, className) {
+  if (source) {
+    return source.cloneNode(false);
+  }
+
+  const container = document.createElement(tagName);
+  container.className = className;
+  return container;
+}
+
+function createQuestionCardPaginationFragment(card, classNames = []) {
+  const fragment = card.cloneNode(false);
+  fragment.classList.add("question-card-fragment", ...classNames);
+  if (card.dataset?.cardLayoutKey) {
+    fragment.dataset.cardLayoutKey = card.dataset.cardLayoutKey;
+  }
+  return fragment;
+}
+
+function createQuestionAnswerItemPaginationFragment(item, classNames = []) {
+  const fragment = item.cloneNode(false);
+  fragment.classList.add("question-answer-item-fragment", ...classNames);
+  if (item.dataset?.cardLayoutKey) {
+    fragment.dataset.cardLayoutKey = item.dataset.cardLayoutKey;
+  }
+  return fragment;
+}
+
+function getQuestionAnswerBoxRowSlices(block) {
+  if (!block || !block.classList || !block.classList.contains("question-answer-box")) {
+    return null;
+  }
+
+  const rows = Array.from(block.children || [])
+    .filter((child) => child.classList && child.classList.contains("question-answer-box-row"));
+
+  if (rows.length < 2) {
+    return null;
+  }
+
+  return rows.map((row, index) => {
+    const slice = block.cloneNode(false);
+    slice.classList.add("question-answer-box-page-fragment");
+    if (index > 0) {
+      slice.classList.add("question-answer-box-continuation");
+    }
+    slice.appendChild(row.cloneNode(true));
+    return slice;
+  });
+}
+
+function createQuestionAnswerBoxPaginationFragment(box, classNames = []) {
+  const fragment = box.cloneNode(false);
+  fragment.classList.add("question-answer-box-page-fragment", "question-answer-box-fragment", ...classNames);
+  return fragment;
+}
+
+function createQuestionAnswerBoxRowSlice(row, classNames = []) {
+  const slice = row.cloneNode(false);
+  slice.classList.add("question-answer-box-row-fragment", ...classNames);
+
+  Array.from(row.children || []).forEach((child) => {
+    slice.appendChild(child.cloneNode(true));
+  });
+
+  return slice;
+}
+
+function appendQuestionAnswerBoxRowFragments(fragments, box, row) {
+  if (!row) {
+    return;
+  }
+
+  const label = row.querySelector(":scope > .question-answer-box-label");
+  const contentBlocks = Array.from(row.children || []).filter((child) => child !== label);
+
+  if (!contentBlocks.length) {
+    const fragment = createQuestionAnswerBoxPaginationFragment(box);
+    fragment.appendChild(createQuestionAnswerBoxRowSlice(row));
+    fragments.push(fragment);
+    return;
+  }
+
+  contentBlocks.forEach((content, index) => {
+    getQuestionPaginationContentSlices(content).forEach((contentSlice, sliceIndex) => {
+      const fragment = createQuestionAnswerBoxPaginationFragment(box);
+      const rowSlice = row.cloneNode(false);
+
+      rowSlice.classList.add("question-answer-box-row-fragment");
+      if (index > 0 || sliceIndex > 0) {
+        rowSlice.classList.add("question-answer-box-row-continuation");
+      }
+      if (label && index === 0 && sliceIndex === 0) {
+        rowSlice.appendChild(label.cloneNode(true));
+      }
+      rowSlice.appendChild(contentSlice);
+      fragment.appendChild(rowSlice);
+      fragments.push(fragment);
+    });
+  });
+}
+
+function expandQuestionAnswerBoxForPagination(box) {
+  if (!box || !box.classList || !box.classList.contains("question-answer-box")) {
+    return [];
+  }
+
+  const fragments = [];
+  const rows = Array.from(box.children || [])
+    .filter((child) => child.classList && child.classList.contains("question-answer-box-row"));
+
+  rows.forEach((row) => appendQuestionAnswerBoxRowFragments(fragments, box, row));
+
+  return fragments.length
+    ? markQuestionPaginationFragmentBoundaries(
+      fragments,
+      "question-answer-box-fragment-start",
+      "question-answer-box-fragment-end",
+    )
+    : [box.cloneNode(true)];
+}
+
+function getQuestionListItemBody(item) {
+  return item?.querySelector?.(":scope > .list-item-body") || item || null;
+}
+
+function isQuestionListItemAnswerBox(item, child) {
+  return Boolean(
+    item
+    && child
+    && child.classList
+    && child.classList.contains("question-answer-box")
+    && child.closest("li") === item
+  );
+}
+
+function hasQuestionListItemFragmentContent(children) {
+  return children.some((child) => {
+    if (!child) {
+      return false;
+    }
+
+    const text = String(child.textContent || "").replace(/\s+/g, "").trim();
+    return Boolean(
+      text
+      || ["IMG", "TABLE", "PRE", "FIGURE"].includes(child.tagName)
+      || child.querySelector?.("img, table, pre, figure, .math-block, .mindmap-card")
+    );
+  });
+}
+
+function createQuestionListItemFragment(item, children, classNames = []) {
+  const itemClone = item.cloneNode(false);
+  const itemBody = getQuestionListItemBody(item);
+  const bodyClone = itemBody && itemBody !== item
+    ? itemBody.cloneNode(false)
+    : itemClone;
+
+  itemClone.classList.add("question-list-item-fragment", ...classNames);
+
+  children.forEach((child) => {
+    bodyClone.appendChild(child.cloneNode(true));
+  });
+
+  if (bodyClone !== itemClone) {
+    itemClone.appendChild(bodyClone);
+  }
+
+  return itemClone;
+}
+
+function createQuestionListBlockFragment(list, item, children, itemIndex, classNames = []) {
+  const fragment = list.cloneNode(false);
+  const isContinuation = classNames.includes("question-list-item-continuation");
+
+  fragment.classList.add("article-list-page-fragment", "question-list-page-fragment");
+  if (itemIndex > 0 || isContinuation) {
+    fragment.classList.add("article-list-continuation");
+  }
+  fragment.dataset.listItemOffset = String(itemIndex);
+  fragment.dataset.listOriginalItemCount = String(getPaginatedListItems(list).length);
+  fragment.appendChild(createQuestionListItemFragment(item, children, classNames));
+  return fragment;
+}
+
+function expandQuestionListItemForPagination(list, item, itemIndex) {
+  const itemBody = getQuestionListItemBody(item);
+  const bodyChildren = Array.from(itemBody?.children || []);
+
+  if (!bodyChildren.some((child) => isQuestionListItemAnswerBox(item, child))) {
+    return [];
+  }
+
+  const fragments = [];
+  let bufferedChildren = [];
+  let hasPassedAnswerBox = false;
+
+  const flushBufferedChildren = () => {
+    if (!hasQuestionListItemFragmentContent(bufferedChildren)) {
+      bufferedChildren = [];
+      return;
+    }
+
+    fragments.push(createQuestionListBlockFragment(
+      list,
+      item,
+      bufferedChildren,
+      itemIndex,
+      hasPassedAnswerBox ? ["question-list-item-continuation"] : ["question-list-item-start"],
+    ));
+    bufferedChildren = [];
+  };
+
+  bodyChildren.forEach((child) => {
+    if (!isQuestionListItemAnswerBox(item, child)) {
+      bufferedChildren.push(child);
+      return;
+    }
+
+    flushBufferedChildren();
+    expandQuestionAnswerBoxForPagination(child).forEach((fragment) => {
+      fragment.classList.add("question-list-answer-fragment");
+      fragments.push(fragment);
+    });
+    hasPassedAnswerBox = true;
+  });
+
+  flushBufferedChildren();
+  return fragments;
+}
+
+function expandQuestionBodyListForPagination(list) {
+  if (!list || !["OL", "UL"].includes(list.tagName || "")) {
+    return [];
+  }
+
+  const items = getPaginatedListItems(list);
+  const fragments = [];
+  let rangeStart = 0;
+
+  const flushRange = (rangeEnd) => {
+    if (rangeEnd <= rangeStart) {
+      return;
+    }
+
+    fragments.push(createPaginatedListSlice(
+      list,
+      rangeStart,
+      rangeEnd - rangeStart,
+      rangeEnd >= items.length,
+    ));
+    rangeStart = rangeEnd;
+  };
+
+  items.forEach((item, itemIndex) => {
+    const itemFragments = expandQuestionListItemForPagination(list, item, itemIndex);
+
+    if (!itemFragments.length) {
+      return;
+    }
+
+    flushRange(itemIndex);
+    fragments.push(...itemFragments);
+    rangeStart = itemIndex + 1;
+  });
+
+  flushRange(items.length);
+  return fragments.length ? fragments : [list.cloneNode(true)];
+}
+
+function getQuestionPaginationContentSlices(block) {
+  const answerBoxSlices = getQuestionAnswerBoxRowSlices(block);
+  return answerBoxSlices || [block.cloneNode(true)];
+}
+
+function appendQuestionCardStemTitleFragment(fragments, card, stemPanel, title) {
+  if (!title) {
+    return;
+  }
+
+  const fragment = createQuestionCardPaginationFragment(card, [
+    "question-card-fragment-stem",
+    "question-card-fragment-heading",
+  ]);
+  const panel = cloneQuestionPaginationContainer(stemPanel, "section", "question-panel question-panel-stem");
+
+  panel.appendChild(title.cloneNode(true));
+  fragment.appendChild(panel);
+  fragments.push(fragment);
+}
+
+function appendQuestionCardStemContentFragments(fragments, card, stemPanel, stemBody, block) {
+  getQuestionPaginationContentSlices(block).forEach((contentSlice) => {
+    const fragment = createQuestionCardPaginationFragment(card, ["question-card-fragment-stem"]);
+    const panel = cloneQuestionPaginationContainer(stemPanel, "section", "question-panel question-panel-stem");
+    const body = cloneQuestionPaginationContainer(stemBody, "div", "question-panel-body question-panel-body-stem");
+
+    body.appendChild(contentSlice);
+    panel.appendChild(body);
+    fragment.appendChild(panel);
+    fragments.push(fragment);
+  });
+}
+
+function appendQuestionCardDetailFragment(fragments, card, detailPanel, detailBody, content, section = null) {
+  const fragment = createQuestionCardPaginationFragment(card, ["question-card-fragment-detail"]);
+  const panel = cloneQuestionPaginationContainer(detailPanel, "section", "question-panel question-panel-detail question-followup-box");
+  const body = cloneQuestionPaginationContainer(detailBody, "div", "question-panel-body question-panel-body-detail");
+
+  if (section) {
+    const sectionClone = section.cloneNode(false);
+    sectionClone.classList.add("question-detail-section-fragment");
+    sectionClone.appendChild(content);
+    body.appendChild(sectionClone);
+  } else {
+    body.appendChild(content);
+  }
+
+  panel.appendChild(body);
+  fragment.appendChild(panel);
+  fragments.push(fragment);
+}
+
+function appendQuestionCardDetailFragments(fragments, card, detailPanel) {
+  if (!detailPanel) {
+    return;
+  }
+
+  const detailBody = detailPanel.querySelector(":scope > .question-panel-body-detail");
+  const detailChildren = Array.from((detailBody || detailPanel).children || []);
+
+  detailChildren.forEach((child) => {
+    if (child.classList && child.classList.contains("question-detail-section")) {
+      const sectionChildren = Array.from(child.children || []);
+
+      if (!sectionChildren.length) {
+        appendQuestionCardDetailFragment(fragments, card, detailPanel, detailBody, child.cloneNode(true));
+        return;
+      }
+
+      sectionChildren.forEach((sectionChild) => {
+        getQuestionPaginationContentSlices(sectionChild).forEach((contentSlice) => {
+          appendQuestionCardDetailFragment(fragments, card, detailPanel, detailBody, contentSlice, child);
+        });
+      });
+      return;
+    }
+
+    getQuestionPaginationContentSlices(child).forEach((contentSlice) => {
+      appendQuestionCardDetailFragment(fragments, card, detailPanel, detailBody, contentSlice);
+    });
+  });
+}
+
+function expandQuestionCardForPagination(card) {
+  if (!card) {
+    return [];
+  }
+
+  const fragments = [];
+  const stemPanel = card.querySelector(":scope > .question-panel-stem");
+  const stemBody = stemPanel?.querySelector?.(":scope > .question-panel-body-stem");
+  const title = stemPanel?.querySelector?.(":scope > .question-card-title");
+  const detailPanel = card.querySelector(":scope > .question-panel-detail");
+
+  appendQuestionCardStemTitleFragment(fragments, card, stemPanel, title);
+  Array.from(stemBody?.children || []).forEach((child) => {
+    appendQuestionCardStemContentFragments(fragments, card, stemPanel, stemBody, child);
+  });
+  appendQuestionCardDetailFragments(fragments, card, detailPanel);
+
+  return fragments.length
+    ? markQuestionPaginationFragmentBoundaries(
+      fragments,
+      "question-card-fragment-start",
+      "question-card-fragment-end",
+    )
+    : [card.cloneNode(true)];
+}
+
+function appendQuestionAnswerItemTitleFragment(fragments, item, title) {
+  if (!title) {
+    return;
+  }
+
+  const fragment = createQuestionAnswerItemPaginationFragment(item, [
+    "question-answer-item-fragment-heading",
+  ]);
+
+  fragment.appendChild(title.cloneNode(true));
+  fragments.push(fragment);
+}
+
+function appendQuestionAnswerItemContentFragment(fragments, item, content, classNames = []) {
+  const fragment = createQuestionAnswerItemPaginationFragment(item, classNames);
+  fragment.appendChild(content);
+  fragments.push(fragment);
+}
+
+function appendQuestionAnswerItemDetailFragment(fragments, item, detailPanel, detailBody, content, section = null) {
+  const panel = cloneQuestionPaginationContainer(detailPanel, "section", "question-panel question-panel-detail question-answer-item-detail question-followup-box");
+  const body = cloneQuestionPaginationContainer(detailBody, "div", "question-panel-body question-panel-body-detail");
+
+  if (section) {
+    const sectionClone = section.cloneNode(false);
+    sectionClone.classList.add("question-detail-section-fragment");
+    sectionClone.appendChild(content);
+    body.appendChild(sectionClone);
+  } else {
+    body.appendChild(content);
+  }
+
+  panel.appendChild(body);
+  appendQuestionAnswerItemContentFragment(fragments, item, panel, ["question-answer-item-fragment-detail"]);
+}
+
+function appendQuestionAnswerItemDetailFragments(fragments, item, detailPanel) {
+  const detailBody = detailPanel.querySelector(":scope > .question-panel-body-detail");
+  const detailChildren = Array.from((detailBody || detailPanel).children || []);
+
+  detailChildren.forEach((child) => {
+    if (child.classList && child.classList.contains("question-detail-section")) {
+      const sectionChildren = Array.from(child.children || []);
+
+      if (!sectionChildren.length) {
+        appendQuestionAnswerItemDetailFragment(fragments, item, detailPanel, detailBody, child.cloneNode(true));
+        return;
+      }
+
+      sectionChildren.forEach((sectionChild) => {
+        getQuestionPaginationContentSlices(sectionChild).forEach((contentSlice) => {
+          appendQuestionAnswerItemDetailFragment(fragments, item, detailPanel, detailBody, contentSlice, child);
+        });
+      });
+      return;
+    }
+
+    getQuestionPaginationContentSlices(child).forEach((contentSlice) => {
+      appendQuestionAnswerItemDetailFragment(fragments, item, detailPanel, detailBody, contentSlice);
+    });
+  });
+}
+
+function expandQuestionAnswerItemForPagination(item) {
+  if (!item) {
+    return [];
+  }
+
+  const fragments = [];
+  const title = item.querySelector(":scope > .question-answer-item-title");
+
+  appendQuestionAnswerItemTitleFragment(fragments, item, title);
+
+  Array.from(item.children || []).forEach((child) => {
+    if (child === title) {
+      return;
+    }
+
+    if (child.classList && child.classList.contains("question-panel-detail")) {
+      appendQuestionAnswerItemDetailFragments(fragments, item, child);
+      return;
+    }
+
+    getQuestionPaginationContentSlices(child).forEach((contentSlice) => {
+      appendQuestionAnswerItemContentFragment(fragments, item, contentSlice, ["question-answer-item-fragment-content"]);
+    });
+  });
+
+  return fragments.length
+    ? markQuestionPaginationFragmentBoundaries(
+      fragments,
+      "question-answer-item-fragment-start",
+      "question-answer-item-fragment-end",
+    )
+    : [item.cloneNode(true)];
 }
 
 function collectPaginatedBlocks(sourceRoot) {
@@ -5863,8 +7219,27 @@ function collectPaginatedBlocks(sourceRoot) {
   const blocks = [];
 
   Array.from(sourceRoot.children).forEach((block) => {
+    if (block.classList && block.classList.contains("question-card")) {
+      blocks.push(...expandQuestionCardForPagination(block));
+      return;
+    }
+
     if (block.classList && block.classList.contains("question-answer-item")) {
-      blocks.push(block.cloneNode(true));
+      blocks.push(...expandQuestionAnswerItemForPagination(block));
+      return;
+    }
+
+    if (block.classList && block.classList.contains("question-answer-box")) {
+      blocks.push(...expandQuestionAnswerBoxForPagination(block));
+      return;
+    }
+
+    if (
+      sourceRoot.classList?.contains("question-body-layout")
+      && ["OL", "UL"].includes(block.tagName || "")
+      && block.classList.contains("note-list")
+    ) {
+      blocks.push(...expandQuestionBodyListForPagination(block));
       return;
     }
 
@@ -5888,6 +7263,12 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   const pages = [];
   const sourceClassNames = sourceRoot?.classList ? Array.from(sourceRoot.classList) : [];
   let currentPage = null;
+  const paginationStrategy = sanitizeChoice(
+    resolved.paginationStrategy,
+    PAGINATION_STRATEGIES,
+    DEFAULT_PAGINATION_STRATEGY,
+  );
+  const isBlockFirstPagination = paginationStrategy === "block-first";
 
   workbench.innerHTML = "";
   preview.className = "page-preview";
@@ -5920,6 +7301,29 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     currentPage
     && currentPage.article.scrollHeight <= getPaginatedArticleHeightLimit(currentPage, pageMetrics.contentHeightPx) + PAGE_LAYOUT_FIT_TOLERANCE_PX
   );
+
+  const canMoveOverflowBlockToNextPage = (block) => {
+    if (!currentPage || !block || !block.isConnected || currentPage.article.childElementCount <= 1) {
+      return false;
+    }
+
+    return !(
+      currentPage.article.childElementCount === 2
+      && shouldKeepPaginatedBlockWithNext(block.previousElementSibling)
+    );
+  };
+
+  const moveOverflowBlockToNextPage = (block) => {
+    if (!canMoveOverflowBlockToNextPage(block)) {
+      return false;
+    }
+
+    block.remove();
+    commitCurrentPage();
+    startNewPage();
+    currentPage.article.appendChild(block);
+    return true;
+  };
 
   const measureTableGroupFit = (block, table, groups, startGroupIndex, groupCount) => {
     if (!currentPage || groupCount <= 0) {
@@ -6222,6 +7626,12 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     return true;
   };
 
+  const splitOverflowBlock = (block) => (
+    paginateTableBlock(block)
+    || paginateListBlock(block)
+    || paginateParagraphBlock(block)
+  );
+
   startNewPage();
 
   while (pendingBlocks.length) {
@@ -6247,13 +7657,18 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       startNewPage();
     }
 
-    if (shouldForcePageBreakBeforeBlock(block) && currentPage.article.childElementCount > 0) {
+    if (
+      isBlockFirstPagination
+      && shouldForcePageBreakBeforeBlock(block)
+      && currentPage.article.childElementCount > 0
+    ) {
       commitCurrentPage();
       startNewPage();
     }
 
     if (
-      shouldKeepPaginatedBlockWithNext(block)
+      isBlockFirstPagination
+      && shouldKeepPaginatedBlockWithNext(block)
       && pendingBlocks.length
       && currentPage.article.childElementCount > 0
     ) {
@@ -6280,15 +7695,19 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       continue;
     }
 
-    if (paginateTableBlock(block)) {
-      continue;
-    }
+    if (isBlockFirstPagination && moveOverflowBlockToNextPage(block)) {
+      if (pageHasRoom()) {
+        continue;
+      }
 
-    if (paginateListBlock(block)) {
-      continue;
-    }
+      if (splitOverflowBlock(block)) {
+        continue;
+      }
 
-    if (paginateParagraphBlock(block)) {
+      if (currentPage.article.childElementCount === 1) {
+        continue;
+      }
+    } else if (splitOverflowBlock(block)) {
       continue;
     }
 
@@ -6297,7 +7716,8 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     }
 
     if (
-      currentPage.article.childElementCount === 2
+      isBlockFirstPagination
+      && currentPage.article.childElementCount === 2
       && shouldKeepPaginatedBlockWithNext(block.previousElementSibling)
     ) {
       continue;
@@ -6801,8 +8221,9 @@ function renderList(lines, startIndex, baseIndent, context, options = {}) {
     if (visibleLines.some((line) => line.trim())) {
       const { style, text: firstLine } = extractLeadingBlockTextStyleToken(visibleLines[0] || "");
       const contentLines = visibleLines.length ? [firstLine, ...visibleLines.slice(1)] : visibleLines;
+      const markerText = ordered ? match[2] : "";
       const marker = ordered
-        ? `<span class="inline-list-marker inline-list-marker-ordered" aria-hidden="true">${items.length + 1}</span>`
+        ? `<span class="inline-list-marker inline-list-marker-ordered" aria-hidden="true">${escapeHtml(markerText)}</span>`
         : '<span class="inline-list-marker inline-list-marker-bullet" aria-hidden="true">•</span>';
       const lineClass = ordered
         ? "list-item-line list-item-line-ordered"
@@ -7071,6 +8492,21 @@ function applyAdaptiveMindmapRootWidth(card, shell) {
   const root = shell.querySelector(":scope > .mindmap-root");
 
   if (!root) {
+    return;
+  }
+
+  const computedRootStyle = window.getComputedStyle(root);
+
+  if (computedRootStyle.writingMode && computedRootStyle.writingMode.startsWith("vertical")) {
+    const nextHeight = Math.max(88, Math.ceil(root.scrollHeight || root.getBoundingClientRect().height || 0));
+
+    if (nextHeight) {
+      card.style.setProperty("--mindmap-root-height", `${nextHeight}px`);
+      shell.style.setProperty("--mindmap-root-height", `${nextHeight}px`);
+    }
+
+    card.style.removeProperty("--mindmap-root-width");
+    shell.style.removeProperty("--mindmap-root-width");
     return;
   }
 
@@ -9258,6 +10694,106 @@ async function buildExportDocumentHtml(sourceCanvas, options) {
   });
 }
 
+function getPageExportCanvasScale(page) {
+  const rect = page.getBoundingClientRect();
+  const width = Math.max(1, Math.ceil(rect.width || page.scrollWidth || 1));
+  const height = Math.max(1, Math.ceil(rect.height || page.scrollHeight || 1));
+  const dimensionLimit = 32760 / Math.max(width, height, 1);
+  const areaLimit = Math.sqrt(PDF_MAX_CANVAS_PIXELS / Math.max(width * height, 1));
+
+  return Math.max(1, Math.min(PNG_EXPORT_SCALE, window.devicePixelRatio || 1, dimensionLimit, areaLimit));
+}
+
+async function preparePngExportPreview(sourceCanvas, options) {
+  const resolved = getResolvedDocumentOptions(options);
+  const title = String(options && options.title ? options.title : "");
+  const paginated = buildPaginatedPreview(sourceCanvas, resolved, title);
+  const host = document.createElement("div");
+
+  host.setAttribute("aria-hidden", "true");
+  host.style.position = "absolute";
+  host.style.left = "-20000px";
+  host.style.top = "0";
+  host.style.width = `${paginated.metrics.pageWidthPx}px`;
+  host.style.margin = "0";
+  host.style.padding = "0";
+  host.style.zIndex = "-1";
+  host.style.pointerEvents = "none";
+  host.style.overflow = "visible";
+
+  paginated.element.classList.add("page-export");
+  host.appendChild(paginated.element);
+  document.body.appendChild(host);
+
+  try {
+    await waitForDocumentFonts(document);
+    await inlineImagesForPdf(sourceCanvas, paginated.element);
+    mountSvgMindmaps(paginated.element);
+    await waitForNextPaint();
+
+    return {
+      element: paginated.element,
+      pages: Array.from(paginated.element.querySelectorAll(".page-sheet")),
+      cleanup() {
+        host.remove();
+      },
+    };
+  } catch (error) {
+    host.remove();
+    throw error;
+  }
+}
+
+async function renderPageToPngBlob(page) {
+  const html2canvasLib = typeof window !== "undefined" ? window.html2canvas : null;
+
+  if (typeof html2canvasLib !== "function") {
+    throw new Error("PNG export library is unavailable.");
+  }
+
+  const rect = page.getBoundingClientRect();
+  const width = Math.max(1, Math.ceil(rect.width || page.scrollWidth || 1));
+  const height = Math.max(1, Math.ceil(rect.height || page.scrollHeight || 1));
+  const canvas = await html2canvasLib(page, {
+    backgroundColor: null,
+    scale: getPageExportCanvasScale(page),
+    useCORS: true,
+    logging: false,
+    imageTimeout: 0,
+    removeContainer: true,
+    foreignObjectRendering: false,
+    width,
+    height,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: width,
+    windowHeight: height,
+  });
+
+  if (!canvas.width || !canvas.height) {
+    throw new Error("The export result is empty.");
+  }
+
+  return canvasToBlob(canvas, "image/png");
+}
+
+async function buildPngPageBlobs(sourceCanvas, options) {
+  const preview = await preparePngExportPreview(sourceCanvas, options);
+
+  try {
+    const pages = preview.pages.length ? preview.pages : [preview.element];
+    const blobs = [];
+
+    for (const page of pages) {
+      blobs.push(await renderPageToPngBlob(page));
+    }
+
+    return blobs;
+  } finally {
+    preview.cleanup();
+  }
+}
+
 function waitForNextFrame() {
   return new Promise((resolve) => {
     if (typeof window === "undefined" || typeof window.requestAnimationFrame !== "function") {
@@ -10853,7 +12389,7 @@ function getQuestionRoleLabelText(block, fallback) {
 
 function createQuestionAnswerBox() {
   const box = document.createElement("section");
-  box.className = "question-answer-box";
+  box.className = "question-answer-box question-followup-box";
   return box;
 }
 
@@ -10914,7 +12450,7 @@ function wrapQuestionAnswerBlocks(root) {
   }
 
   wrapSequentialQuestionAnswerBlocks(root);
-  Array.from(root.querySelectorAll("li, .question-answer-item, .question-panel-body-detail")).forEach((container) => {
+  Array.from(root.querySelectorAll("li, .list-item-copy, .list-item-body, .question-answer-item, .question-panel-body-detail")).forEach((container) => {
     wrapSequentialQuestionAnswerBlocks(container);
   });
 }
@@ -11695,1170 +13231,237 @@ function openFormulaEditor(options = {}) {
   };
 }
 
-function initApp() {
-  if (typeof document === "undefined") {
-    return;
+function formatLayoutPresetShortLabel(label) {
+  const normalized = String(label || "预设").replace(/\s+/g, "");
+  return Array.from(normalized).slice(0, 4).join("") || "预设";
+}
+
+function getLayoutPresetPreviewKind(presetId, mode) {
+  const id = String(presetId || "");
+
+  if (mode === "question" || id.includes("question-")) {
+    return id.includes("review") || id.includes("journal") || id.includes("autumn") ? "question-review" : "question";
   }
-
-  const textarea = document.getElementById("markdownInput");
-  const canvas = document.getElementById("articleCanvas");
-  const statusText = document.getElementById("statusText");
-  const previewNote = document.querySelector(".preview-note");
-  const fileInput = document.getElementById("fileInput");
-  const pdfInput = document.getElementById("pdfInput");
-  const pdfImportLabel = document.getElementById("pdfImportLabel");
-  const loadSampleBtn = document.getElementById("loadSampleBtn");
-  const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
-  const downloadWordBtn = document.getElementById("downloadWordBtn");
-  const printBtn = document.getElementById("printBtn");
-  const aiSubjectInput = document.getElementById("aiSubjectInput");
-  const aiTopicInput = document.getElementById("aiTopicInput");
-  const aiSourceInput = document.getElementById("aiSourceInput");
-  const aiGenerateBtn = document.getElementById("generateStudyNotesBtn");
-  const aiNoteStatus = document.getElementById("aiNoteStatus");
-  const modeBenefitTitle = document.getElementById("modeBenefitTitle");
-  const modeBenefitSummary = document.getElementById("modeBenefitSummary");
-  const modeBenefitList = document.getElementById("modeBenefitList");
-  const layoutPresetPicker = ensureLayoutPresetPicker();
-  const questionAnswerLayoutPicker = ensureQuestionAnswerLayoutPicker();
-  const articleStyleControls = ARTICLE_STYLE_CONTROLS.map((control) => ({
-    ...control,
-    range: document.getElementById(control.inputId),
-    value: document.getElementById(control.valueId),
-  }));
-  const paragraphControls = ARTICLE_PARAGRAPH_CONTROLS.map((control) => ({
-    ...control,
-    range: document.getElementById(control.inputId),
-    value: document.getElementById(control.valueId),
-  }));
-  const headingLineHeightControls = HEADING_LINE_HEIGHT_CONTROLS.map((control) => ({
-    ...control,
-    range: document.getElementById(control.inputId),
-    value: document.getElementById(control.valueId),
-  }));
-  const headingSpaceControls = HEADING_SPACE_CONTROLS.map((control) => ({
-    ...control,
-    range: document.getElementById(control.inputId),
-    value: document.getElementById(control.valueId),
-  }));
-  const pageStyleControls = PAGE_STYLE_CONTROLS.map((control) => ({
-    ...control,
-    range: document.getElementById(control.inputId),
-    value: document.getElementById(control.valueId),
-  }));
-  const globalFontFamilySelect = document.getElementById("globalFontFamilySelect");
-  const bodyFontFamilySelect = document.getElementById("bodyFontFamilySelect");
-  const headingFontFamilySelect = document.getElementById("headingFontFamilySelect");
-  const previewFontFamilySelect = document.getElementById("previewFontFamilySelect");
-  const previewFontSizeSelect = document.getElementById("previewFontSizeSelect");
-  const previewTextColorInput = document.getElementById("previewTextColorInput");
-  const textColorButtons = Array.from(document.querySelectorAll("[data-text-color]"));
-  const selectionAlignButtons = Array.from(document.querySelectorAll("[data-selection-align]"));
-  const paragraphStepButtons = Array.from(document.querySelectorAll("[data-paragraph-step]"));
-  const clearTextStyleBtn = document.getElementById("clearTextStyleBtn");
-  const clearParagraphStyleBtn = document.getElementById("clearParagraphStyleBtn");
-  const lineHeightRange = document.getElementById("lineHeightRange");
-  const lineHeightValue = document.getElementById("lineHeightValue");
-  const letterSpacingRange = document.getElementById("letterSpacingRange");
-  const letterSpacingValue = document.getElementById("letterSpacingValue");
-  const pageHeaderToggle = document.getElementById("pageHeaderToggle");
-  const pageHeaderInput = document.getElementById("pageHeaderInput");
-  const watermarkToggle = document.getElementById("watermarkToggle");
-  const watermarkInput = document.getElementById("watermarkInput");
-  const exportBackgroundInput = document.getElementById("exportBackgroundInput");
-  const exportBackgroundName = document.getElementById("exportBackgroundName");
-  const clearExportBackgroundBtn = document.getElementById("clearExportBackgroundBtn");
-  let questionAnswerLayoutButtons = [];
-  const ribbonTabs = Array.from(document.querySelectorAll("[data-ribbon-tab]"));
-  const ribbonPanels = Array.from(document.querySelectorAll("[data-ribbon-panel]"));
-  const themeButtons = Array.from(document.querySelectorAll("[data-theme-option]"));
-  const modeButtons = Array.from(document.querySelectorAll("[data-mode-option]"));
-  const brushButtons = Array.from(document.querySelectorAll("[data-brush-style]"));
-  const inlineStyleButtons = Array.from(document.querySelectorAll("[data-inline-style]"));
-  const formulaEditorBtn = document.getElementById("formulaEditorBtn");
-  const paragraphAlignButtons = Array.from(document.querySelectorAll("[data-paragraph-align]"));
-  const mergeCellsBtn = document.getElementById("mergeCellsBtn");
-  const splitCellBtn = document.getElementById("splitCellBtn");
-  const forcePageBreakBtn = document.getElementById("forcePageBreakBtn");
-
-  if (!textarea || !canvas || !statusText) {
-    return;
+  if (mode === "article" || id.includes("article-")) {
+    if (id.includes("editorial") || id.includes("minimal")) return "editorial";
+    if (id.includes("journal") || id.includes("study") || id.includes("cream")) return "journal";
+    return "article";
   }
+  if (id.includes("research") || id.includes("brief") || id.includes("report")) return "research";
+  if (id.includes("minimal") || id.includes("editorial")) return "editorial";
+  if (id.includes("journal") || id.includes("study") || id.includes("cream") || id.includes("pencil")) return "journal";
+  if (id.includes("blueprint")) return "blueprint";
+  if (id.includes("ledger") || id.includes("archive")) return "ledger";
+  if (id.includes("lunar") || id.includes("snowpeak")) return "lunar";
+  if (id.includes("botanical") || id.includes("spring")) return "botanical";
+  if (id.includes("cherry") || id.includes("autumn")) return "marked";
+  return "index";
+}
 
-  function ensureLayoutPresetPicker() {
-    const existingPicker = document.getElementById("layoutPresetPicker");
+function getLayoutPresetPreviewTheme(presetId) {
+  const id = String(presetId || "");
 
-    if (existingPicker) {
-      return existingPicker;
-    }
+  if (id.includes("botanical")) return "botanical";
+  if (id.includes("lunar")) return "lunar";
+  if (id.includes("blueprint")) return "blueprint";
+  if (id.includes("cherry")) return "cherry";
+  if (id.includes("ledger") || id.includes("archive")) return "ledger";
+  if (id.includes("snowpeak")) return "snowpeak";
+  if (id.includes("spring")) return "spring";
+  if (id.includes("autumn")) return "autumn";
+  if (id.includes("cream")) return "cream";
+  if (id.includes("pencil")) return "pencil";
+  if (id.includes("research") || id.includes("report")) return "research";
+  if (id.includes("minimal") || id.includes("editorial")) return "minimal";
+  if (id.includes("journal") || id.includes("study")) return "journal";
+  return "classic";
+}
 
-    const anchor = modeBenefitList?.closest(".mode-benefit-card") || document.querySelector(".option-panel-mode");
+function createSvgElement(tagName, attrs = {}) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tagName);
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, String(value));
+  });
+  return el;
+}
 
-    if (!anchor) {
-      return null;
-    }
-
-    const panel = document.createElement("div");
-    const heading = document.createElement("div");
-    const kicker = document.createElement("p");
-    const note = document.createElement("p");
-    const select = document.createElement("select");
-    const picker = document.createElement("div");
-
-    panel.className = "layout-preset-panel";
-    heading.className = "layout-preset-head";
-    kicker.className = "layout-preset-kicker";
-    note.className = "layout-preset-note";
-    select.id = "layoutPresetSelect";
-    select.className = "layout-preset-select";
-    select.setAttribute("aria-label", "\u9009\u62e9\u7248\u5f0f\u9884\u8bbe");
-    picker.id = "layoutPresetPicker";
-    picker.className = "layout-preset-grid";
-    picker.setAttribute("role", "group");
-    picker.setAttribute("aria-label", "\u9009\u62e9\u7248\u5f0f\u9884\u8bbe");
-
-    kicker.textContent = "\u7248\u5f0f\u9884\u89c8";
-    note.textContent = "\u5148\u7528\u4e0b\u62c9\u9009\u7248\u5f0f\uff0c\u4e5f\u53ef\u6a2a\u5411\u6d4f\u89c8\u5361\u7247";
-
-    heading.appendChild(kicker);
-    heading.appendChild(note);
-    panel.appendChild(heading);
-    panel.appendChild(select);
-    panel.appendChild(picker);
-    anchor.insertAdjacentElement("afterend", panel);
-
-    return picker;
-  }
-
-  function ensureQuestionAnswerLayoutPicker() {
-    const existingPicker = document.getElementById("questionAnswerLayoutPicker");
-
-    if (existingPicker) {
-      return existingPicker;
-    }
-
-    const anchor = document.getElementById("layoutPresetPicker")?.closest(".layout-preset-panel")
-      || modeBenefitList?.closest(".mode-benefit-card")
-      || document.querySelector(".option-panel-mode");
-
-    if (!anchor) {
-      return null;
-    }
-
-    const panel = document.createElement("div");
-    const heading = document.createElement("div");
-    const kicker = document.createElement("p");
-    const note = document.createElement("p");
-    const select = document.createElement("select");
-    const picker = document.createElement("div");
-
-    panel.className = "question-answer-layout-panel";
-    heading.className = "question-answer-layout-head";
-    kicker.className = "question-answer-layout-kicker";
-    note.className = "question-answer-layout-note";
-    select.id = "questionAnswerLayoutSelect";
-    select.className = "question-answer-layout-select";
-    select.setAttribute("aria-label", "Select answer layout");
-    picker.id = "questionAnswerLayoutPicker";
-    picker.className = "question-answer-layout-grid";
-    picker.setAttribute("role", "group");
-    picker.setAttribute("aria-label", "选择答案结构");
-
-    kicker.textContent = "答案结构";
-    note.textContent = "逐题 / 后置";
-
-    Object.entries(QUESTION_ANSWER_LAYOUTS).forEach(([layout, meta]) => {
-      const button = document.createElement("button");
-      const title = document.createElement("span");
-      const summary = document.createElement("span");
-
-      button.type = "button";
-      button.className = "question-answer-layout-button";
-      button.dataset.questionAnswerLayout = layout;
-      button.setAttribute("aria-pressed", "false");
-
-      title.className = "question-answer-layout-title";
-      summary.className = "question-answer-layout-summary";
-      title.textContent = meta.label;
-      summary.textContent = meta.summary;
-
-      button.appendChild(title);
-      button.appendChild(summary);
-      picker.appendChild(button);
-    });
-
-    heading.appendChild(kicker);
-    heading.appendChild(note);
-    panel.appendChild(heading);
-    panel.appendChild(select);
-    panel.appendChild(picker);
-    anchor.insertAdjacentElement("afterend", panel);
-
-    return picker;
-  }
-
-  const workbench = getPageLayoutWorkbench();
-  const measureCanvas = document.createElement("article");
-  measureCanvas.className = "article-canvas article-measure-canvas";
-  measureCanvas.dataset.mode = DEFAULT_MODE;
-  measureCanvas.setAttribute("aria-hidden", "true");
-  workbench.appendChild(measureCanvas);
-
-  const state = {
-    theme: DEFAULT_THEME,
-    mode: DEFAULT_MODE,
-    questionAnswerLayout: DEFAULT_QUESTION_ANSWER_LAYOUT,
-    layoutPreset: getDefaultLayoutPresetForMode(DEFAULT_MODE),
-    layoutPresetByMode: normalizeLayoutPresetByMode({}),
-    bodyFontFamily: DEFAULT_BODY_FONT_FAMILY,
-    headingFontFamily: DEFAULT_HEADING_FONT_FAMILY,
-    paragraphAlign: DEFAULT_PARAGRAPH_ALIGN,
-    fontSize: DEFAULT_FONT_SIZE,
-    heading1Size: DEFAULT_HEADING1_SIZE,
-    heading2Size: DEFAULT_HEADING2_SIZE,
-    heading3Size: DEFAULT_HEADING3_SIZE,
-    heading4Size: DEFAULT_HEADING4_SIZE,
-    tableFontSize: DEFAULT_TABLE_FONT_SIZE,
-    accentFontSize: DEFAULT_ACCENT_FONT_SIZE,
-    mindmapNodeWidth: DEFAULT_MINDMAP_NODE_WIDTH,
-    lineHeight: DEFAULT_LINE_HEIGHT,
-    letterSpacing: DEFAULT_LETTER_SPACING,
-    paragraphSpacing: DEFAULT_PARAGRAPH_SPACING,
-    paragraphIndent: DEFAULT_PARAGRAPH_INDENT,
-    heading1LineHeight: DEFAULT_HEADING1_LINE_HEIGHT,
-    heading2LineHeight: DEFAULT_HEADING2_LINE_HEIGHT,
-    heading3LineHeight: DEFAULT_HEADING3_LINE_HEIGHT,
-    heading4LineHeight: DEFAULT_HEADING4_LINE_HEIGHT,
-    headingSpaceH1: DEFAULT_HEADING_SPACE_H1,
-    headingSpaceH2: DEFAULT_HEADING_SPACE_H2,
-    headingSpaceH3: DEFAULT_HEADING_SPACE_H3,
-    headingSpaceH4: DEFAULT_HEADING_SPACE_H4,
-    pageWidth: DEFAULT_PAGE_WIDTH,
-    pageHeight: DEFAULT_PAGE_HEIGHT,
-    pageMarginTop: DEFAULT_PAGE_MARGIN_TOP,
-    pageMarginRight: DEFAULT_PAGE_MARGIN_RIGHT,
-    pageMarginBottom: DEFAULT_PAGE_MARGIN_BOTTOM,
-    pageMarginLeft: DEFAULT_PAGE_MARGIN_LEFT,
-    pageHeaderEnabled: DEFAULT_PAGE_HEADER_ENABLED,
-    pageHeaderText: DEFAULT_PAGE_HEADER_TEXT,
-    watermarkEnabled: DEFAULT_WATERMARK_ENABLED,
-    watermarkText: DEFAULT_WATERMARK_TEXT,
-    watermarkOpacity: DEFAULT_WATERMARK_OPACITY,
-    exportBackgroundSrc: DEFAULT_EXPORT_BACKGROUND_SRC,
-    exportBackgroundName: DEFAULT_EXPORT_BACKGROUND_NAME,
-    tableLayouts: {},
-    latestCharacterCount: 0,
-    latestBlockCount: 0,
-    latestPageCount: 0,
+function createLayoutPresetPreviewSvg(preset, mode) {
+  const wrap = document.createElement("span");
+  const svg = createSvgElement("svg", {
+    viewBox: "0 0 120 72",
+    "aria-hidden": "true",
+    focusable: "false",
+  });
+  const kind = getLayoutPresetPreviewKind(preset?.id, mode);
+  const theme = getLayoutPresetPreviewTheme(preset?.id);
+  const line = (x, y, width, className = "layout-preset-svg-line") => {
+    svg.appendChild(createSvgElement("rect", { x, y, width, height: 3, rx: 1.5, class: className }));
+  };
+  const card = (x, y, width, height, className = "layout-preset-svg-card") => {
+    svg.appendChild(createSvgElement("rect", { x, y, width, height, rx: 4, class: className }));
   };
 
-  let renderTimer = null;
-  let statusTimer = null;
-  let isExportingPdf = false;
+  wrap.className = `layout-preset-preview layout-preset-preview-${kind} layout-preset-theme-${theme}`;
+  svg.classList.add("layout-preset-svg");
+  svg.appendChild(createSvgElement("rect", { x: 0, y: 0, width: 120, height: 72, rx: 10, class: "layout-preset-svg-backdrop" }));
+  svg.appendChild(createSvgElement("path", { d: "M0 0H120V22C91 16 77 28 55 21C34 14 18 17 0 24Z", class: "layout-preset-svg-wash" }));
+  svg.appendChild(createSvgElement("rect", { x: 10, y: 9, width: 102, height: 56, rx: 8, class: "layout-preset-svg-shadow" }));
+  svg.appendChild(createSvgElement("rect", { x: 7, y: 6, width: 104, height: 58, rx: 8, class: "layout-preset-svg-page" }));
+  svg.appendChild(createSvgElement("rect", { x: 13, y: 11, width: 32, height: 4, rx: 2, class: "layout-preset-svg-topbar" }));
+  svg.appendChild(createSvgElement("circle", { cx: 100, cy: 13, r: 2, class: "layout-preset-svg-dot" }));
+  svg.appendChild(createSvgElement("circle", { cx: 94, cy: 13, r: 2, class: "layout-preset-svg-dot-muted" }));
 
-  if (printBtn) {
-    printBtn.textContent = "导出 PDF";
-    printBtn.setAttribute("aria-label", "导出 PDF");
+  if (kind === "blueprint") {
+    [24, 44, 64, 84].forEach((x) => svg.appendChild(createSvgElement("path", { d: `M${x} 8V64`, class: "layout-preset-svg-grid" })));
+    [20, 36, 52].forEach((y) => svg.appendChild(createSvgElement("path", { d: `M10 ${y}H110`, class: "layout-preset-svg-grid" })));
+    card(15, 16, 30, 16);
+    card(55, 18, 40, 12, "layout-preset-svg-muted");
+    card(50, 42, 45, 12);
+    svg.appendChild(createSvgElement("circle", { cx: 30, cy: 49, r: 5, class: "layout-preset-svg-accent" }));
+  } else if (kind === "research") {
+    line(14, 15, 42, "layout-preset-svg-accent");
+    card(14, 24, 92, 12, "layout-preset-svg-muted");
+    line(19, 29, 48);
+    card(14, 43, 28, 14);
+    card(48, 43, 58, 14);
+    line(54, 49, 34);
+  } else if (kind === "editorial") {
+    line(16, 17, 72, "layout-preset-svg-accent");
+    line(16, 28, 38);
+    line(16, 39, 84);
+    line(16, 48, 74);
+    line(16, 57, 45);
+    svg.appendChild(createSvgElement("path", { d: "M100 14V58", class: "layout-preset-svg-rule" }));
+  } else if (kind === "journal") {
+    card(14, 14, 42, 28, "layout-preset-svg-muted");
+    line(20, 23, 24, "layout-preset-svg-accent");
+    line(20, 32, 28);
+    card(63, 18, 36, 12);
+    card(63, 38, 42, 14, "layout-preset-svg-muted");
+    svg.appendChild(createSvgElement("path", { d: "M18 51H101", class: "layout-preset-svg-rule" }));
+  } else if (kind === "question" || kind === "question-review") {
+    card(14, 13, 92, 16, "layout-preset-svg-muted");
+    line(20, 20, 56, "layout-preset-svg-accent");
+    card(14, 36, 42, 18);
+    card(64, 36, 42, 18);
+    line(20, 45, 22);
+    line(70, 45, 22);
+    if (kind === "question-review") svg.appendChild(createSvgElement("path", { d: "M18 60H102", class: "layout-preset-svg-mark" }));
+  } else if (kind === "article") {
+    line(15, 16, 56, "layout-preset-svg-accent");
+    line(15, 27, 85);
+    line(15, 36, 78);
+    line(15, 45, 88);
+    card(15, 55, 90, 5, "layout-preset-svg-muted");
+  } else {
+    svg.appendChild(createSvgElement("path", { d: "M16 12V60", class: "layout-preset-svg-rule" }));
+    line(25, 16, 46, "layout-preset-svg-accent");
+    card(25, 27, 36, 13);
+    card(67, 27, 35, 13, "layout-preset-svg-muted");
+    card(25, 47, 77, 10);
   }
 
-  [
-    ...articleStyleControls.map((control) => ({
-      rangeInput: control.range,
-      display: control.value,
-      min: control.min,
-      max: control.max,
-      step: control.range ? Number(control.range.step || 1) : 1,
-      defaultValue: control.defaultValue,
-      formatValue: formatPixelValue,
-    })),
-    ...paragraphControls.map((control) => ({
-      rangeInput: control.range,
-      display: control.value,
-      min: control.min,
-      max: control.max,
-      step: control.range ? Number(control.range.step || 1) : 1,
-      defaultValue: control.defaultValue,
-      formatValue: control.formatValue,
-    })),
-    ...headingLineHeightControls.map((control) => ({
-      rangeInput: control.range,
-      display: control.value,
-      min: control.min,
-      max: control.max,
-      step: control.range ? Number(control.range.step || 0.05) : 0.05,
-      defaultValue: control.defaultValue,
-      formatValue: control.formatValue,
-    })),
-    ...headingSpaceControls.map((control) => ({
-      rangeInput: control.range,
-      display: control.value,
-      min: control.min,
-      max: control.max,
-      step: control.range ? Number(control.range.step || 1) : 1,
-      defaultValue: control.defaultValue,
-      formatValue: control.formatValue,
-    })),
-    ...pageStyleControls.map((control) => ({
-      rangeInput: control.range,
-      display: control.value,
-      min: control.min,
-      max: control.max,
-      step: control.range ? Number(control.range.step || 1) : 1,
-      defaultValue: control.defaultValue,
-      formatValue: control.formatValue,
-    })),
-    {
-      rangeInput: lineHeightRange,
-      display: lineHeightValue,
-      min: 1.1,
-      max: 2.4,
-      step: 0.05,
-      defaultValue: DEFAULT_LINE_HEIGHT,
-      formatValue: formatLineHeight,
-    },
-    {
-      rangeInput: letterSpacingRange,
-      display: letterSpacingValue,
-      min: -0.5,
-      max: 2,
-      step: 0.1,
-      defaultValue: DEFAULT_LETTER_SPACING,
-      formatValue: formatDecimalPixelValue,
-    },
-  ].forEach(initNumericScrubber);
+  if (theme === "botanical") {
+    svg.appendChild(createSvgElement("path", { d: "M93 49C82 49 79 58 79 58C90 59 97 54 93 49Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M79 58C84 53 88 51 93 50", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "lunar") {
+    svg.appendChild(createSvgElement("circle", { cx: 100, cy: 52, r: 6, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 103, cy: 50, r: 6, class: "layout-preset-svg-cutout" }));
+  } else if (theme === "blueprint") {
+    svg.appendChild(createSvgElement("path", { d: "M74 55A16 16 0 0 0 99 45", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 74, cy: 55, r: 2, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 99, cy: 45, r: 2, class: "layout-preset-svg-motif" }));
+  } else if (theme === "cherry") {
+    svg.appendChild(createSvgElement("circle", { cx: 95, cy: 53, r: 4, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 102, cy: 49, r: 4, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M96 49C96 43 100 41 105 40", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "ledger" || theme === "cream" || theme === "research") {
+    svg.appendChild(createSvgElement("rect", { x: 78, y: 48, width: 27, height: 12, rx: 2, class: "layout-preset-svg-ticket" }));
+    svg.appendChild(createSvgElement("path", { d: "M82 52H101M82 56H96", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "snowpeak") {
+    svg.appendChild(createSvgElement("path", { d: "M74 59L85 43L94 58L101 50L109 59Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M85 43L88 51L92 48", class: "layout-preset-svg-cutline" }));
+  } else if (theme === "spring") {
+    svg.appendChild(createSvgElement("path", { d: "M90 60V44M90 48C82 48 80 39 80 39C88 39 90 44 90 48ZM91 53C99 53 102 45 102 45C94 44 91 49 91 53Z", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "autumn") {
+    svg.appendChild(createSvgElement("path", { d: "M92 44C83 47 84 57 94 59C104 54 101 44 92 44Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M92 44L96 60M87 51H101", class: "layout-preset-svg-cutline" }));
+  } else if (theme === "pencil") {
+    svg.appendChild(createSvgElement("path", { d: "M78 58L100 36L106 42L84 64L77 65Z", class: "layout-preset-svg-pencil" }));
+    svg.appendChild(createSvgElement("path", { d: "M96 40L102 46", class: "layout-preset-svg-cutline" }));
+  } else if (theme === "minimal") {
+    svg.appendChild(createSvgElement("path", { d: "M78 17H105M78 56H105", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "journal") {
+    svg.appendChild(createSvgElement("path", { d: "M80 45H106V61H80z M85 45V61", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M90 50H101M90 56H99", class: "layout-preset-svg-motif-line" }));
+  }
 
-  document.body.classList.add("has-compact-controls");
+  wrap.appendChild(svg);
+  return wrap;
+}
 
-  function syncOptionButtons(buttons, attributeName, activeValue) {
-    buttons.forEach((button) => {
-      const selected = button.getAttribute(attributeName) === activeValue;
-      button.classList.toggle("is-active", selected);
-      button.setAttribute("aria-pressed", selected ? "true" : "false");
+function createRibbonTabIcon(tabName) {
+  const svg = createSvgElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false" });
+
+  svg.classList.add("ribbon-tab-icon");
+  svg.appendChild(createSvgElement("rect", { x: 3.5, y: 3.5, width: 17, height: 17, rx: 5, class: "ribbon-tab-icon-surface" }));
+
+  if (tabName === "layout") {
+    svg.appendChild(createSvgElement("rect", { x: 6.5, y: 6.5, width: 11, height: 11, rx: 2, class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M6.5 10.2h11M10.2 6.5v11M13.5 10.2v7.3", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("rect", { x: 13.7, y: 12.4, width: 3, height: 3.6, rx: 1, class: "ribbon-tab-icon-fill" }));
+  } else if (tabName === "design") {
+    svg.appendChild(createSvgElement("path", { d: "M12 6.2c3.5 0 5.8 2 5.8 4.8 0 1.7-.9 2.6-2.4 2.6h-1.1c-.8 0-1.2.4-1.2 1.2 0 1-.8 1.8-2.1 1.8-2.7 0-4.9-2.1-4.9-5 0-3.1 2.4-5.4 5.9-5.4z", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 9, cy: 10.5, r: 0.9, class: "ribbon-tab-icon-fill" }));
+    svg.appendChild(createSvgElement("circle", { cx: 11.2, cy: 8.7, r: 0.9, class: "ribbon-tab-icon-fill" }));
+    svg.appendChild(createSvgElement("circle", { cx: 13.8, cy: 9.2, r: 0.9, class: "ribbon-tab-icon-fill" }));
+  } else {
+    svg.appendChild(createSvgElement("path", { d: "M7 6.4h7.2l3.1 3.1v8.1H7z", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M14.2 6.4v3.1h3.1M9.5 12.2h5.2M9.5 15h6.6", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("rect", { x: 8.8, y: 8.3, width: 3.2, height: 1.5, rx: 0.75, class: "ribbon-tab-icon-fill" }));
+  }
+
+  return svg;
+}
+
+function setupRibbonTabIcons(ribbonTabs) {
+  ribbonTabs.forEach((button) => {
+    if (button.querySelector(".ribbon-tab-icon")) {
+      return;
+    }
+
+    const label = document.createElement("span");
+    label.className = "ribbon-tab-label";
+    label.textContent = button.textContent.trim();
+    button.textContent = "";
+    button.append(createRibbonTabIcon(button.getAttribute("data-ribbon-tab")), label);
+  });
+}
+
+function setupWorkspaceViewTabs() {
+  const shell = document.querySelector(".workspace-shell");
+  const tabs = Array.from(document.querySelectorAll(".workspace-tab[data-workspace-view]"));
+
+  if (!shell || !tabs.length || shell.dataset.workspaceTabsBound === "true") {
+    return;
+  }
+
+  const setWorkspaceView = (view) => {
+    shell.dataset.workspaceView = view;
+    tabs.forEach((tab) => {
+      const isActive = tab.getAttribute("data-workspace-view") === view;
+      tab.classList.toggle("is-active", isActive);
+      tab.setAttribute("aria-pressed", String(isActive));
     });
-  }
-
-  function updateStatusText() {
-    const modeLabel = MODE_METADATA[state.mode].title;
-    const themeLabel = THEME_LABELS[state.theme];
-
-    statusText.textContent = state.latestCharacterCount
-      ? `已更新 ${state.latestCharacterCount} 字 · ${modeLabel} · ${themeLabel}`
-      : `等待输入 · ${modeLabel} · ${themeLabel}`;
-  }
-
-  function flashStatus(message) {
-    window.clearTimeout(statusTimer);
-    statusText.textContent = message;
-    statusTimer = window.setTimeout(updateStatusText, 1800);
-  }
-
-  function showPersistentStatus(message) {
-    window.clearTimeout(statusTimer);
-    statusText.textContent = message;
-  }
-
-  function setAiNoteStatus(message) {
-    if (aiNoteStatus) {
-      aiNoteStatus.textContent = message || "";
-    }
-  }
-
-  function preserveSelectionForToolbar() {
-    preservePreviewSelection = true;
-  }
-
-  function releaseSelectionAfterToolbar() {
-    window.setTimeout(() => {
-      preservePreviewSelection = false;
-    }, 0);
-  }
-
-  function commitPreviewFormatting(message, { rerender = true, deferRerender = false } = {}) {
-    syncPreviewToTextarea();
-
-    if (rerender) {
-      renderNow();
-    } else if (deferRerender) {
-      window.clearTimeout(renderTimer);
-      renderTimer = window.setTimeout(renderNow, 900);
-    }
-
-    if (message) {
-      flashStatus(message);
-    }
-  }
-
-  function applySelectedTextStyle(stylePatch, message) {
-    preserveSelectionForToolbar();
-
-    if (applyInlineTextStyleToPreviewSelection(canvas, stylePatch, previewSelectionRange)) {
-      commitPreviewFormatting(message, { rerender: false, deferRerender: true });
-      releaseSelectionAfterToolbar();
-      return true;
-    }
-
-    if (applyBlockTextStyleToPreviewTargets(canvas, stylePatch, previewSelectionRange, previewSelectionHost)) {
-      commitPreviewFormatting(message, { rerender: false, deferRerender: true });
-      releaseSelectionAfterToolbar();
-      return true;
-    }
-
-    if (document.activeElement === textarea && applyInlineTextStyleToTextarea(textarea, stylePatch)) {
-      renderNow();
-      flashStatus(message);
-      releaseSelectionAfterToolbar();
-      return true;
-    }
-
-    releaseSelectionAfterToolbar();
-    return false;
-  }
-
-  function applySelectedParagraphStyle(stylePatch, message) {
-    preserveSelectionForToolbar();
-
-    if (!applyBlockTextStyleToPreviewTargets(canvas, stylePatch, previewSelectionRange, previewSelectionHost)) {
-      releaseSelectionAfterToolbar();
-      return false;
-    }
-
-    commitPreviewFormatting(message, { rerender: false, deferRerender: true });
-    releaseSelectionAfterToolbar();
-    return true;
-  }
-
-  function stepSelectedParagraphStyle(action) {
-    const targets = getPreviewBlockStyleTargets(canvas, previewSelectionRange, previewSelectionHost);
-
-    if (!targets.length) {
-      return false;
-    }
-
-    targets.forEach((element) => {
-      const currentStyle = getBlockTextStyleFromElement(element);
-
-      if (action === "indent-increase") {
-        setBlockTextStyleOnElement(element, { indent: Math.min(96, (Number(currentStyle.indent) || 0) + 8) });
-        return;
-      }
-
-      if (action === "indent-decrease") {
-        setBlockTextStyleOnElement(element, { indent: Math.max(0, (Number(currentStyle.indent) || 0) - 8) });
-        return;
-      }
-
-      if (action === "spacing-increase") {
-        setBlockTextStyleOnElement(element, { spacing: Math.min(72, (Number(currentStyle.spacing) || 0) + 4) });
-        return;
-      }
-
-      if (action === "spacing-decrease") {
-        setBlockTextStyleOnElement(element, { spacing: Math.max(0, (Number(currentStyle.spacing) || 0) - 4) });
-      }
-    });
-
-    commitPreviewFormatting("已调整段落", { rerender: false, deferRerender: true });
-    return true;
-  }
-
-  function findPreviewTableById(tableId, tableRowOffset = null) {
-    const tables = Array.from(canvas.querySelectorAll("table.article-table[data-table-id]"))
-      .filter((table) => table.dataset.tableId === tableId);
-
-    if (tableRowOffset != null) {
-      const offsetKey = String(tableRowOffset);
-      const offsetMatch = tables.find((table) => getTablePaginationFragmentKey(table) === offsetKey);
-
-      if (offsetMatch) {
-        return offsetMatch;
-      }
-
-      return null;
-    }
-
-    return tables[0] || null;
-  }
-
-  function refreshActiveTableCellSelection() {
-    Array.from(canvas.querySelectorAll(".is-table-cell-selected")).forEach((cell) => {
-      cell.classList.remove("is-table-cell-selected");
-    });
-
-    const table = activeTableCellSelection
-      ? findPreviewTableById(activeTableCellSelection.tableId, activeTableCellSelection.tableRowOffset)
-      : null;
-
-    if (!table) {
-      activeTableCellSelection = null;
-    } else {
-      getUniqueTableEntriesInRect(table, activeTableCellSelection).forEach((entry) => {
-        entry.cell.classList.add("is-table-cell-selected");
-      });
-    }
-
-    if (mergeCellsBtn) {
-      mergeCellsBtn.disabled = !(table && activeTableCellSelection && canMergeTableSelection(table, activeTableCellSelection));
-    }
-
-    if (splitCellBtn) {
-      splitCellBtn.disabled = !(table && activeTableCellSelection && canSplitTableSelection(table, activeTableCellSelection));
-    }
-  }
-
-  function setActiveTableCellSelection(nextSelection) {
-    activeTableCellSelection = nextSelection
-      ? {
-        anchorCol: Number(nextSelection.anchorCol),
-        anchorRow: Number(nextSelection.anchorRow),
-        endCol: Number(nextSelection.endCol),
-        endRow: Number(nextSelection.endRow),
-        startCol: Number(nextSelection.startCol),
-        startRow: Number(nextSelection.startRow),
-        tableId: String(nextSelection.tableId || ""),
-        tableRowOffset: String(nextSelection.tableRowOffset ?? ""),
-      }
-      : null;
-
-    refreshActiveTableCellSelection();
-  }
-
-  function handlePreviewClick(event) {
-    const cell = event.target.closest("th, td");
-
-    if (!cell || !canvas.contains(cell)) {
-      setActiveTableCellSelection(null);
-      return;
-    }
-
-    const table = cell.closest("table.article-table[data-table-id]");
-    const row = Number(cell.dataset.tableRow);
-    const col = Number(cell.dataset.tableCol);
-    const tableRowOffset = getTablePaginationFragmentKey(table);
-
-    if (!table || !Number.isInteger(row) || !Number.isInteger(col)) {
-      setActiveTableCellSelection(null);
-      return;
-    }
-
-    if (
-      event.shiftKey
-      && activeTableCellSelection
-      && activeTableCellSelection.tableId === table.dataset.tableId
-      && activeTableCellSelection.tableRowOffset === tableRowOffset
-    ) {
-      setActiveTableCellSelection({
-        anchorCol: activeTableCellSelection.anchorCol,
-        anchorRow: activeTableCellSelection.anchorRow,
-        endCol: col,
-        endRow: row,
-        startCol: activeTableCellSelection.anchorCol,
-        startRow: activeTableCellSelection.anchorRow,
-        tableId: table.dataset.tableId,
-        tableRowOffset,
-      });
-      return;
-    }
-
-    setActiveTableCellSelection({
-      anchorCol: col,
-      anchorRow: row,
-      endCol: col,
-      endRow: row,
-      startCol: col,
-      startRow: row,
-      tableId: table.dataset.tableId,
-      tableRowOffset,
-    });
-  }
-
-  function syncPreviewToTextarea() {
-    window.clearTimeout(previewSyncTimer);
-
-    const markdown = serializeEditableArticleToMarkdown(canvas);
-    textarea.value = markdown;
-    previewHasPendingSync = false;
-
-    state.latestCharacterCount = markdown.trim().length;
-    state.latestBlockCount = (canvas.innerHTML.match(/<(h[1-6]|p|blockquote|ol|ul|table|section|figure)\b/g) || []).length;
-
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.markdown, markdown);
-    } catch (_error) {
-      // Ignore storage failures in restricted browsers.
-    }
-
-    updateStatusText();
-    return markdown;
-  }
-
-  function schedulePreviewSync() {
-    previewHasPendingSync = true;
-    window.clearTimeout(previewSyncTimer);
-    previewSyncTimer = window.setTimeout(() => {
-      syncPreviewToTextarea();
-      window.requestAnimationFrame(() => {
-        syncMountedTableEditors(canvas);
-        mountSvgMindmaps(canvas);
-      });
-    }, 120);
-  }
-
-  function handlePreviewSelectionChange() {
-    const selection = window.getSelection();
-
-    if (!selection || !selection.rangeCount) {
-      if (!preservePreviewSelection) {
-        previewSelectionRange = null;
-        previewSelectionHost = null;
-      }
-      return;
-    }
-
-    const range = selection.getRangeAt(0);
-    if (!isRangeInsideRoot(canvas, range)) {
-      if (!preservePreviewSelection) {
-        previewSelectionRange = null;
-        previewSelectionHost = null;
-      }
-      return;
-    }
-
-    previewSelectionHost = getEditablePreviewHost(canvas, selection.anchorNode);
-    previewSelectionRange = range.cloneRange();
-  }
-
-  function handlePreviewKeydown(event) {
-    const editableHost = getEditablePreviewHost(canvas, event.target);
-
-    if (!editableHost) {
-      return;
-    }
-
-    if (event.key === "Enter") {
-      event.preventDefault();
-      insertLineBreakAtSelection();
-      schedulePreviewSync();
-    }
-  }
-
-  function handlePreviewPaste(event) {
-    const editableHost = getEditablePreviewHost(canvas, event.target);
-
-    if (!editableHost) {
-      return;
-    }
-
-    event.preventDefault();
-    insertPlainTextAtSelection(event.clipboardData ? event.clipboardData.getData("text/plain") : "");
-    schedulePreviewSync();
-  }
-
-  function handlePreviewInput(event) {
-    if (!getEditablePreviewHost(canvas, event.target)) {
-      return;
-    }
-
-    schedulePreviewSync();
-  }
-
-  function handleMergeSelectedCells() {
-    const table = activeTableCellSelection
-      ? findPreviewTableById(activeTableCellSelection.tableId, activeTableCellSelection.tableRowOffset)
-      : null;
-
-    if (!table || !canMergeTableSelection(table, activeTableCellSelection)) {
-      flashStatus("请先在预览区框选同一张表格里的连续单元格");
-      return;
-    }
-
-    const mergedCell = mergeTableSelection(table, activeTableCellSelection);
-
-    if (!mergedCell) {
-      flashStatus("当前单元格区域暂时无法合并");
-      return;
-    }
-
-    setActiveTableCellSelection({
-      anchorCol: mergedCell.col,
-      anchorRow: mergedCell.row,
-      endCol: mergedCell.col,
-      endRow: mergedCell.row,
-      startCol: mergedCell.col,
-      startRow: mergedCell.row,
-      tableId: table.dataset.tableId,
-      tableRowOffset: getTablePaginationFragmentKey(table),
-    });
-    syncPreviewToTextarea();
-    renderNow();
-    flashStatus("已合并单元格");
-  }
-
-  function handleSplitSelectedCell() {
-    const table = activeTableCellSelection
-      ? findPreviewTableById(activeTableCellSelection.tableId, activeTableCellSelection.tableRowOffset)
-      : null;
-
-    if (!table || !canSplitTableSelection(table, activeTableCellSelection)) {
-      flashStatus("请先选中一个已合并的单元格");
-      return;
-    }
-
-    const splitCell = splitTableSelection(table, activeTableCellSelection);
-
-    if (!splitCell) {
-      flashStatus("当前单元格暂时无法取消合并");
-      return;
-    }
-
-    setActiveTableCellSelection({
-      anchorCol: splitCell.col,
-      anchorRow: splitCell.row,
-      endCol: splitCell.col,
-      endRow: splitCell.row,
-      startCol: splitCell.col,
-      startRow: splitCell.row,
-      tableId: table.dataset.tableId,
-      tableRowOffset: getTablePaginationFragmentKey(table),
-    });
-    syncPreviewToTextarea();
-    renderNow();
-    flashStatus("已取消合并");
-  }
-
-  function saveUiState() {
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.theme, state.theme);
-      window.localStorage.setItem(STORAGE_KEYS.mode, state.mode);
-      window.localStorage.setItem(STORAGE_KEYS.questionAnswerLayout, state.questionAnswerLayout);
-      ARTICLE_STYLE_CONTROLS.forEach((control) => {
-        window.localStorage.setItem(control.storageKey, String(state[control.key]));
-      });
-      window.localStorage.setItem(STORAGE_KEYS.lineHeight, String(state.lineHeight));
-      window.localStorage.setItem(STORAGE_KEYS.letterSpacing, String(state.letterSpacing));
-      window.localStorage.setItem(STORAGE_KEYS.headingSpaceH1, String(state.headingSpaceH1));
-      window.localStorage.setItem(STORAGE_KEYS.headingSpaceH2, String(state.headingSpaceH2));
-      window.localStorage.setItem(STORAGE_KEYS.headingSpaceH3, String(state.headingSpaceH3));
-      window.localStorage.setItem(STORAGE_KEYS.typographyVersion, TYPOGRAPHY_BASELINE_VERSION);
-      window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
-    } catch (_error) {
-      // Ignore storage failures in restricted browsers.
-    }
-  }
-
-  function updateModeBenefitCard() {
-    const meta = MODE_METADATA[state.mode];
-
-    if (!meta || !modeBenefitTitle || !modeBenefitSummary || !modeBenefitList) {
-      return;
-    }
-
-    modeBenefitTitle.textContent = meta.title;
-    modeBenefitSummary.textContent = meta.summary;
-    modeBenefitList.innerHTML = meta.highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-  }
-
-  function syncQuestionAnswerLayoutControls() {
-    if (!questionAnswerLayoutPicker) {
-      return;
-    }
-
-    if (!questionAnswerLayoutButtons.length) {
-      questionAnswerLayoutButtons = Array.from(questionAnswerLayoutPicker.querySelectorAll("[data-question-answer-layout]"));
-      questionAnswerLayoutButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          state.questionAnswerLayout = sanitizeChoice(
-            button.dataset.questionAnswerLayout,
-            QUESTION_ANSWER_LAYOUTS,
-            DEFAULT_QUESTION_ANSWER_LAYOUT,
-          );
-          applyUiState();
-          renderNow();
-
-          const meta = QUESTION_ANSWER_LAYOUTS[state.questionAnswerLayout];
-          flashStatus(meta ? `已切换为${meta.label}` : "已切换答案结构");
-        });
-      });
-    }
-
-    const isQuestionMode = state.mode === "question";
-    const panel = questionAnswerLayoutPicker.closest(".question-answer-layout-panel");
-    if (panel) {
-      panel.hidden = !isQuestionMode;
-    }
-
-    questionAnswerLayoutButtons.forEach((button) => {
-      const isActive = button.dataset.questionAnswerLayout === state.questionAnswerLayout;
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    });
-  }
-
-  function applyUiState() {
-    enforceTypeScale(state);
-    const resolved = applyArticleStyleProperties(canvas, state);
-
-    document.body.dataset.theme = resolved.theme;
-    canvas.dataset.mode = resolved.mode;
-    canvas.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
-    textarea.style.fontSize = `${Math.max(10, state.fontSize - 1)}px`;
-    textarea.style.lineHeight = String(Math.max(1.1, state.lineHeight));
-    textarea.style.letterSpacing = `${state.letterSpacing}px`;
-
-    articleStyleControls.forEach((control) => {
-      if (control.range) {
-        control.range.value = String(state[control.key]);
-      }
-
-      if (control.value) {
-        control.value.textContent = formatPixelValue(state[control.key]);
-      }
-    });
-
-    if (lineHeightRange) {
-      lineHeightRange.value = String(state.lineHeight);
-    }
-
-    if (letterSpacingRange) {
-      letterSpacingRange.value = String(state.letterSpacing);
-    }
-
-    if (headingSpaceH1Range) {
-      headingSpaceH1Range.value = String(state.headingSpaceH1);
-    }
-
-    if (headingSpaceH2Range) {
-      headingSpaceH2Range.value = String(state.headingSpaceH2);
-    }
-
-    if (headingSpaceH3Range) {
-      headingSpaceH3Range.value = String(state.headingSpaceH3);
-    }
-
-    if (lineHeightValue) {
-      lineHeightValue.textContent = formatLineHeight(state.lineHeight);
-    }
-
-    if (letterSpacingValue) {
-      letterSpacingValue.textContent = formatDecimalPixelValue(state.letterSpacing);
-    }
-
-    if (headingSpaceH1Value) {
-      headingSpaceH1Value.textContent = `${state.headingSpaceH1} px`;
-    }
-
-    if (headingSpaceH2Value) {
-      headingSpaceH2Value.textContent = `${state.headingSpaceH2} px`;
-    }
-
-    if (headingSpaceH3Value) {
-      headingSpaceH3Value.textContent = `${state.headingSpaceH3} px`;
-    }
-
-    syncOptionButtons(themeButtons, "data-theme-option", state.theme);
-    syncOptionButtons(modeButtons, "data-mode-option", state.mode);
-    syncQuestionAnswerLayoutControls();
-    updateModeBenefitCard();
-    saveUiState();
-    updateStatusText();
-    window.requestAnimationFrame(() => {
-      syncMountedTableEditors(canvas);
-      mountSvgMindmaps(canvas);
-      refreshActiveTableCellSelection();
-    });
-  }
-
-  function renderNow() {
-    const markdown = textarea.value;
-    const html = renderMarkdown(markdown);
-
-    canvas.innerHTML = html;
-    canvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
-    enhanceRenderedArticle(canvas, state.mode);
-    mountManagedTableEditors(canvas, state, saveUiState);
-    mountSvgMindmaps(canvas);
-    state.latestCharacterCount = markdown.trim().length;
-    state.latestBlockCount = (canvas.innerHTML.match(/<(h[1-6]|p|blockquote|ol|ul|table|section|figure)\b/g) || []).length;
-
-    try {
-      window.localStorage.setItem(STORAGE_KEYS.markdown, markdown);
-    } catch (_error) {
-      // Ignore storage failures in restricted browsers.
-    }
-
-    updateStatusText();
-  }
-
-  function scheduleRender() {
-    window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(renderNow, 80);
-  }
-
-  textarea.addEventListener("input", scheduleRender);
-  canvas.addEventListener("keydown", handlePreviewKeydown);
-  canvas.addEventListener("paste", handlePreviewPaste);
-  canvas.addEventListener("input", handlePreviewInput);
-  document.addEventListener("selectionchange", handlePreviewSelectionChange);
-  bindMindmapSvgResizeUpdates();
-
-  articleStyleControls.forEach((control) => {
-    control.range?.addEventListener("input", (event) => {
-      state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
-      applyUiState();
+  };
+
+  shell.dataset.workspaceTabsBound = "true";
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      setWorkspaceView(tab.getAttribute("data-workspace-view") || "preview");
     });
   });
-
-  lineHeightRange?.addEventListener("input", (event) => {
-    state.lineHeight = clampNumber(event.target.value, 1.1, 2.4, DEFAULT_LINE_HEIGHT);
-    applyUiState();
-  });
-
-  letterSpacingRange?.addEventListener("input", (event) => {
-    state.letterSpacing = clampNumber(event.target.value, -0.5, 2, DEFAULT_LETTER_SPACING);
-    applyUiState();
-  });
-
-  headingSpaceH1Range?.addEventListener("input", (event) => {
-    state.headingSpaceH1 = clampNumber(event.target.value, 0, 44, DEFAULT_HEADING_SPACE_H1);
-    applyUiState();
-  });
-
-  headingSpaceH2Range?.addEventListener("input", (event) => {
-    state.headingSpaceH2 = clampNumber(event.target.value, 0, 36, DEFAULT_HEADING_SPACE_H2);
-    applyUiState();
-  });
-
-  headingSpaceH3Range?.addEventListener("input", (event) => {
-    state.headingSpaceH3 = clampNumber(event.target.value, 0, 28, DEFAULT_HEADING_SPACE_H3);
-    applyUiState();
-  });
-
-  themeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.theme = sanitizeChoice(button.getAttribute("data-theme-option"), THEME_LABELS, DEFAULT_THEME);
-      applyUiState();
-    });
-  });
-
-  modeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.mode = sanitizeChoice(button.getAttribute("data-mode-option"), MODE_METADATA, DEFAULT_MODE);
-      applyUiState();
-      renderNow();
-    });
-  });
-
-  brushButtons.forEach((button) => {
-    button.addEventListener("mousedown", (event) => {
-      event.preventDefault();
-    });
-
-    button.addEventListener("click", () => {
-      const brushStyle = sanitizeChoice(button.getAttribute("data-brush-style"), BRUSH_LABELS, "glow");
-
-      if (applyBrushToPreviewSelection(canvas, brushStyle, previewSelectionRange)) {
-        syncPreviewToTextarea();
-        flashStatus(`宸叉坊鍔?${BRUSH_LABELS[brushStyle]}`);
-        return;
-      }
-
-      if (!applyBrushToTextarea(textarea, brushStyle)) {
-        flashStatus("先在左侧 Markdown 输入框选中文字，再点击笔刷");
-        return;
-      }
-
-      renderNow();
-      flashStatus(`已添加 ${BRUSH_LABELS[brushStyle]}`);
-    });
-  });
-
-  brushButtons.forEach((button) => {
-    button.addEventListener("mousedown", (event) => {
-      event.preventDefault();
-    }, { capture: true });
-
-    button.addEventListener("click", (event) => {
-      const brushStyle = sanitizeChoice(button.getAttribute("data-brush-style"), BRUSH_LABELS, "glow");
-
-      if (!applyBrushToPreviewSelection(canvas, brushStyle, previewSelectionRange)) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      syncPreviewToTextarea();
-      flashStatus(`宸叉坊鍔?${BRUSH_LABELS[brushStyle]}`);
-    }, { capture: true });
-  });
-
-  loadSampleBtn?.addEventListener("click", () => {
-    textarea.value = SAMPLE_MARKDOWN;
-    state.mode = DEFAULT_MODE;
-    applyUiState();
-    renderNow();
-  });
-
-  fileInput?.addEventListener("change", (event) => {
-    const target = event.target;
-    const file = target.files && target.files[0];
-
-    if (!file) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      textarea.value = String(reader.result || "");
-      renderNow();
-    };
-    reader.readAsText(file, "utf-8");
-    target.value = "";
-  });
-
-  brushButtons.forEach((button) => {
-    button.addEventListener("mousedown", (event) => {
-      event.preventDefault();
-    }, { capture: true });
-
-    button.addEventListener("click", (event) => {
-      const brushStyle = sanitizeChoice(button.getAttribute("data-brush-style"), BRUSH_LABELS, "glow");
-
-      if (!applyBrushToPreviewSelection(canvas, brushStyle, previewSelectionRange)) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      syncPreviewToTextarea();
-      flashStatus(`宸叉坊鍔?${BRUSH_LABELS[brushStyle]}`);
-    }, { capture: true });
-  });
-
-  downloadHtmlBtn?.addEventListener("click", () => {
-    const title = extractTitle(textarea.value);
-    const html = buildExportHtml(canvas.innerHTML, title, getArticleExportOptions(state));
-    downloadFile(`${sanitizeFileName(title)}.html`, html, "text/html;charset=utf-8");
-  });
-
-  downloadWordBtn?.addEventListener("click", () => {
-    renderNow();
-  }, { capture: true });
-
-  bindWordExportButton(
-    downloadWordBtn,
-    textarea,
-    canvas,
-    (title) => ({
-      title,
-      ...getArticleExportOptions(state),
-    }),
-    { busy: false },
-    flashStatus,
-  );
-
-  printBtn?.addEventListener("click", async () => {
-    if (isExportingPdf) {
-      return;
-    }
-
-    isExportingPdf = true;
-    printBtn.disabled = true;
-    flashStatus("正在导出 PDF…");
-
-    try {
-      await Promise.all(Array.from(canvas.querySelectorAll("img")).map(waitForImage));
-
-      const title = extractTitle(textarea.value);
-      const pdfBlob = await exportCanvasToPdf(canvas, {
-        title,
-        ...getArticleExportOptions(state),
-      });
-
-      downloadBlob(`${sanitizeFileName(title)}.pdf`, pdfBlob);
-      flashStatus("PDF 已导出");
-    } catch (error) {
-      console.error(error);
-      flashStatus("PDF 导出失败，请重试");
-    } finally {
-      isExportingPdf = false;
-      printBtn.disabled = false;
-    }
-  });
-
-  let initialText = SAMPLE_MARKDOWN;
-
-  try {
-    const savedMarkdown = window.localStorage.getItem(STORAGE_KEYS.markdown);
-    const savedTheme = window.localStorage.getItem(STORAGE_KEYS.theme);
-    const savedMode = window.localStorage.getItem(STORAGE_KEYS.mode);
-    const savedQuestionAnswerLayout = window.localStorage.getItem(STORAGE_KEYS.questionAnswerLayout);
-    const savedLineHeight = window.localStorage.getItem(STORAGE_KEYS.lineHeight);
-    const savedLetterSpacing = window.localStorage.getItem(STORAGE_KEYS.letterSpacing);
-    const savedHeadingSpaceH1 = window.localStorage.getItem(STORAGE_KEYS.headingSpaceH1);
-    const savedHeadingSpaceH2 = window.localStorage.getItem(STORAGE_KEYS.headingSpaceH2);
-    const savedHeadingSpaceH3 = window.localStorage.getItem(STORAGE_KEYS.headingSpaceH3);
-    const savedTypographyVersion = window.localStorage.getItem(STORAGE_KEYS.typographyVersion);
-    const savedTableLayouts = window.localStorage.getItem(STORAGE_KEYS.tableLayouts);
-
-    if (savedMarkdown && savedMarkdown.trim()) {
-      initialText = savedMarkdown;
-    }
-
-    state.theme = sanitizeChoice(savedTheme, THEME_LABELS, DEFAULT_THEME);
-    state.mode = sanitizeChoice(savedMode, MODE_METADATA, DEFAULT_MODE);
-    state.questionAnswerLayout = sanitizeChoice(
-      savedQuestionAnswerLayout,
-      QUESTION_ANSWER_LAYOUTS,
-      DEFAULT_QUESTION_ANSWER_LAYOUT,
-    );
-    ARTICLE_STYLE_CONTROLS.forEach((control) => {
-      const savedValue = window.localStorage.getItem(control.storageKey);
-      state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
-    });
-    state.lineHeight = clampNumber(
-      migrateLegacyCompactValue(savedLineHeight, LEGACY_COMPACT_DEFAULTS.lineHeight, DEFAULT_LINE_HEIGHT),
-      1.1,
-      2.4,
-      DEFAULT_LINE_HEIGHT,
-    );
-    state.letterSpacing = clampNumber(savedLetterSpacing, -0.5, 2, DEFAULT_LETTER_SPACING);
-    state.headingSpaceH1 = clampNumber(
-      migrateLegacyCompactValue(savedHeadingSpaceH1, LEGACY_COMPACT_DEFAULTS.headingSpaceH1, DEFAULT_HEADING_SPACE_H1),
-      0,
-      44,
-      DEFAULT_HEADING_SPACE_H1,
-    );
-    state.headingSpaceH2 = clampNumber(
-      migrateLegacyCompactValue(savedHeadingSpaceH2, LEGACY_COMPACT_DEFAULTS.headingSpaceH2, DEFAULT_HEADING_SPACE_H2),
-      0,
-      36,
-      DEFAULT_HEADING_SPACE_H2,
-    );
-    state.headingSpaceH3 = clampNumber(
-      migrateLegacyCompactValue(savedHeadingSpaceH3, LEGACY_COMPACT_DEFAULTS.headingSpaceH3, DEFAULT_HEADING_SPACE_H3),
-      0,
-      28,
-      DEFAULT_HEADING_SPACE_H3,
-    );
-    if (savedTypographyVersion !== TYPOGRAPHY_BASELINE_VERSION) {
-      applyReadableTypographyBaseline(state);
-    }
-    state.tableLayouts = normalizeTableLayouts(savedTableLayouts ? JSON.parse(savedTableLayouts) : {});
-  } catch (_error) {
-    // Ignore storage failures in restricted browsers.
-  }
-
-  textarea.value = initialText;
-  applyUiState();
-  renderNow();
-  cachedExportStyles = getExportStyles();
-
-  if (printBtn && printBtn.parentNode) {
-    const replacementPrintBtn = printBtn.cloneNode(true);
-    replacementPrintBtn.textContent = "导出 PDF";
-    replacementPrintBtn.setAttribute("aria-label", "导出 PDF");
-    printBtn.replaceWith(replacementPrintBtn);
-    bindPdfExportButton(replacementPrintBtn, textarea, canvas, state, { busy: false }, flashStatus);
-  }
+  setWorkspaceView(shell.dataset.workspaceView || "preview");
 }
 
 async function initPagedApp() {
@@ -12874,9 +13477,13 @@ async function initPagedApp() {
   const pdfInput = document.getElementById("pdfInput");
   const pdfImportLabel = document.getElementById("pdfImportLabel");
   const loadSampleBtn = document.getElementById("loadSampleBtn");
+  const toolbarExportToggle = document.getElementById("toolbarExportToggle");
+  const toolbarExportMenu = document.getElementById("toolbarExportMenu");
   const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
   const downloadWordBtn = document.getElementById("downloadWordBtn");
   const printBtn = document.getElementById("printBtn");
+  const downloadPngBtn = document.getElementById("downloadPngBtn");
+  const downloadImageGroupBtn = document.getElementById("downloadImageGroupBtn");
   const aiSubjectInput = document.getElementById("aiSubjectInput");
   const aiTopicInput = document.getElementById("aiTopicInput");
   const aiSourceInput = document.getElementById("aiSourceInput");
@@ -12920,6 +13527,18 @@ async function initPagedApp() {
   const previewFontFamilySelect = document.getElementById("previewFontFamilySelect");
   const previewFontSizeSelect = document.getElementById("previewFontSizeSelect");
   const previewTextColorInput = document.getElementById("previewTextColorInput");
+  const previewToolsToggle = document.getElementById("previewToolsToggle");
+  const inspectorToggle = document.getElementById("inspectorToggle");
+  const previewEditorTools = document.getElementById("previewEditorTools");
+  const elementStylePanel = document.getElementById("elementStylePanel");
+  const elementStyleTitle = elementStylePanel?.querySelector(".element-style-title");
+  const elementStyleNote = elementStylePanel?.querySelector(".element-style-note");
+  const elementStyleGrid = elementStylePanel?.querySelector(".element-style-grid");
+  let cardLayoutPanel = null;
+  let cardLayoutFields = null;
+  let cardLayoutTarget = null;
+  let cardLayoutResetBtn = null;
+  let cardLayoutControls = [];
   const textColorButtons = Array.from(document.querySelectorAll("[data-text-color]"));
   const selectionAlignButtons = Array.from(document.querySelectorAll("[data-selection-align]"));
   const paragraphStepButtons = Array.from(document.querySelectorAll("[data-paragraph-step]"));
@@ -12933,6 +13552,8 @@ async function initPagedApp() {
   const pageHeaderInput = document.getElementById("pageHeaderInput");
   const watermarkToggle = document.getElementById("watermarkToggle");
   const watermarkInput = document.getElementById("watermarkInput");
+  const paginationStrategySelect = document.getElementById("paginationStrategySelect");
+  const previewPaginationStrategySelect = document.getElementById("previewPaginationStrategySelect");
   const exportBackgroundInput = document.getElementById("exportBackgroundInput");
   const exportBackgroundName = document.getElementById("exportBackgroundName");
   const clearExportBackgroundBtn = document.getElementById("clearExportBackgroundBtn");
@@ -13122,6 +13743,11 @@ async function initPagedApp() {
     watermarkOpacity: DEFAULT_WATERMARK_OPACITY,
     exportBackgroundSrc: DEFAULT_EXPORT_BACKGROUND_SRC,
     exportBackgroundName: DEFAULT_EXPORT_BACKGROUND_NAME,
+    paginationStrategy: DEFAULT_PAGINATION_STRATEGY,
+    elementStyles: getElementStyleDefaults(),
+    cardLayouts: {},
+    cardOrder: [],
+    activeElementStyleGroup: ELEMENT_STYLE_SCHEMA[0].id,
     tableLayouts: {},
     latestCharacterCount: 0,
     latestBlockCount: 0,
@@ -13200,6 +13826,7 @@ async function initPagedApp() {
 
     getLayoutPresetsForMode(state.mode).forEach((preset) => {
       const button = document.createElement("button");
+      const preview = createLayoutPresetPreviewSvg(preset, state.mode);
       const title = document.createElement("span");
       const summary = document.createElement("span");
       const option = document.createElement("option");
@@ -13208,13 +13835,15 @@ async function initPagedApp() {
       button.className = "layout-preset-button";
       button.dataset.layoutPreset = preset.id;
       button.setAttribute("aria-pressed", "false");
+      button.setAttribute("aria-label", `${preset.label} - ${preset.summary}`);
       button.title = `${preset.label} - ${preset.summary}`;
 
       title.className = "layout-preset-title";
       summary.className = "layout-preset-summary";
-      title.textContent = preset.label;
+      title.textContent = formatLayoutPresetShortLabel(preset.label);
       summary.textContent = preset.summary;
 
+      button.appendChild(preview);
       button.appendChild(title);
       button.appendChild(summary);
       layoutPresetPicker.appendChild(button);
@@ -13342,6 +13971,9 @@ async function initPagedApp() {
   let activeTableCellSelection = null;
   let tableCellSelectionDrag = null;
   let suppressNextTableClick = false;
+  let activeCardLayoutKey = "";
+  let activeCardElement = null;
+  let cardDragState = null;
 
   [
     ...articleStyleControls.map((control) => ({
@@ -13443,6 +14075,651 @@ async function initPagedApp() {
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
+  }
+
+  function setPreviewDrawer(openPanel) {
+    const showTools = openPanel === "tools";
+    const showInspector = openPanel === "inspector";
+
+    if (previewEditorTools) {
+      previewEditorTools.hidden = !showTools;
+    }
+
+    if (elementStylePanel) {
+      elementStylePanel.hidden = !showInspector;
+    }
+
+    previewToolsToggle?.classList.toggle("is-active", showTools);
+    previewToolsToggle?.setAttribute("aria-expanded", String(showTools));
+    inspectorToggle?.classList.toggle("is-active", showInspector);
+    inspectorToggle?.setAttribute("aria-expanded", String(showInspector));
+  }
+
+  function getGroupIdForPreviewElement(element) {
+    const target = element?.closest?.([
+      ".knowledge-cluster",
+      ".question-card",
+      ".question-panel",
+      ".mindmap-card",
+      ".callout-box",
+      ".note-quote",
+      ".brush-block",
+      ".article-table-editor",
+      "figure",
+      "table",
+      "blockquote",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "ul",
+      "ol",
+      "li",
+      "p",
+    ].join(","));
+
+    if (!target) {
+      return state.activeElementStyleGroup || ELEMENT_STYLE_SCHEMA[0].id;
+    }
+
+    if (target.matches("h1")) return "heading1";
+    if (target.matches("h2")) return "heading2";
+    if (target.matches("h3")) return "heading3";
+    if (target.matches("h4")) return "heading4";
+    if (target.matches("ul, ol, li")) return "list";
+    if (target.matches(".callout-box, .note-quote, .brush-block, blockquote")) return "callout";
+    if (target.matches("table, .article-table-editor")) return "table";
+    if (target.matches(".knowledge-cluster, .question-card, .question-panel, .mindmap-card, figure")) return "card";
+    return "paragraph";
+  }
+
+  function syncElementStylePanel() {
+    if (!elementStyleGrid) {
+      return;
+    }
+
+    const activeGroup = getElementStyleGroup(state.activeElementStyleGroup);
+
+    if (elementStylePanel) {
+      elementStylePanel.dataset.activeElementStyle = activeGroup.id;
+    }
+
+    elementStyleGrid.querySelectorAll("[data-element-style-group]").forEach((button) => {
+      const isActive = button.getAttribute("data-element-style-group") === activeGroup.id;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    elementStyleGrid.querySelectorAll("[data-element-style-field]").forEach((range) => {
+      const groupId = range.getAttribute("data-element-style-group-field");
+      const fieldKey = range.getAttribute("data-element-style-field");
+      const field = getElementStyleField(groupId, fieldKey);
+      const group = state.elementStyles?.[groupId];
+
+      if (!field || !group) {
+        return;
+      }
+
+      const value = clampNumber(group[fieldKey], field.min, field.max, field.defaultValue);
+      const fieldEl = range.closest(".element-style-field");
+      const valueEl = fieldEl?.querySelector(".element-style-value");
+
+      range.value = String(value);
+      updateRangeControlVisual(range);
+      if (valueEl) {
+        valueEl.textContent = field.formatValue ? field.formatValue(value) : String(value);
+      }
+    });
+
+    if (elementStyleNote) {
+      elementStyleNote.textContent = `当前：${activeGroup.label}`;
+    }
+  }
+
+  function selectElementStyleGroup(groupId, { open = true } = {}) {
+    state.activeElementStyleGroup = getElementStyleGroup(groupId).id;
+
+    if (elementStylePanel) {
+      elementStylePanel.dataset.activeElementStyle = state.activeElementStyleGroup;
+    }
+
+    syncElementStylePanel();
+
+    if (open) {
+      setPreviewDrawer("inspector");
+    }
+  }
+
+  function mountElementStylePanel() {
+    if (!elementStylePanel || !elementStyleGrid || elementStylePanel.dataset.mounted === "true") {
+      return;
+    }
+
+    elementStylePanel.dataset.mounted = "true";
+
+    const groupPicker = document.createElement("div");
+    const fieldsWrap = document.createElement("div");
+    const resetBtn = document.createElement("button");
+
+    groupPicker.className = "element-style-picker";
+    groupPicker.setAttribute("role", "tablist");
+    fieldsWrap.className = "element-style-fields";
+    resetBtn.type = "button";
+    resetBtn.className = "element-style-reset";
+    resetBtn.textContent = "重置当前";
+
+    ELEMENT_STYLE_SCHEMA.forEach((group) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "element-style-chip";
+      button.dataset.elementStyleGroup = group.id;
+      button.textContent = group.label;
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => selectElementStyleGroup(group.id));
+      groupPicker.appendChild(button);
+
+      const groupFields = document.createElement("div");
+      groupFields.className = "element-style-group-fields";
+      groupFields.dataset.elementStyleFieldsGroup = group.id;
+
+      group.fields.forEach((field) => {
+        const fieldEl = document.createElement("label");
+        const label = document.createElement("span");
+        const value = document.createElement("span");
+        const range = document.createElement("input");
+
+        fieldEl.className = "element-style-field";
+        label.className = "element-style-label";
+        value.className = "element-style-value";
+        range.type = "range";
+        range.className = "precision-range";
+        range.min = String(field.min);
+        range.max = String(field.max);
+        range.step = String(field.step || 1);
+        range.dataset.elementStyleGroupField = group.id;
+        range.dataset.elementStyleField = field.key;
+
+        label.textContent = field.label;
+        fieldEl.append(label, value, range);
+        groupFields.appendChild(fieldEl);
+
+        range.addEventListener("input", () => {
+          const normalizedStyles = normalizeElementStyles(state.elementStyles);
+          normalizedStyles[group.id][field.key] = clampNumber(range.value, field.min, field.max, field.defaultValue);
+          state.elementStyles = normalizedStyles;
+          applyElementStyleProperties(measureCanvas, state.elementStyles);
+          syncElementStylePanel();
+          applyUiState({ rerender: true });
+        });
+      });
+
+      fieldsWrap.appendChild(groupFields);
+    });
+
+    resetBtn.addEventListener("click", () => {
+      const group = getElementStyleGroup(state.activeElementStyleGroup);
+      const normalizedStyles = normalizeElementStyles(state.elementStyles);
+      const defaults = getElementStyleDefaults(state);
+
+      normalizedStyles[group.id] = { ...defaults[group.id] };
+      state.elementStyles = normalizedStyles;
+      syncElementStylePanel();
+      applyUiState({ rerender: true });
+    });
+
+    elementStyleGrid.prepend(groupPicker, fieldsWrap, resetBtn);
+
+    if (elementStyleTitle) {
+      elementStyleTitle.textContent = "元素参数";
+    }
+
+    syncElementStylePanel();
+  }
+
+  function ensureCardLayoutPanel() {
+    if (cardLayoutPanel) {
+      return cardLayoutPanel;
+    }
+
+    if (!elementStylePanel || !elementStyleGrid) {
+      return null;
+    }
+
+    const panel = document.createElement("section");
+    const head = document.createElement("div");
+    const title = document.createElement("p");
+    const target = document.createElement("p");
+    const fields = document.createElement("div");
+    const resetButton = document.createElement("button");
+
+    panel.id = "cardLayoutPanel";
+    panel.className = "card-layout-panel";
+    panel.hidden = true;
+    head.className = "card-layout-head";
+    title.className = "card-layout-title";
+    target.id = "cardLayoutTarget";
+    target.className = "card-layout-target";
+    fields.id = "cardLayoutFields";
+    fields.className = "card-layout-fields";
+    resetButton.id = "cardLayoutResetBtn";
+    resetButton.type = "button";
+    resetButton.className = "element-style-reset card-layout-reset";
+
+    title.textContent = "卡片参数";
+    target.textContent = "点击预览里的卡片";
+    resetButton.textContent = "重置卡片";
+
+    head.append(title, target, resetButton);
+    panel.append(head, fields);
+    elementStyleGrid.insertAdjacentElement("afterend", panel);
+
+    cardLayoutPanel = panel;
+    cardLayoutFields = fields;
+    cardLayoutTarget = target;
+    cardLayoutResetBtn = resetButton;
+    return panel;
+  }
+
+  function mountCardLayoutPanel() {
+    ensureCardLayoutPanel();
+
+    if (!cardLayoutPanel || !cardLayoutFields || cardLayoutPanel.dataset.mounted === "true") {
+      return;
+    }
+
+    cardLayoutPanel.dataset.mounted = "true";
+    cardLayoutFields.replaceChildren();
+    cardLayoutControls = CARD_LAYOUT_FIELD_SCHEMA.map((field) => {
+      const fieldEl = document.createElement("label");
+      const label = document.createElement("span");
+      const value = document.createElement("span");
+      const range = document.createElement("input");
+
+      fieldEl.className = "element-style-field card-layout-field";
+      label.className = "element-style-label";
+      value.className = "element-style-value";
+      range.type = "range";
+      range.className = "precision-range";
+      range.min = String(field.min);
+      range.max = String(field.max);
+      range.step = String(field.step || 1);
+      range.value = String(field.defaultValue);
+      range.dataset.cardLayoutField = field.key;
+
+      label.textContent = field.label;
+      fieldEl.append(label, value, range);
+      cardLayoutFields.appendChild(fieldEl);
+
+      initNumericScrubber({
+        rangeInput: range,
+        display: value,
+        min: field.min,
+        max: field.max,
+        step: field.step || 1,
+        defaultValue: field.defaultValue,
+        formatValue: field.formatValue,
+      });
+
+      range.addEventListener("input", () => {
+        if (!activeCardLayoutKey) {
+          return;
+        }
+
+        state.cardLayouts = setCardLayoutEntry(state.cardLayouts, activeCardLayoutKey, {
+          [field.key]: clampNumber(range.value, field.min, field.max, field.defaultValue),
+        });
+        applyCardLayouts(canvas, state.cardLayouts);
+        fitCardTextToFixedHeight(canvas);
+        syncCardLayoutPanel();
+        saveUiState();
+        scheduleRender();
+      });
+
+      return { field, range, value };
+    });
+
+    cardLayoutResetBtn?.addEventListener("click", () => {
+      if (!activeCardLayoutKey) {
+        flashStatus("请先点击预览里的卡片");
+        return;
+      }
+
+      state.cardLayouts = setCardLayoutEntry(state.cardLayouts, activeCardLayoutKey, CARD_LAYOUT_DEFAULTS);
+      applyCardLayouts(canvas, state.cardLayouts);
+      fitCardTextToFixedHeight(canvas);
+      syncCardLayoutPanel();
+      saveUiState();
+      scheduleRender();
+      flashStatus("已重置当前卡片参数");
+    });
+
+    syncCardLayoutPanel();
+  }
+
+  function getCardLayoutElementFromTarget(target) {
+    const element = target && target.nodeType === Node.ELEMENT_NODE
+      ? target
+      : target?.parentElement;
+    const card = element?.closest?.("[data-card-layout-key].layout-editable-card, .knowledge-cluster-fragment[data-card-layout-key]");
+
+    return card && canvas.contains(card) ? card : null;
+  }
+
+  function getCardTitleForPanel(card) {
+    const title = card?.querySelector?.(":scope .knowledge-cluster-title, :scope .question-card-title, :scope .question-answer-item-title");
+    const text = (title?.textContent || card?.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return text ? text.slice(0, 28) : "已选卡片";
+  }
+
+  function syncCardLayoutPanel() {
+    mountCardLayoutPanel();
+
+    if (!cardLayoutPanel || !cardLayoutFields) {
+      return;
+    }
+
+    const hasActiveCard = Boolean(activeCardLayoutKey && activeCardElement);
+    const entry = getCardLayoutEntry(state.cardLayouts, activeCardLayoutKey);
+
+    cardLayoutPanel.hidden = !hasActiveCard;
+
+    if (cardLayoutTarget) {
+      cardLayoutTarget.textContent = hasActiveCard
+        ? getCardTitleForPanel(activeCardElement)
+        : "点击预览里的卡片";
+    }
+
+    cardLayoutControls.forEach((control) => {
+      const value = hasActiveCard ? entry[control.field.key] : control.field.defaultValue;
+
+      control.range.disabled = !hasActiveCard;
+      control.range.value = String(value);
+      updateRangeControlVisual(control.range);
+      updateNumericDisplay(
+        control.value,
+        value,
+        control.field.formatValue,
+        control.field.step,
+        !hasActiveCard,
+      );
+    });
+  }
+
+  function syncCardLayoutSelection() {
+    Array.from(canvas.querySelectorAll(".is-card-layout-selected")).forEach((element) => {
+      element.classList.remove("is-card-layout-selected");
+    });
+
+    activeCardElement = activeCardLayoutKey
+      ? getInteractiveCardLayoutTargets(canvas).find((card) => getCardLayoutKey(card) === activeCardLayoutKey) || null
+      : null;
+
+    if (activeCardLayoutKey) {
+      getInteractiveCardLayoutTargets(canvas).forEach((card) => {
+        card.classList.toggle("is-card-layout-selected", getCardLayoutKey(card) === activeCardLayoutKey);
+      });
+    }
+
+    syncCardLayoutPanel();
+  }
+
+  function selectCardLayout(card, { flash = false } = {}) {
+    const key = getCardLayoutKey(card);
+
+    if (!key) {
+      return false;
+    }
+
+    activeCardLayoutKey = key;
+    activeCardElement = card;
+    selectElementStyleGroup("card");
+    syncCardLayoutSelection();
+
+    if (flash) {
+      flashStatus("已选中卡片，可调宽高、边距和文字比例");
+    }
+
+    return true;
+  }
+
+  function clearCardLayoutSelection() {
+    activeCardLayoutKey = "";
+    activeCardElement = null;
+    syncCardLayoutSelection();
+  }
+
+  function getCurrentPreviewCardOrder() {
+    const keys = [];
+    const seen = new Set();
+
+    getInteractiveCardLayoutTargets(canvas).forEach((card) => {
+      const key = getCardLayoutKey(card);
+
+      if (!key || seen.has(key)) {
+        return;
+      }
+
+      seen.add(key);
+      keys.push(key);
+    });
+
+    return keys;
+  }
+
+  function moveCardOrderKey(order, key, targetKey, position) {
+    if (!key || !targetKey || key === targetKey) {
+      return normalizeCardOrder(order);
+    }
+
+    const keys = normalizeCardOrder(order).filter((item) => item !== key);
+    const targetIndex = keys.indexOf(targetKey);
+
+    if (targetIndex === -1) {
+      keys.push(key);
+      return keys;
+    }
+
+    keys.splice(position === "after" ? targetIndex + 1 : targetIndex, 0, key);
+    return keys;
+  }
+
+  function clearCardLayoutDropState() {
+    Array.from(canvas.querySelectorAll(".is-card-drop-before, .is-card-drop-after")).forEach((element) => {
+      element.classList.remove("is-card-drop-before", "is-card-drop-after");
+    });
+  }
+
+  function markCardLayoutDropTarget(card, position) {
+    clearCardLayoutDropState();
+
+    if (!card || !position) {
+      return;
+    }
+
+    card.classList.add(position === "before" ? "is-card-drop-before" : "is-card-drop-after");
+  }
+
+  function getCardDropTargetFromPoint(event, draggedKey = "") {
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const card = getCardLayoutElementFromTarget(target);
+    const targetKey = getCardLayoutKey(card);
+
+    if (!card || !targetKey || targetKey === draggedKey) {
+      return { card: null, targetKey: "", position: "" };
+    }
+
+    const rect = card.getBoundingClientRect();
+    return {
+      card,
+      targetKey,
+      position: event.clientY > rect.top + rect.height / 2 ? "after" : "before",
+    };
+  }
+
+  function getAdjacentCardDropTarget(order, key, deltaY) {
+    const keys = normalizeCardOrder(order);
+    const currentIndex = keys.indexOf(key);
+
+    if (currentIndex === -1 || Math.abs(deltaY) < 10) {
+      return { targetKey: "", position: "" };
+    }
+
+    if (deltaY > 0) {
+      return { targetKey: keys[currentIndex + 1] || "", position: "after" };
+    }
+
+    return { targetKey: keys[currentIndex - 1] || "", position: "before" };
+  }
+
+  function mountCardDragHandles(root) {
+    if (!root || !root.querySelectorAll) {
+      return;
+    }
+
+    Array.from(root.querySelectorAll(".card-layout-drag-handle")).forEach((handle) => handle.remove());
+
+    getInteractiveCardLayoutTargets(root).forEach((card) => {
+      const key = getCardLayoutKey(card);
+
+      if (!key || card.querySelector(":scope > .card-layout-drag-handle")) {
+        return;
+      }
+
+      const handle = document.createElement("button");
+      handle.type = "button";
+      handle.className = "card-layout-drag-handle";
+      handle.dataset.serializationSkip = "true";
+      handle.setAttribute("contenteditable", "false");
+      handle.setAttribute("aria-label", "上下拖动卡片");
+      handle.title = "上下拖动卡片";
+      handle.textContent = "::";
+      card.appendChild(handle);
+    });
+  }
+
+  function startCardLayoutDrag(card, handle, event) {
+    const key = getCardLayoutKey(card);
+
+    if (!key) {
+      return false;
+    }
+
+    selectCardLayout(card);
+    cardDragState = {
+      key,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      targetKey: "",
+      position: "",
+      didMove: false,
+    };
+
+    card.classList.add("is-card-layout-dragging");
+    try {
+      handle.setPointerCapture?.(event.pointerId);
+    } catch (_error) {
+      // Synthetic pointer events may not create an active capture target.
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    window.getSelection()?.removeAllRanges();
+    return true;
+  }
+
+  function updateCardLayoutDrag(event) {
+    if (!cardDragState || event.pointerId !== cardDragState.pointerId) {
+      return;
+    }
+
+    const distance = Math.hypot(event.clientX - cardDragState.startX, event.clientY - cardDragState.startY);
+    cardDragState.lastX = event.clientX;
+    cardDragState.lastY = event.clientY;
+    cardDragState.didMove = true;
+
+    if (distance < 4) {
+      return;
+    }
+
+    const { card, targetKey, position } = getCardDropTargetFromPoint(event, cardDragState.key);
+
+    if (!card || !targetKey || !position) {
+      cardDragState.targetKey = "";
+      cardDragState.position = "";
+      clearCardLayoutDropState();
+      return;
+    }
+
+    cardDragState.targetKey = targetKey;
+    cardDragState.position = position;
+    markCardLayoutDropTarget(card, position);
+    event.preventDefault();
+  }
+
+  function finishCardLayoutDrag(event) {
+    if (!cardDragState || event.pointerId !== cardDragState.pointerId) {
+      return;
+    }
+
+    Array.from(canvas.querySelectorAll(".is-card-layout-dragging")).forEach((card) => {
+      card.classList.remove("is-card-layout-dragging");
+    });
+    clearCardLayoutDropState();
+
+    const { key, startY, lastY, didMove } = cardDragState;
+    let { targetKey, position } = cardDragState;
+    cardDragState = null;
+
+    const baseOrder = getCurrentPreviewCardOrder();
+    const pointTarget = getCardDropTargetFromPoint(event, key);
+    if (pointTarget.targetKey && pointTarget.position) {
+      targetKey = pointTarget.targetKey;
+      position = pointTarget.position;
+    }
+
+    if (!targetKey || !position) {
+      const endY = Number.isFinite(event.clientY) ? event.clientY : lastY;
+      const fallbackTarget = getAdjacentCardDropTarget(baseOrder, key, endY - startY);
+      targetKey = fallbackTarget.targetKey;
+      position = fallbackTarget.position;
+    }
+
+    if (!didMove || !targetKey || !position) {
+      return;
+    }
+
+    state.cardOrder = moveCardOrderKey(baseOrder, key, targetKey, position);
+    saveUiState();
+    renderNow();
+    flashStatus("已调整卡片顺序");
+  }
+
+  function fitCardTextToFixedHeight(root) {
+    if (!root || !root.querySelectorAll) {
+      return;
+    }
+
+    getAllCardLayoutTargets(root).forEach((card) => {
+      const layout = getCardLayoutEntry(state.cardLayouts, getCardLayoutKey(card));
+      card.style.removeProperty("--card-auto-text-scale");
+
+      if (layout.height <= 0) {
+        return;
+      }
+
+      const maxHeight = Math.max(1, layout.height);
+      let scale = 1;
+
+      while (scale > 0.68 && card.scrollHeight > maxHeight + 2) {
+        scale = Number((scale - 0.04).toFixed(2));
+        card.style.setProperty("--card-auto-text-scale", String(scale));
+      }
+    });
   }
 
   function getDocumentOptions(title = "") {
@@ -13547,6 +14824,8 @@ async function initPagedApp() {
   }
 
   mountExportBackgroundPresets();
+  mountElementStylePanel();
+  mountCardLayoutPanel();
   await restoreCustomFontsFromStorage();
   syncCustomFontSelectOptions();
 
@@ -13794,6 +15073,14 @@ async function initPagedApp() {
       return;
     }
 
+    const dragHandle = event.target.closest?.(".card-layout-drag-handle");
+    if (dragHandle) {
+      const card = getCardLayoutElementFromTarget(dragHandle);
+      if (card && startCardLayoutDrag(card, dragHandle, event)) {
+        return;
+      }
+    }
+
     const anchor = getTableCellFromEventTarget(event.target);
 
     if (!anchor) {
@@ -13880,6 +15167,15 @@ async function initPagedApp() {
   }
 
   function handlePreviewClick(event) {
+    const clickedCard = getCardLayoutElementFromTarget(event.target);
+    if (clickedCard && !event.target.closest?.(".card-layout-drag-handle")) {
+      selectCardLayout(clickedCard);
+      selectElementStyleGroup("card", { open: false });
+    } else if (!event.target.closest?.(".element-style-panel, .card-layout-panel")) {
+      clearCardLayoutSelection();
+      selectElementStyleGroup(getGroupIdForPreviewElement(event.target), { open: false });
+    }
+
     const mathElement = getPreviewMathElement(canvas, event.target);
 
     if (mathElement) {
@@ -13974,8 +15270,31 @@ async function initPagedApp() {
     }
 
     const range = selection.getRangeAt(0);
-    if (!isRangeInsideRoot(canvas, range) || range.collapsed) {
+    if (!isRangeInsideRoot(canvas, range)) {
       previewSelectionRange = null;
+      return;
+    }
+
+    const selectedElement = range.startContainer.nodeType === Node.ELEMENT_NODE
+      ? range.startContainer
+      : range.startContainer.parentElement;
+
+    if (selectedElement) {
+      const selectedCard = getCardLayoutElementFromTarget(selectedElement);
+      if (selectedCard) {
+        selectCardLayout(selectedCard);
+        selectElementStyleGroup("card", { open: false });
+        if (range.collapsed) {
+          return;
+        }
+        previewSelectionRange = range.cloneRange();
+        return;
+      }
+
+      selectElementStyleGroup(getGroupIdForPreviewElement(selectedElement), { open: false });
+    }
+
+    if (range.collapsed) {
       return;
     }
 
@@ -14119,8 +15438,12 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.pageHeaderText, state.pageHeaderText);
       window.localStorage.setItem(STORAGE_KEYS.watermarkEnabled, String(state.watermarkEnabled));
       window.localStorage.setItem(STORAGE_KEYS.watermarkText, state.watermarkText);
+      window.localStorage.setItem(STORAGE_KEYS.paginationStrategy, state.paginationStrategy);
       window.localStorage.setItem(STORAGE_KEYS.typographyVersion, TYPOGRAPHY_BASELINE_VERSION);
+      window.localStorage.setItem(STORAGE_KEYS.elementStyles, JSON.stringify(normalizeElementStyles(state.elementStyles)));
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
+      window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
+      window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
@@ -14142,6 +15465,14 @@ async function initPagedApp() {
 
   function applyUiState({ rerender = false } = {}) {
     syncLayoutPresetWithMode(state);
+    state.paginationStrategy = sanitizeChoice(
+      state.paginationStrategy,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    );
+    state.elementStyles = normalizeElementStyles(state.elementStyles);
+    state.cardLayouts = normalizeCardLayouts(state.cardLayouts);
+    state.cardOrder = normalizeCardOrder(state.cardOrder);
     enforceTypeScale(state);
     const pageMetrics = getPageMetrics(state);
 
@@ -14294,6 +15625,22 @@ async function initPagedApp() {
       watermarkInput.disabled = !state.watermarkEnabled;
     }
 
+    if (paginationStrategySelect) {
+      paginationStrategySelect.value = sanitizeChoice(
+        state.paginationStrategy,
+        PAGINATION_STRATEGIES,
+        DEFAULT_PAGINATION_STRATEGY,
+      );
+    }
+
+    if (previewPaginationStrategySelect) {
+      previewPaginationStrategySelect.value = sanitizeChoice(
+        state.paginationStrategy,
+        PAGINATION_STRATEGIES,
+        DEFAULT_PAGINATION_STRATEGY,
+      );
+    }
+
     if (exportBackgroundName) {
       exportBackgroundName.textContent = getExportBackgroundLabel(state.exportBackgroundName, state.exportBackgroundSrc);
       exportBackgroundName.title = state.exportBackgroundName || "";
@@ -14324,6 +15671,8 @@ async function initPagedApp() {
     syncOptionButtons(themeButtons, "data-theme-option", state.theme);
     syncOptionButtons(modeButtons, "data-mode-option", state.mode);
     syncOptionButtons(paragraphAlignButtons, "data-paragraph-align", state.paragraphAlign);
+    syncRangeControlVisuals();
+    syncElementStylePanel();
     syncLayoutPresetButtons();
     syncQuestionAnswerLayoutControls();
     updateModeBenefitCard();
@@ -14338,6 +15687,9 @@ async function initPagedApp() {
     window.requestAnimationFrame(() => {
       syncMountedTableEditors(canvas);
       mountSvgMindmaps(canvas);
+      mountCardDragHandles(canvas);
+      syncCardLayoutSelection();
+      fitCardTextToFixedHeight(canvas);
       refreshActiveTableCellSelection();
     });
   }
@@ -14358,6 +15710,11 @@ async function initPagedApp() {
     measureCanvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     applyArticleStyleProperties(measureCanvas, state, pageMetrics.contentWidthPx);
     enhanceRenderedArticle(measureCanvas, state.mode);
+    assignCardLayoutKeys(measureCanvas, state.mode);
+    state.cardOrder = compactCardOrder(measureCanvas, state.cardOrder);
+    applyCardOrder(measureCanvas, state.cardOrder);
+    applyCardLayouts(measureCanvas, state.cardLayouts);
+    fitCardTextToFixedHeight(measureCanvas);
     applyManagedTableLayoutsToTables(measureCanvas, state);
 
     canvas.dataset.mode = state.mode;
@@ -14367,6 +15724,10 @@ async function initPagedApp() {
     const paginated = buildPaginatedPreview(measureCanvas, getDocumentOptions(title), title);
     canvas.replaceChildren(...Array.from(paginated.element.childNodes));
     markPreviewEditableNodes(canvas);
+    applyCardLayouts(canvas, state.cardLayouts);
+    mountCardDragHandles(canvas);
+    syncCardLayoutSelection();
+    fitCardTextToFixedHeight(canvas);
     mountManagedTableEditors(canvas, state, saveUiState, scheduleRender);
     mountSvgMindmaps(canvas);
     refreshActiveTableCellSelection();
@@ -14386,6 +15747,9 @@ async function initPagedApp() {
     window.requestAnimationFrame(() => {
       syncMountedTableEditors(canvas);
       mountSvgMindmaps(canvas);
+      mountCardDragHandles(canvas);
+      syncCardLayoutSelection();
+      fitCardTextToFixedHeight(canvas);
       refreshActiveTableCellSelection();
     });
   }
@@ -14405,8 +15769,19 @@ async function initPagedApp() {
   canvas.addEventListener("keydown", handlePreviewKeydown);
   canvas.addEventListener("paste", handlePreviewPaste);
   canvas.addEventListener("input", handlePreviewInput);
+  window.addEventListener("pointermove", updateCardLayoutDrag);
+  window.addEventListener("pointerup", finishCardLayoutDrag);
+  window.addEventListener("pointercancel", finishCardLayoutDrag);
   document.addEventListener("selectionchange", handlePreviewSelectionChange);
   bindMindmapSvgResizeUpdates();
+
+  previewToolsToggle?.addEventListener("click", () => {
+    setPreviewDrawer(previewEditorTools?.hidden ? "tools" : "");
+  });
+
+  inspectorToggle?.addEventListener("click", () => {
+    setPreviewDrawer(elementStylePanel?.hidden ? "inspector" : "");
+  });
 
   [
     ...textColorButtons,
@@ -14425,6 +15800,7 @@ async function initPagedApp() {
   articleStyleControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
+      state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
       applyUiState({ rerender: true });
     });
   });
@@ -14432,6 +15808,7 @@ async function initPagedApp() {
   paragraphControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
+      state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
       applyUiState({ rerender: true });
     });
   });
@@ -14439,6 +15816,7 @@ async function initPagedApp() {
   headingLineHeightControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
+      state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
       applyUiState({ rerender: true });
     });
   });
@@ -14446,6 +15824,7 @@ async function initPagedApp() {
   headingSpaceControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
+      state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
       applyUiState({ rerender: true });
     });
   });
@@ -14459,6 +15838,7 @@ async function initPagedApp() {
 
   lineHeightRange?.addEventListener("input", (event) => {
     state.lineHeight = clampNumber(event.target.value, 1.1, 2.4, DEFAULT_LINE_HEIGHT);
+    state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, "lineHeight", state.lineHeight);
     applyUiState({ rerender: true });
   });
 
@@ -14663,6 +16043,24 @@ async function initPagedApp() {
     applyUiState({ rerender: true });
   });
 
+  paginationStrategySelect?.addEventListener("change", (event) => {
+    state.paginationStrategy = sanitizeChoice(
+      event.target.value,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    );
+    applyUiState({ rerender: true });
+  });
+
+  previewPaginationStrategySelect?.addEventListener("change", (event) => {
+    state.paginationStrategy = sanitizeChoice(
+      event.target.value,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    );
+    applyUiState({ rerender: true });
+  });
+
   exportBackgroundInput?.addEventListener("change", async (event) => {
     const target = event.target;
     const file = target.files && target.files[0];
@@ -14862,6 +16260,51 @@ async function initPagedApp() {
     }
   });
 
+  function setToolbarExportMenuOpen(isOpen) {
+    if (!toolbarExportToggle || !toolbarExportMenu) {
+      return;
+    }
+
+    toolbarExportMenu.hidden = !isOpen;
+    toolbarExportToggle.setAttribute("aria-expanded", String(isOpen));
+  }
+
+  function closeToolbarExportMenu() {
+    setToolbarExportMenuOpen(false);
+  }
+
+  toolbarExportToggle?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setToolbarExportMenuOpen(Boolean(toolbarExportMenu?.hidden));
+  });
+
+  toolbarExportMenu?.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    if (event.target && event.target.closest("button")) {
+      closeToolbarExportMenu();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      toolbarExportMenu?.hidden
+      || toolbarExportMenu?.contains(event.target)
+      || toolbarExportToggle?.contains(event.target)
+    ) {
+      return;
+    }
+
+    closeToolbarExportMenu();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeToolbarExportMenu();
+    }
+  });
+
   downloadHtmlBtn?.addEventListener("click", () => {
     renderNow();
   }, { capture: true });
@@ -14890,6 +16333,68 @@ async function initPagedApp() {
     { busy: false },
     flashStatus,
   );
+
+  downloadPngBtn?.addEventListener("click", () => {
+    renderNow();
+  }, { capture: true });
+
+  downloadPngBtn?.addEventListener("click", async () => {
+    if (exportBusy) {
+      return;
+    }
+
+    exportBusy = true;
+    downloadPngBtn.disabled = true;
+    flashStatus("正在导出 PNG...");
+
+    try {
+      const title = extractTitle(textarea.value);
+      const blobs = await buildPngPageBlobs(measureCanvas, getDocumentOptions(title));
+      downloadBlob(`${sanitizeFileName(title)}.png`, blobs[0]);
+      flashStatus("PNG 已导出");
+    } catch (error) {
+      console.error(error);
+      flashStatus("PNG 导出失败，请重试");
+    } finally {
+      exportBusy = false;
+      downloadPngBtn.disabled = false;
+    }
+  });
+
+  downloadImageGroupBtn?.addEventListener("click", () => {
+    renderNow();
+  }, { capture: true });
+
+  downloadImageGroupBtn?.addEventListener("click", async () => {
+    if (exportBusy) {
+      return;
+    }
+
+    exportBusy = true;
+    downloadImageGroupBtn.disabled = true;
+    flashStatus("正在导出图片组...");
+
+    try {
+      const title = extractTitle(textarea.value);
+      const fileBaseName = sanitizeFileName(title);
+      const blobs = await buildPngPageBlobs(measureCanvas, getDocumentOptions(title));
+
+      blobs.forEach((blob, index) => {
+        const pageSuffix = String(index + 1).padStart(2, "0");
+        window.setTimeout(() => {
+          downloadBlob(`${fileBaseName}-${pageSuffix}.png`, blob);
+        }, index * 150);
+      });
+
+      flashStatus(`图片组已导出 ${blobs.length} 张`);
+    } catch (error) {
+      console.error(error);
+      flashStatus("图片组导出失败，请重试");
+    } finally {
+      exportBusy = false;
+      downloadImageGroupBtn.disabled = false;
+    }
+  });
 
   brushButtons.forEach((button) => {
     button.addEventListener("mousedown", (event) => {
@@ -15054,9 +16559,13 @@ async function initPagedApp() {
     const savedWatermarkText = window.localStorage.getItem(STORAGE_KEYS.watermarkText);
     const savedExportBackgroundSrc = window.localStorage.getItem(STORAGE_KEYS.exportBackgroundSrc);
     const savedExportBackgroundName = window.localStorage.getItem(STORAGE_KEYS.exportBackgroundName);
+    const savedPaginationStrategy = window.localStorage.getItem(STORAGE_KEYS.paginationStrategy);
     const savedRibbonTab = window.localStorage.getItem(STORAGE_KEYS.ribbonTab);
     const savedTypographyVersion = window.localStorage.getItem(STORAGE_KEYS.typographyVersion);
+    const savedElementStyles = window.localStorage.getItem(STORAGE_KEYS.elementStyles);
     const savedTableLayouts = window.localStorage.getItem(STORAGE_KEYS.tableLayouts);
+    const savedCardLayouts = window.localStorage.getItem(STORAGE_KEYS.cardLayouts);
+    const savedCardOrder = window.localStorage.getItem(STORAGE_KEYS.cardOrder);
 
     if (savedMarkdown && savedMarkdown.trim()) {
       initialText = savedMarkdown;
@@ -15076,22 +16585,35 @@ async function initPagedApp() {
     state.bodyFontFamily = sanitizeChoice(savedBodyFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_BODY_FONT_FAMILY);
     state.headingFontFamily = sanitizeChoice(savedHeadingFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_HEADING_FONT_FAMILY);
     state.paragraphAlign = sanitizeChoice(savedParagraphAlign, PARAGRAPH_ALIGN_OPTIONS, DEFAULT_PARAGRAPH_ALIGN);
+    const hadSavedElementStyles = Boolean(savedElementStyles);
 
     ARTICLE_STYLE_CONTROLS.forEach((control) => {
       const savedValue = window.localStorage.getItem(control.storageKey);
       state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
+      if (!hadSavedElementStyles) {
+        state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
+      }
     });
     ARTICLE_PARAGRAPH_CONTROLS.forEach((control) => {
       const savedValue = window.localStorage.getItem(control.storageKey);
       state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
+      if (!hadSavedElementStyles) {
+        state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
+      }
     });
     HEADING_LINE_HEIGHT_CONTROLS.forEach((control) => {
       const savedValue = window.localStorage.getItem(control.storageKey);
       state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
+      if (!hadSavedElementStyles) {
+        state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
+      }
     });
     HEADING_SPACE_CONTROLS.forEach((control) => {
       const savedValue = window.localStorage.getItem(control.storageKey);
       state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
+      if (!hadSavedElementStyles) {
+        state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, control.key, state[control.key]);
+      }
     });
 
     PAGE_STYLE_CONTROLS.forEach((control) => {
@@ -15105,6 +16627,9 @@ async function initPagedApp() {
       2.4,
       DEFAULT_LINE_HEIGHT,
     );
+    if (!hadSavedElementStyles) {
+      state.elementStyles = syncElementStylesFromGlobalControl(state.elementStyles, "lineHeight", state.lineHeight);
+    }
     state.letterSpacing = clampNumber(savedLetterSpacing, -0.5, 2, DEFAULT_LETTER_SPACING);
     state.headingSpaceH1 = clampNumber(
       migrateLegacyCompactValue(state.headingSpaceH1, LEGACY_COMPACT_DEFAULTS.headingSpaceH1, DEFAULT_HEADING_SPACE_H1),
@@ -15131,19 +16656,32 @@ async function initPagedApp() {
     state.pageHeaderText = savedPageHeaderText == null ? DEFAULT_PAGE_HEADER_TEXT : String(savedPageHeaderText);
     state.watermarkEnabled = normalizeBoolean(savedWatermarkEnabled, DEFAULT_WATERMARK_ENABLED);
     state.watermarkText = savedWatermarkText == null ? DEFAULT_WATERMARK_TEXT : String(savedWatermarkText);
+    state.paginationStrategy = sanitizeChoice(
+      savedPaginationStrategy,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    );
+    state.elementStyles = hadSavedElementStyles
+      ? normalizeElementStyles(savedElementStyles)
+      : getElementStyleDefaults(state);
     state.exportBackgroundSrc = normalizeBackgroundSource(savedExportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC);
     state.exportBackgroundName = state.exportBackgroundSrc
       ? normalizeBackgroundName(savedExportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME)
       : DEFAULT_EXPORT_BACKGROUND_NAME;
     activeRibbonTab = sanitizeChoice(savedRibbonTab, RIBBON_TABS, DEFAULT_RIBBON_TAB);
     state.tableLayouts = normalizeTableLayouts(savedTableLayouts ? JSON.parse(savedTableLayouts) : {});
+    state.cardLayouts = normalizeCardLayouts(savedCardLayouts);
+    state.cardOrder = normalizeCardOrder(savedCardOrder);
   } catch (_error) {
     // Ignore storage failures in restricted browsers.
   }
 
   textarea.value = initialText;
+  setupRibbonTabIcons(ribbonTabs);
+  setupWorkspaceViewTabs();
   applyRibbonTab(activeRibbonTab);
   applyUiState();
+  setPreviewDrawer("tools");
   renderNow();
   cachedExportStyles = getExportStyles();
 }
