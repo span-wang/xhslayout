@@ -16,6 +16,9 @@ const MAX_REQUEST_BODY_BYTES = 80 * 1024 * 1024;
 const MAX_STUDY_NOTES_SOURCE_CHARS = 60000;
 const PDF_EXPORT_TIMEOUT_MS = Math.max(30000, Number(process.env.PDF_EXPORT_TIMEOUT_MS) || 180000);
 const PDF_ASSET_READY_TIMEOUT_MS = Math.max(3000, Number(process.env.PDF_ASSET_READY_TIMEOUT_MS) || 12000);
+const PDF_EXPORT_SCALE = 1.5;
+const PNG_EXPORT_TIMEOUT_MS = Math.max(30000, Number(process.env.PNG_EXPORT_TIMEOUT_MS) || 180000);
+const PNG_EXPORT_DEVICE_SCALE_FACTOR = Math.max(1, Math.min(3, Number(process.env.PNG_EXPORT_DEVICE_SCALE_FACTOR) || 2));
 const LOGIN_PATH = "/login";
 const LOGOUT_PATH = "/logout";
 const LLM_API_KEY = process.env.LLM_API_KEY || process.env.OPENAI_API_KEY || "";
@@ -71,6 +74,24 @@ const AUTH_SESSION_SECRET = crypto
   .update(`${ACCESS_CONFIG.salt}:${ACCESS_CONFIG.hash}`)
   .digest();
 let pdfBrowserPromise = null;
+
+function buildZipCrc32Table() {
+  const table = new Uint32Array(256);
+
+  for (let index = 0; index < table.length; index += 1) {
+    let value = index;
+
+    for (let bit = 0; bit < 8; bit += 1) {
+      value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+    }
+
+    table[index] = value >>> 0;
+  }
+
+  return table;
+}
+
+const ZIP_CRC32_TABLE = buildZipCrc32Table();
 
 function collapseHtmlBreakRuns(value, maxBreaks = 2) {
   const limit = Math.max(1, Math.floor(Number(maxBreaks) || 1));
@@ -430,7 +451,6 @@ function renderLoginPage(nextPath = "/", errorMessage = "") {
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Protected Access</title>
   <style>
     :root {
@@ -732,49 +752,237 @@ function waitForNetworkAssets(page, timeoutMs = PDF_ASSET_READY_TIMEOUT_MS) {
   }, timeoutMs);
 }
 
-async function exportPdfFromHtml(html) {
+async function withExportPage(html, options, callback) {
   const browser = await getPdfBrowser();
   const context = await browser.newContext({
     viewport: {
       width: 1440,
       height: 900,
     },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: Math.max(1, Number(options && options.deviceScaleFactor) || 1),
   });
 
   try {
-    context.setDefaultTimeout(PDF_EXPORT_TIMEOUT_MS);
-    context.setDefaultNavigationTimeout(PDF_EXPORT_TIMEOUT_MS);
+    const timeoutMs = Math.max(1000, Number(options && options.timeoutMs) || PDF_EXPORT_TIMEOUT_MS);
+
+    context.setDefaultTimeout(timeoutMs);
+    context.setDefaultNavigationTimeout(timeoutMs);
     await context.route("**/*", fulfillExportAsset);
 
     const page = await context.newPage();
 
     await page.setContent(String(html || ""), {
       waitUntil: "domcontentloaded",
-      timeout: PDF_EXPORT_TIMEOUT_MS,
+      timeout: timeoutMs,
     });
     await waitForNetworkAssets(page);
+    return await callback(page, timeoutMs);
+  } finally {
+    await context.close();
+  }
+}
+
+async function exportPdfFromHtml(html) {
+  return withExportPage(html, {
+    timeoutMs: PDF_EXPORT_TIMEOUT_MS,
+    deviceScaleFactor: 1,
+  }, async (page, timeoutMs) => {
     await page.emulateMedia({
       media: "print",
     });
 
-    const pdfBuffer = await page.pdf({
+    return page.pdf({
       printBackground: true,
       displayHeaderFooter: false,
       preferCSSPageSize: true,
+      scale: PDF_EXPORT_SCALE,
       margin: {
         top: "0",
         right: "0",
         bottom: "0",
         left: "0",
       },
-      timeout: PDF_EXPORT_TIMEOUT_MS,
+      timeout: timeoutMs,
     });
+  });
+}
 
-    return pdfBuffer;
-  } finally {
-    await context.close();
+function getZipCrc32(bytes) {
+  let crc = 0xffffffff;
+
+  for (let index = 0; index < bytes.length; index += 1) {
+    crc = ZIP_CRC32_TABLE[(crc ^ bytes[index]) & 0xff] ^ (crc >>> 8);
   }
+
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function writeZipUint16(target, offset, value) {
+  target[offset] = value & 0xff;
+  target[offset + 1] = (value >>> 8) & 0xff;
+}
+
+function writeZipUint32(target, offset, value) {
+  target[offset] = value & 0xff;
+  target[offset + 1] = (value >>> 8) & 0xff;
+  target[offset + 2] = (value >>> 16) & 0xff;
+  target[offset + 3] = (value >>> 24) & 0xff;
+}
+
+function getZipDateTime(date = new Date()) {
+  const year = Math.max(1980, Math.min(2107, Number(date.getFullYear()) || 1980));
+  const month = Math.max(1, Math.min(12, (Number(date.getMonth()) || 0) + 1));
+  const day = Math.max(1, Math.min(31, Number(date.getDate()) || 1));
+  const hours = Math.max(0, Math.min(23, Number(date.getHours()) || 0));
+  const minutes = Math.max(0, Math.min(59, Number(date.getMinutes()) || 0));
+  const seconds = Math.max(0, Math.min(29, Math.floor((Number(date.getSeconds()) || 0) / 2)));
+
+  return {
+    date: ((year - 1980) << 9) | (month << 5) | day,
+    time: (hours << 11) | (minutes << 5) | seconds,
+  };
+}
+
+function buildZipBuffer(entries) {
+  const encoder = new TextEncoder();
+  const zipDateTime = getZipDateTime();
+  const chunks = [];
+  const centralDirectory = [];
+  let offset = 0;
+
+  for (const entry of entries) {
+    const nameBytes = encoder.encode(String(entry.name || "file"));
+    const dataBytes = Buffer.isBuffer(entry.data) ? entry.data : Buffer.from(entry.data || []);
+    const crc32 = getZipCrc32(dataBytes);
+    const localHeader = Buffer.alloc(30 + nameBytes.length);
+    const localOffset = offset;
+
+    writeZipUint32(localHeader, 0, 0x04034b50);
+    writeZipUint16(localHeader, 4, 20);
+    writeZipUint16(localHeader, 6, 0x0800);
+    writeZipUint16(localHeader, 8, 0);
+    writeZipUint16(localHeader, 10, zipDateTime.time);
+    writeZipUint16(localHeader, 12, zipDateTime.date);
+    writeZipUint32(localHeader, 14, crc32);
+    writeZipUint32(localHeader, 18, dataBytes.length);
+    writeZipUint32(localHeader, 22, dataBytes.length);
+    writeZipUint16(localHeader, 26, nameBytes.length);
+    writeZipUint16(localHeader, 28, 0);
+    Buffer.from(nameBytes).copy(localHeader, 30);
+
+    chunks.push(localHeader, dataBytes);
+    offset += localHeader.length + dataBytes.length;
+
+    const centralHeader = Buffer.alloc(46 + nameBytes.length);
+
+    writeZipUint32(centralHeader, 0, 0x02014b50);
+    writeZipUint16(centralHeader, 4, 20);
+    writeZipUint16(centralHeader, 6, 20);
+    writeZipUint16(centralHeader, 8, 0x0800);
+    writeZipUint16(centralHeader, 10, 0);
+    writeZipUint16(centralHeader, 12, zipDateTime.time);
+    writeZipUint16(centralHeader, 14, zipDateTime.date);
+    writeZipUint32(centralHeader, 16, crc32);
+    writeZipUint32(centralHeader, 20, dataBytes.length);
+    writeZipUint32(centralHeader, 24, dataBytes.length);
+    writeZipUint16(centralHeader, 28, nameBytes.length);
+    writeZipUint16(centralHeader, 30, 0);
+    writeZipUint16(centralHeader, 32, 0);
+    writeZipUint16(centralHeader, 34, 0);
+    writeZipUint16(centralHeader, 36, 0);
+    writeZipUint32(centralHeader, 38, 0);
+    writeZipUint32(centralHeader, 42, localOffset);
+    Buffer.from(nameBytes).copy(centralHeader, 46);
+    centralDirectory.push(centralHeader);
+  }
+
+  const centralDirectoryOffset = offset;
+  const centralDirectorySize = centralDirectory.reduce((sum, chunk) => sum + chunk.length, 0);
+
+  centralDirectory.forEach((chunk) => {
+    chunks.push(chunk);
+    offset += chunk.length;
+  });
+
+  const endRecord = Buffer.alloc(22);
+
+  writeZipUint32(endRecord, 0, 0x06054b50);
+  writeZipUint16(endRecord, 4, 0);
+  writeZipUint16(endRecord, 6, 0);
+  writeZipUint16(endRecord, 8, entries.length);
+  writeZipUint16(endRecord, 10, entries.length);
+  writeZipUint32(endRecord, 12, centralDirectorySize);
+  writeZipUint32(endRecord, 16, centralDirectoryOffset);
+  writeZipUint16(endRecord, 20, 0);
+  chunks.push(endRecord);
+
+  return Buffer.concat(chunks);
+}
+
+async function captureExportPages(page) {
+  await page.emulateMedia({
+    media: "screen",
+  });
+
+  const pageInfos = await page.evaluate(() => {
+    return Array.from(document.querySelectorAll(".page-sheet")).map((element, index) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        index,
+        width: Math.max(1, Math.round(rect.width)),
+        height: Math.max(1, Math.round(rect.height)),
+      };
+    });
+  });
+
+  if (!pageInfos.length) {
+    throw new Error("Missing paginated export pages.");
+  }
+
+  const results = [];
+
+  for (const info of pageInfos) {
+    const handle = await page.locator(".page-sheet").nth(info.index).elementHandle();
+
+    if (!handle) {
+      throw new Error(`Missing export page at index ${info.index}.`);
+    }
+
+    const pngBuffer = await handle.screenshot({
+      type: "png",
+      omitBackground: false,
+    });
+    await handle.dispose();
+    results.push({
+      ...info,
+      pngBuffer,
+    });
+  }
+
+  return results;
+}
+
+async function exportPngZipFromHtml(html, fileBaseName) {
+  return withExportPage(html, {
+    timeoutMs: PNG_EXPORT_TIMEOUT_MS,
+    deviceScaleFactor: PNG_EXPORT_DEVICE_SCALE_FACTOR,
+  }, async (page) => {
+    const pages = await captureExportPages(page);
+    const digitWidth = String(pages.length).length < 2 ? 2 : String(pages.length).length;
+    const entries = [];
+
+    for (const info of pages) {
+      entries.push({
+        name: `${fileBaseName}-${String(info.index + 1).padStart(digitWidth, "0")}.png`,
+        data: info.pngBuffer,
+      });
+    }
+
+    return {
+      buffer: buildZipBuffer(entries),
+      count: entries.length,
+    };
+  });
 }
 
 function collectRequestBody(request) {
@@ -1105,6 +1313,34 @@ async function handleExportPdf(request, response) {
   response.end(pdfBuffer);
 }
 
+async function handleExportPngZip(request, response) {
+  const rawBody = await collectRequestBody(request);
+  const payload = JSON.parse(rawBody || "{}");
+  const requestedFileName = String(payload.fileName || "export.zip").replace(/[\\/:*?\"<>|]/g, "-");
+  const html = String(payload.html || "");
+
+  if (!html.trim()) {
+    sendJson(response, 400, {
+      error: "Missing export HTML.",
+    });
+    return;
+  }
+
+  const zipFileName = requestedFileName.toLowerCase().endsWith(".zip") ? requestedFileName : `${requestedFileName}.zip`;
+  const fileBaseName = zipFileName.replace(/\.zip$/i, "") || "export";
+  const result = await exportPngZipFromHtml(html, fileBaseName);
+
+  setCorsHeaders(response);
+  response.writeHead(200, {
+    "Content-Type": "application/zip",
+    "Content-Disposition": `attachment; filename="${encodeURIComponent(zipFileName)}"`,
+    "Content-Length": result.buffer.length,
+    "Cache-Control": "no-store",
+    "X-Export-Page-Count": String(result.count),
+  });
+  response.end(result.buffer);
+}
+
 function handleStaticFile(requestUrl, response) {
   const filePath = sanitizeLocalPath(requestUrl.pathname);
 
@@ -1201,6 +1437,11 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "POST" && requestUrl.pathname === "/api/export-pdf") {
       await handleExportPdf(request, response);
+      return;
+    }
+
+    if (request.method === "POST" && requestUrl.pathname === "/api/export-png-zip") {
+      await handleExportPngZip(request, response);
       return;
     }
 

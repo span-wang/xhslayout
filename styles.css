@@ -634,6 +634,46 @@ textarea:focus-visible,
   line-height: 1.7;
 }
 
+.status-stack {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.export-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.export-progress-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(17, 19, 21, 0.1);
+}
+
+.export-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(77, 135, 201, 0.95), rgba(105, 179, 145, 0.92));
+  transition: width 180ms ease;
+}
+
+.export-progress-text {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: right;
+}
+
 .preview-stage {
   flex: 1;
   min-height: 0;
@@ -1595,66 +1635,6 @@ hr {
 
 .article-canvas[data-mode="article"] .article-insight .content-kicker {
   background: transparent;
-}
-
-@media (max-width: 1080px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .panel-card {
-    height: auto;
-  }
-
-  .preview-stage {
-    min-height: 65vh;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    gap: 18px;
-    padding: 16px;
-  }
-
-  .panel-card,
-  .preview-stage {
-    padding: 18px;
-    border-radius: 24px;
-  }
-
-  .segmented-control,
-  .theme-grid,
-  .brush-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-toolbar {
-    align-items: start;
-    flex-direction: column;
-  }
-
-  .article-canvas {
-    padding: 24px 18px;
-    border-radius: 24px;
-  }
-
-  .ordered-list > li {
-    padding-left: 0;
-  }
-
-  .bullet-list > li {
-    padding-left: calc(var(--bullet-size) + 20px);
-  }
-
-  .article-canvas[data-mode="knowledge"] > ul,
-  .article-canvas[data-mode="knowledge"] > ol {
-    padding-inline: 16px;
-  }
-
-  .article-canvas[data-mode="question"] .ordered-list > li {
-    padding: 16px 16px;
-  }
 }
 
 /* Hard-edge redesign */
@@ -3849,81 +3829,6 @@ hr {
   pointer-events: none;
 }
 
-@media (max-width: 1080px) {
-  .app-shell {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .panel-card {
-    height: auto;
-  }
-
-  .preview-stage {
-    min-height: 65vh;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    padding: 14px;
-  }
-
-  .panel-card,
-  .preview-stage {
-    padding: 18px;
-    border-radius: 0;
-  }
-
-  .ribbon-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding: 6px;
-  }
-
-  .ribbon-tab {
-    flex: 0 0 auto;
-  }
-
-  .toolbar button,
-  .file-trigger {
-    flex: 1 1 calc(50% - 5px);
-  }
-
-  .segmented-control,
-  .option-panel-page .range-grid,
-  .option-panel-type .range-grid,
-  .option-panel-page .form-grid,
-  .theme-grid,
-  .brush-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .toggle-field {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-toolbar {
-    align-items: start;
-    flex-direction: column;
-  }
-
-  .page-sheet {
-    min-height: auto;
-    width: 100%;
-    padding:
-      max(16px, calc(var(--page-margin-top-mm, 18) * 0.7mm))
-      max(16px, calc(var(--page-margin-right-mm, 16) * 0.7mm))
-      max(16px, calc(var(--page-margin-bottom-mm, 18) * 0.7mm))
-      max(16px, calc(var(--page-margin-left-mm, 16) * 0.7mm));
-    box-shadow: none;
-  }
-
-  .page-sheet::before {
-    inset: 8px;
-  }
-}
-
 .panel-card {
   display: grid;
   gap: 6px;
@@ -4653,57 +4558,6 @@ body.has-compact-controls .range-value {
   line-height: 1.45;
 }
 
-@media (max-width: 720px) {
-  .panel-card,
-  .preview-stage {
-    padding: 16px;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .mode-benefit-list,
-  .guide-grid,
-  .range-grid-page-meta,
-  .form-grid-page {
-    grid-template-columns: 1fr;
-  }
-
-  .range-grid-scale,
-  .range-grid-space,
-  .range-grid-page {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .theme-grid,
-  .brush-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .cluster-head,
-  .editor-heading,
-  .option-heading {
-    display: grid;
-    gap: 4px;
-  }
-
-  .cluster-note,
-  .editor-note,
-  .option-note {
-    text-align: left;
-    white-space: normal;
-  }
-
-  .syntax-list li {
-    grid-template-columns: 1fr;
-  }
-
-  .syntax-list span {
-    text-align: left;
-  }
-}
-
 .app-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -5213,153 +5067,6 @@ body.has-compact-controls .range-value {
   min-height: 0;
 }
 
-@media (max-width: 1100px) {
-  .app-shell {
-    height: auto;
-    overflow: visible;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "brand"
-      "tools"
-      "tabs"
-      "settings";
-    gap: 6px;
-    padding: 10px;
-  }
-
-  .control-brand {
-    flex-wrap: wrap;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .ai-note-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ai-note-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .ai-note-actions button {
-    width: 100%;
-  }
-
-  .ribbon-tabs {
-    overflow-x: auto;
-  }
-
-  .settings-grid {
-    flex-wrap: wrap;
-    border-radius: 10px;
-    overflow: visible;
-  }
-
-  .option-panel {
-    width: 100%;
-  }
-
-  .option-panel + .option-panel {
-    margin-left: 0;
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .option-panel-mode,
-  .option-panel-type,
-  .option-panel-page,
-  .option-panel-theme,
-  .option-panel-brush {
-    display: grid;
-    gap: 6px;
-  }
-
-  .option-panel-type .cluster-head,
-  .option-panel-page .cluster-head {
-    display: flex;
-  }
-
-  .option-panel-type .panel-cluster + .panel-cluster,
-  .option-panel-page .panel-cluster + .panel-cluster {
-    margin-top: 4px;
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .option-panel-type .range-grid-scale,
-  .option-panel-type .range-grid-space,
-  .option-panel-page .range-grid-page {
-    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-  }
-
-  .workspace-shell {
-    grid-template-columns: 1fr;
-    overflow: visible;
-  }
-
-  .editor-card {
-    min-height: 340px;
-    overflow: visible;
-  }
-
-  .preview-panel {
-    min-height: 60vh;
-    overflow: visible;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    gap: 12px;
-    height: auto;
-    padding: 14px;
-    overflow: visible;
-  }
-
-  .workspace-shell {
-    gap: 12px;
-  }
-
-  .control-card {
-    padding: 8px;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ribbon-tab {
-    flex: 1 0 auto;
-  }
-
-  .settings-grid {
-    padding: 6px;
-  }
-
-  .page-inline-tools {
-    flex-wrap: wrap;
-  }
-
-  .page-inline-item {
-    flex: 1 1 calc(50% - 4px);
-  }
-
-  .editor-card {
-    min-height: 300px;
-    overflow: visible;
-  }
-
-  #markdownInput {
-    min-height: 260px;
-  }
-}
-
 .workspace-shell.workspace-shell-preview-compact {
   grid-template-columns: minmax(0, 1fr) minmax(260px, max-content);
   align-items: start;
@@ -5403,16 +5110,6 @@ body.has-compact-controls .range-value {
   visibility: hidden;
   pointer-events: none;
   background: transparent;
-}
-
-@media (max-width: 1100px) {
-  .workspace-shell.workspace-shell-preview-compact {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-panel.preview-panel-compact {
-    min-height: auto;
-  }
 }
 
 .preview-toolbar {
@@ -5518,12 +5215,6 @@ body.has-compact-controls .range-value {
 
 .live-preview-canvas .empty-state {
   min-height: 100%;
-}
-
-@media (max-width: 1100px) {
-  .status-text {
-    white-space: normal;
-  }
 }
 
 @page {
@@ -6261,64 +5952,6 @@ body {
   letter-spacing: 0.08em;
 }
 
-@media (max-width: 1100px) {
-  .app-shell {
-    height: auto;
-  }
-
-  .option-panel + .option-panel {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .option-panel-mode {
-    gap: 8px;
-  }
-
-  .segmented-control {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .segmented-chip {
-    flex: 1 1 140px;
-  }
-
-  .mode-benefit-card {
-    min-width: 0;
-    padding-left: 0;
-    border-left: 0;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    padding: 14px;
-  }
-
-  .preview-stage {
-    padding: 14px;
-  }
-
-  .page-preview {
-    gap: 16px;
-  }
-
-  .segmented-chip {
-    min-width: 0;
-  }
-
-  .page-sheet .article-canvas[data-mode="knowledge"] .knowledge-cluster {
-    padding: 12px 12px 14px;
-  }
-
-  .page-sheet .article-canvas[data-mode="question"] .ordered-list > li,
-  .page-sheet .article-canvas[data-mode="question"] .bullet-list > li {
-    padding: 0 0 0.66em;
-  }
-
-}
-
 .preview-action-button.is-active,
 .preview-action-button[aria-pressed="true"] {
   border-color: rgba(181, 126, 114, 0.42);
@@ -6597,18 +6230,6 @@ body {
   box-shadow: 0 0 0 8px rgba(159, 63, 54, 0.1) !important;
 }
 
-@media (max-width: 980px) {
-  .preview-panel.has-layout-quality-sidebar .preview-stage {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .layout-quality-sidebar {
-    position: relative;
-    width: 100%;
-    max-height: 260px;
-  }
-}
-
 .preview-select {
   min-width: 64px;
   height: 28px;
@@ -6716,16 +6337,6 @@ body {
 
 .inline-text-style {
   border-radius: 0.18em;
-}
-
-@media (max-width: 900px) {
-  .preview-toolbar-group {
-    width: 100%;
-  }
-
-  .preview-actions.preview-actions-editor {
-    gap: 8px;
-  }
 }
 
 .article-table-editor.is-resizing .table-resize-handle::before {
@@ -7171,31 +6782,6 @@ body {
   margin-bottom: 0.68em;
 }
 
-@media (max-width: 720px) {
-  .article-canvas[data-mode] {
-    --canvas-padding: 16px;
-  }
-
-  .article-canvas .list-item-line-ordered {
-    grid-template-columns: 1.8em minmax(0, 1fr);
-  }
-
-  .article-canvas .inline-list-marker-ordered {
-    width: 1.8em;
-    min-width: 1.8em;
-  }
-
-  .article-canvas[data-mode="knowledge"] .knowledge-cluster,
-  .article-canvas[data-mode="question"] .question-card {
-    padding: 12px;
-  }
-
-  .article-canvas[data-mode="question"] .question-role .content-kicker {
-    min-width: 3.6em;
-    padding: 0 0.46em;
-  }
-}
-
 .math-inline {
   display: inline-flex;
   max-width: 100%;
@@ -7495,36 +7081,6 @@ body {
   font-weight: 700;
 }
 
-@media (max-width: 720px) {
-  .mindmap-layout {
-    grid-template-columns: 1fr;
-    min-width: 0;
-  }
-
-  .mindmap-root {
-    order: -1;
-  }
-
-  .mindmap-side-left .mindmap-list,
-  .mindmap-side-left .mindmap-list ul {
-    align-items: flex-start;
-  }
-
-  .mindmap-side-left .mindmap-node {
-    text-align: left;
-  }
-
-  .mindmap-side-left .mindmap-list ul {
-    padding-right: 0;
-    padding-left: 22px;
-  }
-
-  .formula-editor-panel {
-    max-height: calc(100vh - 32px);
-    overflow: auto;
-  }
-}
-
 /* List and flow refinement */
 .article-canvas .note-list {
   --list-marker-gap: 0.42em;
@@ -7745,29 +7301,6 @@ body {
   box-shadow: none;
 }
 
-@media (max-width: 720px) {
-  .article-canvas .note-list {
-    --list-marker-gap: 0.34em;
-    --list-marker-width: 1.64em;
-  }
-
-  .article-canvas .list-item-line-bullet {
-    grid-template-columns: 0.98em minmax(0, 1fr);
-  }
-
-  .article-canvas .inline-list-marker-bullet {
-    width: 0.98em;
-    min-width: 0.98em;
-  }
-
-  .article-canvas[data-mode="knowledge"] .knowledge-cluster,
-  .page-sheet .article-canvas[data-mode="knowledge"] .knowledge-cluster {
-    gap: 0.58em;
-    margin-bottom: 0.8em;
-    padding-bottom: 0.8em;
-  }
-}
-
 /* Preview-only: hide layout blocks while keeping the content visible. */
 .live-preview-canvas .article-canvas :is(
   .knowledge-cluster,
@@ -7949,20 +7482,10 @@ body {
   padding: 9px 13px;
 }
 
-.option-panel-type .range-grid-scale .range-field,
-.option-panel-type .range-grid-space .range-field {
-  width: 112px;
-}
-
 .option-panel-type .range-field,
 .option-panel-page .range-field {
   gap: 4px;
   padding: 6px 8px;
-}
-
-.option-panel-type .range-field-body-line,
-.option-panel-type .range-field-body-letter {
-  width: 124px;
 }
 
 .range-title {
@@ -8072,66 +7595,6 @@ body.has-compact-controls .range-value {
   .section-stamp
 ) {
   margin-block: 0.72em !important;
-}
-
-@media (max-width: 1100px) {
-  .app-shell {
-    gap: 14px;
-    padding: 16px;
-  }
-
-  .control-card {
-    padding: 10px;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .option-panel + .option-panel,
-  .option-panel-type .panel-cluster + .panel-cluster,
-  .option-panel-page .panel-cluster + .panel-cluster {
-    padding-left: 0;
-  }
-
-  .option-panel-type .range-grid-scale .range-field,
-  .option-panel-type .range-grid-space .range-field,
-  .option-panel-type .range-field-body-line,
-  .option-panel-type .range-field-body-letter {
-    width: auto;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    padding: 14px;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .settings-grid {
-    padding: 8px;
-  }
-
-  .segmented-chip {
-    min-width: 0;
-  }
-
-  .preview-toolbar {
-    flex-wrap: nowrap;
-  }
-
-  .preview-actions.preview-actions-editor {
-    flex: 0 1 auto;
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .preview-toolbar-group {
-    width: 100%;
-  }
 }
 
 /* Content readability cleanup: keep tables readable and remove decorative separators. */
@@ -8663,19 +8126,6 @@ select {
   line-height: 1.45 !important;
 }
 
-@media (max-width: 720px) {
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .article-canvas,
-  .page-sheet .article-canvas[data-mode] {
-    --read-h1-size: clamp(25px, var(--user-h1-size, 30px), 30px);
-    --read-h2-size: clamp(18px, var(--user-h2-size, 20px), 21px);
-    --read-body-size: max(14px, min(var(--user-font-size, 16px), 16px));
-  }
-}
-
 /* Compact the controls so the editor and preview remain the visual priority. */
 .option-panel-mode {
   flex: 1 1 360px;
@@ -8737,23 +8187,6 @@ select {
   background: rgba(255, 255, 255, 0.72);
   font-size: 11px;
   line-height: 1.2;
-}
-
-.option-panel-type .range-grid-scale .range-field,
-.option-panel-type .range-grid-space .range-field,
-.option-panel-type .range-field-body-line,
-.option-panel-type .range-field-body-letter {
-  width: 118px;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(3) {
-  display: flex;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(4),
-.option-panel-type label[for="heading4SizeRange"],
-.option-panel-type label[for="headingSpaceH4Range"] {
-  display: none;
 }
 
 .option-panel-type .range-field,
@@ -9187,57 +8620,6 @@ body.has-compact-controls .range-value {
   grid-template-columns: minmax(142px, 220px) minmax(0, 1fr);
 }
 
-@media (max-width: 720px) {
-  .article-canvas .mindmap-card.mindmap-card-axis,
-  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
-  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
-    padding: 14px !important;
-  }
-
-  .mindmap-card-axis .mindmap-axis-shell {
-    min-width: 0;
-    padding: 64px 0 4px 42px;
-  }
-
-  .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
-    left: 0;
-    top: 0;
-    width: min(220px, calc(100% - 48px));
-    min-height: 46px;
-    max-width: none;
-    transform: none;
-    padding: 8px 12px;
-    border-radius: 8px !important;
-    font-size: var(--user-accent-font-size);
-  }
-
-  .mindmap-card-axis .mindmap-axis-list {
-    gap: 14px;
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item {
-    grid-template-columns: minmax(94px, 112px) minmax(0, 1fr);
-    column-gap: 12px;
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-node-topic {
-    min-height: 48px;
-    padding: 7px 8px;
-    font-size: calc(var(--user-accent-font-size) - 2px);
-  }
-
-  .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
-    column-gap: 12px;
-  }
-
-  .mindmap-card-axis .mindmap-detail-item > .mindmap-node-detail {
-    padding: 3px 7px;
-    font-size: calc(var(--user-accent-font-size) - 3px);
-  }
-}
-
 /* Bracket mindmap: black root + clean right-branch outline. */
 .article-canvas .mindmap-card.mindmap-card-axis,
 .page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
@@ -9478,118 +8860,6 @@ body.has-compact-controls .range-value {
   grid-template-columns: max-content minmax(0, 1fr);
 }
 
-@media (max-width: 720px) {
-  .article-canvas .mindmap-card.mindmap-card-axis,
-  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
-  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
-    --mindmap-root-width: clamp(38px, calc(var(--user-accent-font-size, 16px) + 24px), 52px);
-    --mindmap-spine-left: calc(var(--mindmap-root-width) + 10px);
-    --mindmap-content-left: calc(var(--mindmap-root-width) + 26px);
-    --mindmap-branch-gap: 10px;
-    --mindmap-level-gap: 10px;
-    --mindmap-topic-max: min(var(--user-mindmap-node-width, 220px), 100%);
-    --mindmap-detail-max: min(var(--user-mindmap-node-width, 220px), 100%);
-    padding: 10px !important;
-  }
-
-  .mindmap-card-axis .mindmap-axis-shell {
-    min-width: 0;
-    min-height: calc(var(--mindmap-root-height, 112px) + 16px);
-    padding: 8px 0 8px var(--mindmap-content-left);
-  }
-
-  .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
-    left: 0;
-    top: 50%;
-    width: var(--mindmap-root-width);
-    min-height: 88px;
-    max-width: none;
-    transform: translateY(-50%);
-    padding: 9px 5px;
-    border-radius: 4px !important;
-    font-size: calc(var(--user-accent-font-size) + 1px);
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item {
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: var(--mindmap-branch-gap);
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-node-topic {
-    min-height: 30px;
-    padding: 4px 6px;
-    font-size: calc(var(--user-accent-font-size) - 1px);
-  }
-}
-
-@container (max-width: 520px) {
-  .mindmap-card-axis .mindmap-axis-shell {
-    --mindmap-root-width: clamp(38px, calc(var(--user-accent-font-size, 16px) + 24px), 52px);
-    --mindmap-spine-left: calc(var(--mindmap-root-width) + 10px);
-    --mindmap-content-left: calc(var(--mindmap-root-width) + 26px);
-    --mindmap-branch-gap: 8px;
-    --mindmap-level-gap: 8px;
-    --mindmap-topic-max: min(var(--user-mindmap-node-width, 220px), 100%);
-    --mindmap-detail-max: min(var(--user-mindmap-node-width, 220px), 100%);
-    min-height: calc(var(--mindmap-root-height, 112px) + 16px);
-    padding: 8px 0 8px var(--mindmap-content-left);
-  }
-
-  .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
-  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
-    left: 0;
-    top: 50%;
-    width: var(--mindmap-root-width);
-    min-height: 88px;
-    max-width: none;
-    transform: translateY(-50%);
-    padding: 9px 5px;
-    font-size: calc(var(--user-accent-font-size) + 1px);
-  }
-
-  .mindmap-card-axis .mindmap-axis-list {
-    gap: 10px;
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
-  .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf {
-    grid-template-columns: max-content minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--mindmap-branch-gap);
-    min-height: 30px;
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-node-topic {
-    justify-self: start;
-    min-height: 30px;
-    padding: 4px 6px;
-  }
-
-  .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
-  .mindmap-card-axis .mindmap-detail-item > .mindmap-list,
-  .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch > .mindmap-list {
-    width: 100%;
-    margin: 0;
-    padding-left: var(--mindmap-level-gap);
-  }
-
-  .mindmap-card-axis .mindmap-detail-item,
-  .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
-    grid-template-columns: max-content minmax(0, 1fr);
-    align-items: center;
-    column-gap: var(--mindmap-level-gap);
-    min-height: 22px;
-  }
-
-  .mindmap-card-axis .mindmap-detail-item > .mindmap-node-detail {
-    justify-self: start;
-    max-width: min(var(--mindmap-detail-max), 100%);
-  }
-}
-
 .mindmap-card-axis .mindmap-link-layer {
   position: absolute;
   left: 0;
@@ -9747,28 +9017,6 @@ body.has-compact-controls .range-value {
 .page-sheet .article-canvas .mindmap-card-axis .mindmap-root,
 .page-sheet .article-canvas .mindmap-card-axis .mindmap-node {
   font-family: inherit;
-}
-
-@media (max-width: 1100px) {
-  .font-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .font-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .font-import-row {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .font-import-button {
-    width: 100%;
-  }
 }
 
 #fileInput,
@@ -12058,17 +11306,9 @@ body.has-compact-controls .range-value {
   --footer-logo-width: 184px;
 }
 
-@media (max-width: 720px) {
-  .layout-preset-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Fixed app ribbon: keep controls readable without stealing preview height. */
 :root {
   --app-ribbon-height: 188px;
-  --app-ribbon-height-narrow: 214px;
-  --app-ribbon-height-mobile: 238px;
 }
 
 .app-shell {
@@ -12413,99 +11653,6 @@ body.has-compact-controls .range-value {
   border-right: 1px solid var(--line-soft) !important;
 }
 
-.option-panel-type .panel-cluster,
-.option-panel-page .panel-cluster {
-  flex: 0 0 auto !important;
-  display: grid !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  align-content: start !important;
-  gap: 5px !important;
-  min-width: 0 !important;
-  height: auto !important;
-  max-height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type {
-  width: 760px !important;
-}
-
-.option-panel-type .panel-cluster:not(:first-of-type) {
-  width: 258px !important;
-}
-
-.option-panel-page .panel-cluster {
-  width: 520px !important;
-}
-
-.option-panel-type .cluster-head,
-.option-panel-page .cluster-head {
-  display: none !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(4),
-.option-panel-type label[for="heading4SizeRange"],
-.option-panel-type label[for="headingSpaceH4Range"] {
-  display: none !important;
-}
-
-.font-grid {
-  display: grid !important;
-  grid-template-columns: minmax(176px, 1.2fr) repeat(2, minmax(126px, 1fr)) !important;
-  gap: 6px !important;
-  min-width: 0 !important;
-  margin: 0 !important;
-}
-
-.font-field {
-  min-height: 28px !important;
-  padding: 3px 6px !important;
-}
-
-.font-import-row {
-  min-height: 26px !important;
-  margin: 0 !important;
-}
-
-.option-panel-type .range-grid-scale,
-.option-panel-type .range-grid-space,
-.option-panel-page .range-grid-page,
-.option-panel-page .range-grid-page-meta {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  align-items: flex-start !important;
-  gap: 6px !important;
-  min-width: 0 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  padding-bottom: 2px !important;
-  scrollbar-width: thin;
-}
-
-.option-panel-type .range-field,
-.option-panel-page .range-field {
-  flex: 0 0 112px !important;
-  width: 112px !important;
-  height: auto !important;
-  align-self: flex-start !important;
-  min-height: 30px !important;
-  padding: 4px 6px !important;
-}
-
-.option-panel-page .range-field {
-  flex-basis: 128px !important;
-  width: 128px !important;
-}
-
-.option-panel-type .range-field-body-line,
-.option-panel-type .range-field-body-letter {
-  flex-basis: 124px !important;
-  width: 124px !important;
-}
-
 .option-panel-page .page-inline-tools {
   display: flex !important;
   flex-wrap: nowrap !important;
@@ -12656,89 +11803,6 @@ body.has-compact-controls .range-value {
   overflow: auto !important;
 }
 
-@media (max-width: 1180px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-narrow) minmax(0, 1fr) !important;
-    padding: 12px !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) minmax(360px, max-content) !important;
-    grid-template-rows: 32px 30px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "brand tools"
-      "tabs tabs"
-      "settings settings" !important;
-  }
-
-  .toolbar {
-    justify-content: flex-end !important;
-  }
-
-  .ribbon-tabs {
-    align-self: stretch !important;
-  }
-
-  .option-panel-mode {
-    width: 950px !important;
-    grid-template-columns: 210px 230px minmax(480px, 1fr) !important;
-  }
-
-  .question-answer-layout-panel {
-    width: 230px !important;
-  }
-
-  .option-panel-type .panel-cluster:first-of-type {
-    width: 660px !important;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-mobile) minmax(0, 1fr) !important;
-    padding: 10px !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 28px 31px 31px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "brand"
-      "tabs"
-      "tools"
-      "settings" !important;
-    gap: 6px !important;
-    padding: 8px !important;
-  }
-
-  .toolbar,
-  .ribbon-tabs {
-    justify-content: flex-start !important;
-  }
-
-  .toolbar button,
-  .file-trigger {
-    min-width: 72px !important;
-  }
-
-  .option-panel-mode {
-    width: 900px !important;
-    grid-template-columns: 190px 220px 470px !important;
-  }
-
-  .question-answer-layout-panel {
-    width: 220px !important;
-  }
-
-  .preview-toolbar {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .preview-actions.preview-actions-editor {
-    justify-content: flex-start !important;
-  }
-}
-
 .article-canvas[data-mode="question"].question-body-layout .question-card,
 .page-sheet .article-canvas[data-mode="question"].question-body-layout .question-card,
 .article-canvas[data-mode="question"].question-body-layout .question-panel,
@@ -12763,8 +11827,6 @@ body.has-compact-controls .range-value {
 /* Dense fixed ribbon: no horizontal sliding, no draggable numeric controls. */
 :root {
   --app-ribbon-height: 174px;
-  --app-ribbon-height-narrow: 206px;
-  --app-ribbon-height-mobile: 242px;
 }
 
 .app-shell {
@@ -12806,756 +11868,6 @@ body.has-compact-controls .range-value {
 .preview-actions.preview-actions-editor {
   min-width: 0 !important;
   max-width: 100% !important;
-}
-
-.toolbar,
-.ribbon-tabs,
-.settings-grid,
-.layout-preset-grid,
-.question-answer-layout-grid,
-.option-panel-type .range-grid-scale,
-.option-panel-type .range-grid-space,
-.option-panel-page .range-grid-page,
-.option-panel-page .range-grid-page-meta,
-.option-panel-page .page-inline-tools,
-.background-preset-grid,
-.preview-actions.preview-actions-editor {
-  overflow-x: hidden !important;
-  scrollbar-width: none !important;
-}
-
-.toolbar::-webkit-scrollbar,
-.ribbon-tabs::-webkit-scrollbar,
-.settings-grid::-webkit-scrollbar,
-.layout-preset-grid::-webkit-scrollbar,
-.question-answer-layout-grid::-webkit-scrollbar,
-.range-grid::-webkit-scrollbar,
-.page-inline-tools::-webkit-scrollbar,
-.background-preset-grid::-webkit-scrollbar,
-.preview-actions.preview-actions-editor::-webkit-scrollbar {
-  display: none !important;
-}
-
-.toolbar {
-  display: grid !important;
-  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
-  grid-auto-rows: 26px !important;
-  align-content: center !important;
-  justify-content: stretch !important;
-  gap: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.toolbar button,
-.file-trigger {
-  min-width: 0 !important;
-  width: 100% !important;
-  min-height: 26px !important;
-  height: 26px !important;
-  padding: 0 5px !important;
-  border-radius: 4px !important;
-  font-size: 11px !important;
-  line-height: 1 !important;
-  text-align: center !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.ribbon-tabs {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  align-items: center !important;
-  gap: 3px !important;
-  min-height: 28px !important;
-  padding: 2px !important;
-  overflow-y: hidden !important;
-}
-
-.ribbon-tab {
-  min-width: 0 !important;
-  width: 100% !important;
-  min-height: 24px !important;
-  padding: 0 6px !important;
-  font-size: 11px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.settings-grid {
-  display: grid !important;
-  grid-template-columns: minmax(288px, 328px) minmax(0, 1fr) !important;
-  grid-auto-rows: minmax(0, 1fr) !important;
-  align-items: stretch !important;
-  gap: 6px !important;
-  height: 100% !important;
-  padding: 6px !important;
-  overflow-y: auto !important;
-}
-
-.settings-grid > .option-panel[hidden] {
-  display: none !important;
-}
-
-.settings-grid > .option-panel {
-  width: auto !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-.settings-grid > .option-panel:only-of-type,
-.option-panel-page {
-  grid-column: 1 / -1 !important;
-}
-
-.option-panel-mode {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: 18px 28px minmax(0, 1fr) !important;
-  gap: 4px !important;
-  width: auto !important;
-  min-width: 0 !important;
-}
-
-.option-panel-mode > .option-heading {
-  min-width: 0 !important;
-  margin: 0 !important;
-}
-
-.option-panel-mode > .segmented-control {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 3px !important;
-  min-width: 0 !important;
-}
-
-.option-panel-mode .segmented-chip {
-  min-width: 0 !important;
-  min-height: 26px !important;
-  height: 26px !important;
-  padding: 0 5px !important;
-  font-size: 11px !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.layout-preset-panel,
-.question-answer-layout-panel {
-  display: grid !important;
-  grid-template-rows: 16px minmax(0, 1fr) !important;
-  width: auto !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 5px !important;
-  gap: 4px !important;
-  overflow: hidden !important;
-}
-
-.layout-preset-select,
-.question-answer-layout-select {
-  display: none;
-  min-width: 0;
-  width: 100%;
-  height: 26px;
-  padding: 0 22px 0 7px;
-  border: 1px solid var(--line-soft);
-  border-radius: 5px;
-  background: #ffffff;
-  color: var(--ink);
-  font: inherit;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.layout-preset-head,
-.question-answer-layout-head {
-  min-width: 0 !important;
-  gap: 4px !important;
-}
-
-.layout-preset-note,
-.question-answer-layout-note {
-  display: none !important;
-}
-
-.layout-preset-grid,
-.question-answer-layout-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  align-content: start !important;
-  gap: 4px !important;
-  overflow-y: auto !important;
-}
-
-.layout-preset-button,
-.question-answer-layout-button {
-  min-width: 0 !important;
-  width: 100% !important;
-  min-height: 34px !important;
-  height: 34px !important;
-  padding: 5px 6px !important;
-  gap: 0 !important;
-}
-
-.layout-preset-title,
-.question-answer-layout-title {
-  font-size: 11px !important;
-  line-height: 1.15 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.layout-preset-summary,
-.question-answer-layout-summary {
-  display: none !important;
-}
-
-.question-answer-layout-panel[hidden] {
-  display: none !important;
-}
-
-.option-panel-type {
-  display: grid !important;
-  grid-template-columns: minmax(288px, 1.08fr) minmax(156px, 0.52fr) minmax(238px, 0.82fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  align-items: start !important;
-  gap: 6px !important;
-  width: auto !important;
-  min-width: 0 !important;
-}
-
-.option-panel-type > .option-heading {
-  display: none !important;
-}
-
-.option-panel-type .panel-cluster,
-.option-panel-page .panel-cluster {
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
-  align-content: start !important;
-  width: auto !important;
-  min-width: 0 !important;
-  height: auto !important;
-  max-height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  overflow: hidden !important;
-}
-
-.option-panel-type .cluster-head,
-.option-panel-page .cluster-head {
-  display: none !important;
-}
-
-.font-grid {
-  display: grid !important;
-  grid-template-columns: 1.24fr 1fr 1fr !important;
-  gap: 4px !important;
-  min-width: 0 !important;
-}
-
-.font-field {
-  min-width: 0 !important;
-  min-height: 24px !important;
-  padding: 2px 5px !important;
-  border-radius: 5px !important;
-}
-
-.font-title,
-.font-field select {
-  min-width: 0 !important;
-  font-size: 10px !important;
-  line-height: 1.15 !important;
-}
-
-.font-field select {
-  width: 100% !important;
-}
-
-.font-import-row {
-  display: grid !important;
-  grid-template-columns: 78px minmax(0, 1fr) !important;
-  align-items: center !important;
-  min-height: 22px !important;
-  gap: 5px !important;
-  overflow: hidden !important;
-}
-
-.font-import-button {
-  min-height: 22px !important;
-  padding: 0 6px !important;
-  border-radius: 4px !important;
-  font-size: 10px !important;
-}
-
-.font-import-status {
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  font-size: 10px !important;
-}
-
-.option-panel-type .range-grid-scale {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.option-panel-type .range-grid-space {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.option-panel-type .range-field,
-.option-panel-page .range-field,
-.page-inline-range {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(54px, 66px) !important;
-  align-items: center !important;
-  gap: 3px !important;
-  min-width: 0 !important;
-  width: auto !important;
-  min-height: 24px !important;
-  height: 24px !important;
-  padding: 2px 4px !important;
-  border-radius: 5px !important;
-  overflow: hidden !important;
-}
-
-.option-panel-page .range-field {
-  grid-template-columns: minmax(0, 1fr) minmax(58px, 72px) !important;
-}
-
-.range-title-row {
-  display: contents !important;
-}
-
-.range-title {
-  min-width: 0 !important;
-  max-width: 100% !important;
-  font-size: 10px !important;
-  line-height: 1.1 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-body.has-compact-controls .range-field input[type="range"],
-.range-native-input {
-  display: none !important;
-}
-
-body.has-compact-controls .range-value,
-.range-value-combo {
-  display: block !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-height: 20px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.range-combo-editor {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  min-width: 0 !important;
-  height: 20px !important;
-  padding: 0 4px !important;
-  border: 1px solid var(--line-strong) !important;
-  border-radius: 4px !important;
-  background: #ffffff !important;
-  overflow: hidden !important;
-}
-
-.range-combo-input {
-  min-width: 0 !important;
-  width: 100% !important;
-  height: 18px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-  color: var(--ink) !important;
-  font: inherit !important;
-  font-size: 10px !important;
-  font-weight: 800 !important;
-  line-height: 1 !important;
-  text-align: right !important;
-}
-
-.range-combo-input:focus {
-  outline: none !important;
-}
-
-.range-combo-unit {
-  margin-left: 2px !important;
-  color: var(--muted) !important;
-  font-size: 9px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
-}
-
-.range-scrubber-step,
-.range-scrubber-drag {
-  display: none !important;
-}
-
-.option-panel-page {
-  display: grid !important;
-  grid-template-columns: minmax(410px, 0.9fr) minmax(360px, 0.8fr) minmax(260px, 0.58fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  gap: 6px !important;
-  width: auto !important;
-  min-width: 0 !important;
-}
-
-.option-panel-page > .option-heading {
-  display: none !important;
-}
-
-.option-panel-page .range-grid-page {
-  display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-}
-
-.option-panel-page .page-inline-tools {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.page-inline-item {
-  min-width: 0 !important;
-  min-height: 24px !important;
-  height: 24px !important;
-  padding: 2px 5px !important;
-  border-radius: 5px !important;
-  overflow: hidden !important;
-}
-
-.page-inline-title,
-.page-inline-action,
-.page-inline-file-name,
-.page-inline-button,
-.page-inline-text input[type="text"] {
-  min-width: 0 !important;
-  font-size: 10px !important;
-  line-height: 1.1 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.page-inline-text input[type="text"] {
-  width: 100% !important;
-}
-
-.page-inline-file {
-  justify-content: space-between !important;
-}
-
-.page-inline-tools-background {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 70px !important;
-}
-
-.background-preset-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 4px !important;
-  margin-top: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.background-preset-button {
-  min-width: 0 !important;
-  height: 56px !important;
-  padding: 3px !important;
-  overflow: hidden !important;
-}
-
-.background-preset-thumb {
-  height: 34px !important;
-}
-
-.background-preset-label {
-  margin-top: 2px !important;
-  font-size: 9px !important;
-  line-height: 1.1 !important;
-}
-
-.option-panel-theme,
-.option-panel-brush {
-  display: grid !important;
-  grid-template-rows: 16px minmax(0, 1fr) !important;
-  width: auto !important;
-  min-width: 0 !important;
-  gap: 4px !important;
-}
-
-.theme-grid,
-.brush-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr)) !important;
-  gap: 4px !important;
-}
-
-.theme-chip,
-.brush-chip {
-  min-width: 0 !important;
-  width: 100% !important;
-  min-height: 26px !important;
-  height: 26px !important;
-  padding: 0 6px !important;
-  border-radius: 5px !important;
-  overflow: hidden !important;
-}
-
-.theme-copy,
-.theme-copy strong,
-.brush-chip {
-  min-width: 0 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-.theme-copy small {
-  display: none !important;
-}
-
-.preview-toolbar {
-  grid-template-columns: minmax(160px, auto) minmax(0, 1fr) !important;
-  overflow: hidden !important;
-}
-
-.preview-actions.preview-actions-editor {
-  flex-wrap: wrap !important;
-  justify-content: flex-start !important;
-  align-content: start !important;
-  gap: 4px !important;
-  overflow-y: hidden !important;
-}
-
-.preview-toolbar-group {
-  flex: 0 1 auto !important;
-  max-width: 100% !important;
-}
-
-.preview-action-button.preview-action-button-mini,
-.preview-select {
-  flex: 0 0 auto !important;
-  min-width: 0 !important;
-}
-
-@media (max-width: 1180px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-narrow) minmax(0, 1fr) !important;
-    padding: 10px !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) !important;
-    grid-template-rows: 52px 28px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "brand tools"
-      "tabs tabs"
-      "settings settings" !important;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    grid-auto-rows: 24px !important;
-    align-content: start !important;
-  }
-
-  .toolbar button,
-  .file-trigger {
-    height: 24px !important;
-    min-height: 24px !important;
-  }
-
-  .settings-grid {
-    grid-template-columns: minmax(238px, 280px) minmax(0, 1fr) !important;
-  }
-
-  .option-panel-type {
-    grid-template-columns: minmax(260px, 1fr) minmax(150px, 0.58fr) minmax(214px, 0.82fr) !important;
-  }
-
-  .font-grid {
-    grid-template-columns: 1fr 1fr 1fr !important;
-  }
-
-  .option-panel-page {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-auto-rows: auto !important;
-    align-content: start !important;
-    overflow-y: auto !important;
-  }
-
-  .option-panel-page .range-grid-page {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-page .page-inline-tools,
-  .page-inline-tools-background {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  .background-preset-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .settings-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-auto-rows: auto !important;
-  }
-
-  .settings-grid > .option-panel {
-    height: auto !important;
-  }
-
-  .option-panel-mode {
-    grid-template-rows: 18px 28px 30px !important;
-  }
-
-  .layout-preset-panel,
-  .question-answer-layout-panel {
-    grid-template-rows: 16px 26px !important;
-  }
-
-  .layout-preset-select,
-  .question-answer-layout-select {
-    display: block !important;
-  }
-
-  .layout-preset-grid,
-  .question-answer-layout-grid {
-    display: none !important;
-  }
-
-  .option-panel-type,
-  .option-panel-page {
-    grid-template-columns: minmax(0, 1fr) !important;
-    overflow-y: auto !important;
-  }
-
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-page .range-grid-page {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-page .page-inline-tools,
-  .page-inline-tools-background {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 720px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-mobile) minmax(0, 1fr) !important;
-    padding: 8px !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 26px 28px 52px minmax(0, 1fr) !important;
-    grid-template-areas:
-      "brand"
-      "tabs"
-      "tools"
-      "settings" !important;
-    gap: 4px !important;
-    padding: 6px !important;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-type .range-grid-scale,
-  .option-panel-type .range-grid-space,
-  .option-panel-page .range-grid-page,
-  .option-panel-page .page-inline-tools,
-  .background-preset-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .settings-grid {
-    overflow-y: auto !important;
-  }
-
-  .font-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .font-import-row {
-    grid-template-columns: 76px minmax(0, 1fr) !important;
-  }
-
-  .preview-toolbar {
-    grid-template-columns: minmax(0, 1fr) !important;
-    align-items: start !important;
-  }
-
-  .preview-actions.preview-actions-editor {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    width: 100% !important;
-    overflow: hidden !important;
-  }
-
-  .preview-toolbar-group {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    padding: 3px !important;
-    gap: 3px !important;
-  }
-
-  .preview-toolbar-group-fields {
-    grid-column: 1 / -1 !important;
-  }
-
-  .preview-action-button.preview-action-button-mini,
-  .preview-select {
-    flex: 1 1 34px !important;
-    min-width: 34px !important;
-    height: 26px !important;
-    min-height: 26px !important;
-    padding: 0 5px !important;
-    font-size: 11px !important;
-  }
-
-  .preview-select {
-    flex-basis: 76px !important;
-  }
 }
 
 .article-canvas[data-mode="question"].question-body-layout .question-panel-stem + .question-panel-detail,
@@ -13875,111 +12187,6 @@ body.has-compact-controls .range-value,
 }
 
 /* Final ribbon collision fixes: keep each control group in its own lane. */
-@media (max-width: 1180px) {
-  .option-panel-page {
-    grid-template-rows: auto auto auto !important;
-    gap: 4px !important;
-  }
-
-  .option-panel-page > .panel-cluster {
-    grid-template-rows: minmax(0, auto) !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-page > .panel-cluster:nth-of-type(1) {
-    grid-row: 1 !important;
-  }
-
-  .option-panel-page > .panel-cluster:nth-of-type(2) {
-    grid-row: 2 !important;
-  }
-
-  .option-panel-page > .panel-cluster:nth-of-type(3) {
-    grid-row: 3 !important;
-  }
-
-  .option-panel-page .range-grid-page,
-  .option-panel-page .page-inline-tools,
-  .option-panel-page .background-preset-grid {
-    height: auto !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .settings-grid {
-    align-content: start !important;
-    grid-template-rows: none !important;
-    grid-auto-rows: max-content !important;
-    overflow-y: auto !important;
-  }
-
-  .settings-grid > .option-panel {
-    height: max-content !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-mode {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 16px 26px 30px !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-mode > .option-heading {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-
-  .option-panel-mode > .segmented-control {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-    width: 100% !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-mode .segmented-chip {
-    width: 100% !important;
-  }
-
-  .layout-preset-panel {
-    grid-column: 1 !important;
-    grid-row: 3 !important;
-    width: 100% !important;
-    height: 30px !important;
-    padding: 2px !important;
-  }
-
-  .layout-preset-panel .layout-preset-head {
-    display: none !important;
-  }
-
-  .settings-grid > .option-panel-theme,
-  .settings-grid > .option-panel-brush {
-    grid-column: 1 !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .settings-grid > .option-panel-theme {
-    grid-row: 1 !important;
-  }
-
-  .settings-grid > .option-panel-brush {
-    grid-row: 2 !important;
-  }
-
-  .option-panel-theme,
-  .option-panel-brush {
-    grid-template-rows: 14px auto !important;
-  }
-}
-
 /* Menu refinements: make layout presets and size controls self-explanatory. */
 .layout-preset-panel {
   grid-template-rows: 18px 28px minmax(40px, 1fr) !important;
@@ -14039,1211 +12246,12 @@ body.has-compact-controls .range-value,
   background: rgba(17, 19, 21, 0.22) !important;
 }
 
-.layout-preset-button {
-  flex: 0 0 138px !important;
-  width: 138px !important;
-  height: 42px !important;
-  min-height: 42px !important;
-  padding: 6px 8px !important;
-  gap: 2px !important;
-}
-
-.layout-preset-title {
-  font-size: 11px !important;
-}
-
-.layout-preset-summary {
-  display: block !important;
-  color: rgba(17, 19, 21, 0.58) !important;
-  font-size: 9px !important;
-  line-height: 1.15 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type {
-  gap: 5px !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type .cluster-head {
-  display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) !important;
-  align-items: baseline !important;
-  gap: 6px !important;
-  min-height: 18px !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type .cluster-title,
-.option-panel-type .panel-cluster:first-of-type .cluster-note {
-  margin: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type .cluster-title {
-  color: var(--ink) !important;
-  font-size: 11px !important;
-  font-weight: 900 !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type .cluster-note {
-  color: var(--muted) !important;
-  font-size: 9px !important;
-  line-height: 1.1 !important;
-}
-
-.option-panel-type label[for="heading4SizeRange"] {
-  display: grid !important;
-}
-
-.option-panel-type .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(132px, 1fr)) !important;
-  gap: 5px !important;
-  overflow: visible !important;
-}
-
-.option-panel-type .range-grid-scale .range-field {
-  display: grid !important;
-  height: 38px !important;
-  min-height: 38px !important;
-  padding: 5px 6px !important;
-  border: 1px solid var(--line-soft) !important;
-  border-radius: 6px !important;
-  background: rgba(255, 255, 255, 0.72) !important;
-}
-
-.option-panel-type .range-grid-scale .range-title-row {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(58px, 68px) !important;
-  grid-template-rows: auto auto !important;
-  align-items: center !important;
-  column-gap: 6px !important;
-  row-gap: 1px !important;
-  width: 100% !important;
-}
-
-.option-panel-type .range-grid-scale .range-title {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  color: var(--ink) !important;
-  font-size: 11px !important;
-  font-weight: 850 !important;
-  line-height: 1.05 !important;
-}
-
 .range-help {
   display: block;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.option-panel-type .range-grid-scale .range-help {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-  color: var(--muted) !important;
-  font-size: 9px !important;
-  font-weight: 650 !important;
-  line-height: 1.05 !important;
-}
-
-.option-panel-type .range-grid-scale .range-value {
-  grid-column: 2 !important;
-  grid-row: 1 / 3 !important;
-  align-self: center !important;
-}
-
-.option-panel-type .range-grid-scale .range-combo-editor {
-  height: 24px !important;
-  padding: 0 5px !important;
-  border-radius: 5px !important;
-}
-
-.option-panel-type .range-grid-scale .range-combo-input {
-  height: 22px !important;
-  font-size: 11px !important;
-}
-
-.option-panel-type .range-grid-scale .range-combo-unit {
-  font-size: 9px !important;
-}
-
-@media (max-width: 1180px) {
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(126px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .layout-preset-panel {
-    grid-template-rows: 28px !important;
-    height: 32px !important;
-    padding: 2px !important;
-  }
-
-  .layout-preset-panel .layout-preset-head,
-  .layout-preset-grid {
-    display: none !important;
-  }
-
-  .layout-preset-select {
-    height: 28px !important;
-  }
-
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(2, minmax(132px, 1fr)) !important;
-  }
-}
-
-/* Final home-ribbon pass: prioritize direct selection over cramped scrolling. */
-:root {
-  --app-ribbon-height: 220px;
-  --app-ribbon-height-narrow: 246px;
-  --app-ribbon-height-mobile: 256px;
-}
-
-.settings-grid {
-  overflow-y: hidden !important;
-}
-
-.option-panel-mode {
-  grid-template-columns: 224px minmax(330px, 0.92fr) minmax(360px, 1fr) !important;
-  grid-template-rows: 18px 34px minmax(0, 1fr) !important;
-}
-
-.option-panel-mode > .segmented-control {
-  grid-row: 2 / 4 !important;
-}
-
-.layout-preset-panel {
-  grid-column: 2 !important;
-  grid-row: 1 / 4 !important;
-  grid-template-rows: 18px 34px minmax(0, 1fr) !important;
-  min-height: 0 !important;
-  padding: 6px 7px !important;
-}
-
-.layout-preset-select {
-  height: 32px !important;
-  font-size: 12px !important;
-}
-
-.layout-preset-grid {
-  height: 38px !important;
-  min-height: 38px !important;
-}
-
-.layout-preset-button {
-  flex-basis: 132px !important;
-  width: 132px !important;
-  height: 34px !important;
-  min-height: 34px !important;
-  padding: 5px 7px !important;
-}
-
-.layout-preset-summary {
-  display: none !important;
-}
-
-.question-answer-layout-panel {
-  grid-column: 3 !important;
-}
-
-.option-panel-type {
-  grid-template-columns: minmax(620px, 1.65fr) minmax(170px, 0.45fr) minmax(250px, 0.72fr) !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type {
-  width: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-.option-panel-type .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(144px, 1fr)) !important;
-}
-
-.option-panel-type .range-grid-scale .range-field {
-  height: 42px !important;
-  min-height: 42px !important;
-}
-
-.option-panel-type .range-grid-scale .range-title {
-  font-size: 12px !important;
-}
-
-.option-panel-type .range-grid-scale .range-help {
-  font-size: 10px !important;
-}
-
-@media (max-width: 1180px) {
-  :root {
-    --app-ribbon-height-narrow: 272px;
-  }
-
-  .option-panel-mode {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 18px 28px 34px !important;
-  }
-
-  .layout-preset-panel {
-    grid-column: 1 !important;
-    grid-row: 3 !important;
-    grid-template-rows: 32px !important;
-    height: 34px !important;
-    padding: 1px !important;
-  }
-
-  .layout-preset-panel .layout-preset-head,
-  .layout-preset-grid {
-    display: none !important;
-  }
-
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) !important;
-    overflow-y: auto !important;
-  }
-
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(144px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  :root {
-    --app-ribbon-height-mobile: 268px;
-  }
-
-  .layout-preset-panel {
-    grid-template-rows: 30px !important;
-    height: 34px !important;
-  }
-
-  .layout-preset-select {
-    height: 30px !important;
-    font-size: 11px !important;
-  }
-}
-
-/* Home ribbon layout: keep layout choice and font-size controls visible together. */
-:root {
-  --app-ribbon-height: 260px;
-  --app-ribbon-height-narrow: 300px;
-  --app-ribbon-height-mobile: 320px;
-}
-
-.settings-grid {
-  display: grid !important;
-  grid-template-columns: minmax(300px, 0.58fr) minmax(0, 1.42fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  align-items: stretch !important;
-  gap: 10px !important;
-  overflow: hidden !important;
-}
-
-.settings-grid > .option-panel {
-  width: auto !important;
-  height: 100% !important;
-}
-
-.option-panel-mode {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: 18px 34px 62px minmax(0, 1fr) !important;
-  gap: 6px !important;
-  width: auto !important;
-  min-width: 0 !important;
-}
-
-.option-panel-mode > .option-heading {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-}
-
-.option-panel-mode > .segmented-control {
-  grid-column: 1 !important;
-  grid-row: 2 !important;
-}
-
-.layout-preset-panel {
-  grid-column: 1 !important;
-  grid-row: 3 !important;
-  display: grid !important;
-  grid-template-rows: 18px 34px !important;
-  height: auto !important;
-  min-height: 0 !important;
-  padding: 5px 6px !important;
-  gap: 4px !important;
-}
-
-.layout-preset-panel .layout-preset-head {
-  display: flex !important;
-}
-
-.layout-preset-select {
-  display: block !important;
-  height: 32px !important;
-  min-height: 32px !important;
-}
-
-.layout-preset-grid {
-  display: none !important;
-}
-
-.question-answer-layout-panel {
-  grid-column: 1 !important;
-  grid-row: 4 !important;
-  width: auto !important;
-  grid-template-rows: 18px 34px !important;
-}
-
-.question-answer-layout-select {
-  display: block !important;
-  height: 32px !important;
-}
-
-.question-answer-layout-grid {
-  display: none !important;
-}
-
-.option-panel-type {
-  grid-column: 2 !important;
-  grid-row: 1 !important;
-  display: grid !important;
-  grid-template-columns: minmax(600px, 1.55fr) minmax(164px, 0.42fr) minmax(238px, 0.62fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-  align-items: start !important;
-  gap: 8px !important;
-  width: auto !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-}
-
-.option-panel-type > .option-heading {
-  display: none !important;
-}
-
-.option-panel-type .panel-cluster:first-of-type {
-  width: auto !important;
-}
-
-.option-panel-type .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(136px, 1fr)) !important;
-  gap: 6px !important;
-}
-
-.option-panel-type .range-grid-scale .range-field {
-  height: 44px !important;
-  min-height: 44px !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: minmax(0, 1fr) !important;
-}
-
-.option-panel-page {
-  grid-column: 1 / -1 !important;
-}
-
-@media (max-width: 1180px) {
-  .settings-grid {
-    grid-template-columns: minmax(260px, 0.42fr) minmax(0, 1.58fr) !important;
-    gap: 8px !important;
-  }
-
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-auto-rows: max-content !important;
-    overflow-y: auto !important;
-  }
-
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(132px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .settings-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    align-content: stretch !important;
-    align-items: stretch !important;
-    overflow-y: auto !important;
-  }
-
-  .settings-grid > .option-panel {
-    flex: 0 0 auto !important;
-  }
-
-  .option-panel-mode,
-  .option-panel-type {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-mode {
-    display: grid !important;
-    grid-template-rows: 18px 30px 36px !important;
-    min-height: 92px !important;
-  }
-
-  .layout-preset-panel {
-    grid-row: 3 !important;
-    grid-template-rows: 32px !important;
-    height: 34px !important;
-    padding: 1px !important;
-  }
-
-  .layout-preset-panel .layout-preset-head {
-    display: none !important;
-  }
-
-  .option-panel-type {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(2, minmax(132px, 1fr)) !important;
-  }
-}
-
-/* The heading div is the first div child, so the first real cluster is nth-of-type(2). */
-.option-panel-type > .panel-cluster:nth-of-type(2) {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  width: auto !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-head {
-  display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) !important;
-  align-items: baseline !important;
-  gap: 6px !important;
-  min-height: 18px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-title,
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-note {
-  margin: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-title {
-  color: var(--ink) !important;
-  font-size: 11px !important;
-  font-weight: 900 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-note {
-  color: var(--muted) !important;
-  font-size: 9px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-grid {
-  grid-template-columns: minmax(160px, 1.1fr) repeat(2, minmax(120px, 0.95fr)) !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(138px, 1fr)) !important;
-}
-
-@media (max-width: 1180px) {
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(132px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-    grid-template-columns: repeat(2, minmax(132px, 1fr)) !important;
-  }
-}
-
-/* Compact typography controls: same layout, smaller footprint, no clipped labels. */
-:root {
-  --app-ribbon-height: 238px;
-  --app-ribbon-height-narrow: 282px;
-  --app-ribbon-height-mobile: 300px;
-}
-
-.option-panel-type {
-  grid-template-columns: minmax(540px, 1.42fr) minmax(150px, 0.4fr) minmax(218px, 0.58fr) !important;
-  gap: 7px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) {
-  gap: 4px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-head {
-  min-height: 15px !important;
-  gap: 5px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-title {
-  font-size: 10px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-note {
-  font-size: 8px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-grid {
-  grid-template-columns: minmax(142px, 1.08fr) repeat(2, minmax(106px, 0.96fr)) !important;
-  gap: 4px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-field {
-  min-height: 22px !important;
-  padding: 2px 5px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-title,
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-field select {
-  font-size: 9px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-import-row {
-  min-height: 20px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-import-button {
-  min-height: 20px !important;
-  font-size: 9px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .font-import-status {
-  font-size: 9px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(124px, 1fr)) !important;
-  gap: 5px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-field {
-  height: 36px !important;
-  min-height: 36px !important;
-  padding: 4px 5px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-title-row {
-  grid-template-columns: minmax(52px, 1fr) minmax(52px, 58px) !important;
-  column-gap: 5px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-title {
-  font-size: 10px !important;
-  line-height: 1.05 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-help {
-  font-size: 8px !important;
-  line-height: 1.05 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-editor {
-  height: 21px !important;
-  padding: 0 4px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-input {
-  height: 19px !important;
-  font-size: 10px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-unit {
-  font-size: 8px !important;
-}
-
-@media (max-width: 1180px) {
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-    grid-template-columns: repeat(3, minmax(124px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) {
-    width: 100% !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .font-grid,
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-    width: 100% !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale {
-    grid-template-columns: repeat(2, minmax(124px, 1fr)) !important;
-  }
-}
-
-/* Final compact menu pass: denser ribbon without clipped or overlapping controls. */
-:root {
-  --app-ribbon-height: 210px;
-  --app-ribbon-height-narrow: 252px;
-  --app-ribbon-height-mobile: 316px;
-}
-
-.app-shell {
-  grid-template-rows: var(--app-ribbon-height) minmax(0, 1fr) !important;
-  gap: 8px !important;
-  padding: 10px 12px !important;
-}
-
-.control-card {
-  grid-template-columns: minmax(144px, 190px) minmax(250px, 0.44fr) minmax(480px, 1fr) !important;
-  grid-template-rows: 28px minmax(0, 1fr) !important;
-  gap: 5px 7px !important;
-  padding: 7px 8px !important;
-}
-
-.control-brand {
-  gap: 5px !important;
-}
-
-.control-brand .eyebrow {
-  display: none !important;
-}
-
-.control-brand h1 {
-  font-size: 13px !important;
-  line-height: 1.1 !important;
-}
-
-.toolbar {
-  grid-template-columns: repeat(7, minmax(54px, 1fr)) !important;
-  grid-auto-rows: 24px !important;
-  gap: 3px !important;
-}
-
-.toolbar button,
-.file-trigger {
-  height: 24px !important;
-  min-height: 24px !important;
-  padding: 0 4px !important;
-  font-size: 10px !important;
-  line-height: 1.1 !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-.ribbon-tabs {
-  min-height: 26px !important;
-  padding: 2px !important;
-  gap: 2px !important;
-}
-
-.ribbon-tab {
-  min-height: 22px !important;
-  height: 22px !important;
-  padding: 0 5px !important;
-  font-size: 10px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-.settings-grid {
-  grid-template-columns: minmax(246px, 286px) minmax(0, 1fr) !important;
-  gap: 5px !important;
-  padding: 5px !important;
-  overflow: hidden auto !important;
-}
-
-.settings-grid > .option-panel {
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.option-label,
-.layout-preset-kicker,
-.question-answer-layout-kicker {
-  font-size: 9px !important;
-  line-height: 1.1 !important;
-}
-
-.option-panel-mode {
-  grid-template-rows: 15px 25px minmax(0, 1fr) !important;
-  gap: 3px !important;
-}
-
-.option-panel-mode .segmented-chip {
-  height: 25px !important;
-  min-height: 25px !important;
-  padding: 0 4px !important;
-  font-size: 10px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-.layout-preset-panel,
-.question-answer-layout-panel {
-  grid-template-rows: 14px minmax(0, 1fr) !important;
-  gap: 3px !important;
-  padding: 4px !important;
-}
-
-.layout-preset-grid,
-.question-answer-layout-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 3px !important;
-  overflow: hidden auto !important;
-}
-
-.layout-preset-button,
-.question-answer-layout-button {
-  height: 30px !important;
-  min-height: 30px !important;
-  padding: 4px 5px !important;
-}
-
-.layout-preset-title,
-.question-answer-layout-title {
-  font-size: 10px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-.option-panel-type {
-  grid-template-columns: minmax(276px, 1.08fr) minmax(134px, 0.46fr) minmax(206px, 0.72fr) !important;
-  gap: 5px !important;
-  overflow: hidden !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2),
-.option-panel-type .panel-cluster,
-.option-panel-page .panel-cluster {
-  display: grid !important;
-  gap: 3px !important;
-  min-width: 0 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(4),
-.option-panel-type label[for="heading4SizeRange"],
-.option-panel-type label[for="headingSpaceH4Range"] {
-  display: grid !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .cluster-head {
-  display: none !important;
-}
-
-.font-grid {
-  grid-template-columns: minmax(0, 1.15fr) repeat(2, minmax(0, 1fr)) !important;
-  gap: 3px !important;
-}
-
-.font-field {
-  min-height: 23px !important;
-  padding: 1px 4px !important;
-  overflow: hidden !important;
-}
-
-.font-title,
-.font-field select {
-  font-size: 9px !important;
-}
-
-.font-import-row {
-  grid-template-columns: 66px minmax(0, 1fr) !important;
-  min-height: 20px !important;
-  gap: 3px !important;
-}
-
-.font-import-button {
-  min-height: 20px !important;
-  padding: 0 4px !important;
-  font-size: 9px !important;
-}
-
-.font-import-status {
-  font-size: 9px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-.option-panel-type .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  gap: 3px !important;
-}
-
-.option-panel-type .range-grid-space {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 3px !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-field,
-.option-panel-type .range-field,
-.option-panel-page .range-field,
-.page-inline-range {
-  grid-template-columns: minmax(0, 1fr) minmax(46px, 54px) !important;
-  min-height: 24px !important;
-  height: 24px !important;
-  padding: 1px 3px !important;
-  gap: 2px !important;
-}
-
-.range-title,
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-title {
-  font-size: 9px !important;
-  line-height: 1 !important;
-}
-
-.range-help {
-  display: none !important;
-}
-
-.range-combo-editor,
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-editor {
-  height: 20px !important;
-  padding: 0 3px !important;
-}
-
-.range-combo-input,
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-input {
-  height: 18px !important;
-  font-size: 9px !important;
-}
-
-.range-combo-unit,
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-combo-unit {
-  font-size: 8px !important;
-}
-
-.option-panel-page {
-  grid-template-columns: minmax(310px, 0.86fr) minmax(286px, 0.8fr) minmax(214px, 0.56fr) !important;
-  gap: 5px !important;
-  overflow: hidden auto !important;
-}
-
-.option-panel-page .range-grid-page,
-.option-panel-page .page-inline-tools,
-.page-inline-tools-background,
-.background-preset-grid {
-  gap: 3px !important;
-}
-
-.page-inline-item {
-  min-height: 24px !important;
-  height: 24px !important;
-  padding: 1px 4px !important;
-}
-
-.page-inline-title,
-.page-inline-action,
-.page-inline-file-name,
-.page-inline-button,
-.page-inline-text input[type="text"],
-.page-inline-select select {
-  font-size: 9px !important;
-}
-
-.background-preset-button {
-  width: 100% !important;
-  min-width: 0 !important;
-  flex-basis: auto !important;
-  height: 48px !important;
-}
-
-.background-preset-thumb {
-  height: 28px !important;
-}
-
-.option-panel-theme,
-.option-panel-brush {
-  grid-template-rows: 14px minmax(0, 1fr) !important;
-  gap: 3px !important;
-}
-
-.theme-grid,
-.brush-grid {
-  gap: 3px !important;
-}
-
-.theme-chip,
-.brush-chip {
-  height: 23px !important;
-  min-height: 23px !important;
-  padding: 0 5px !important;
-}
-
-.theme-chip {
-  min-width: 0 !important;
-}
-
-.theme-copy strong,
-.brush-chip {
-  font-size: 10px !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
-}
-
-@media (max-width: 1180px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-narrow) minmax(0, 1fr) !important;
-    padding: 8px !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr) !important;
-    grid-template-rows: 50px 26px minmax(0, 1fr) !important;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    grid-auto-rows: 23px !important;
-    align-content: start !important;
-  }
-
-  .toolbar button,
-  .file-trigger {
-    height: 23px !important;
-    min-height: 23px !important;
-  }
-
-  .settings-grid {
-    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) !important;
-  }
-
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    grid-template-rows: auto auto !important;
-    align-content: start !important;
-    gap: 4px 5px !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) {
-    grid-column: 1 / -1 !important;
-    grid-row: 1 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(3) {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(4) {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(4, minmax(112px, 1fr)) !important;
-  }
-
-  .option-panel-type .range-grid-space {
-    grid-template-columns: repeat(2, minmax(112px, 1fr)) !important;
-  }
-
-  .background-preset-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .app-shell {
-    grid-template-rows: var(--app-ribbon-height-mobile) minmax(0, 1fr) !important;
-  }
-
-  .control-card {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 24px 26px 50px minmax(0, 1fr) !important;
-  }
-
-  .settings-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-    overflow: hidden auto !important;
-  }
-
-  .settings-grid > .option-panel {
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-mode {
-    grid-template-rows: 15px 25px 28px !important;
-  }
-
-  .layout-preset-panel,
-  .question-answer-layout-panel {
-    grid-template-rows: 24px !important;
-    padding: 2px !important;
-  }
-
-  .layout-preset-select,
-  .question-answer-layout-select {
-    display: block !important;
-    height: 24px !important;
-    font-size: 10px !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-  }
-
-  .layout-preset-grid,
-  .question-answer-layout-grid {
-    display: none !important;
-  }
-
-  .option-panel-type,
-  .option-panel-page {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-auto-rows: max-content !important;
-    align-content: start !important;
-    gap: 5px !important;
-    overflow: hidden auto !important;
-  }
-
-  .option-panel-type > .panel-cluster,
-  .option-panel-type > .panel-cluster:nth-of-type(2),
-  .option-panel-page > .panel-cluster {
-    grid-column: 1 !important;
-    grid-row: auto !important;
-    width: 100% !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-type .range-grid-space,
-  .option-panel-page .range-grid-page,
-  .option-panel-page .page-inline-tools,
-  .page-inline-tools-background,
-  .background-preset-grid,
-  .theme-grid,
-  .brush-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-/* Menu fit safety: keep the home ribbon compact, readable, and collision-free. */
-.option-panel-type {
-  grid-template-columns: minmax(520px, 1.38fr) minmax(176px, 0.46fr) minmax(236px, 0.62fr) !important;
-  grid-template-rows: auto !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(3) {
-  grid-column: 2 !important;
-  grid-row: 1 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(5) {
-  grid-column: 3 !important;
-  grid-row: 1 !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(4),
-.option-panel-type label[for="heading4SizeRange"],
-.option-panel-type label[for="headingSpaceH4Range"] {
-  display: none !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-.option-panel-type .range-grid-scale {
-  grid-template-columns: repeat(4, minmax(118px, 1fr)) !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(3) .range-grid-space {
-  grid-template-columns: repeat(2, minmax(82px, 1fr)) !important;
-}
-
-.option-panel-type > .panel-cluster:nth-of-type(5) .range-grid-space {
-  grid-template-columns: repeat(3, minmax(72px, 1fr)) !important;
-}
-
-@media (max-width: 1180px) {
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.48fr) !important;
-    grid-template-rows: auto auto !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) {
-    grid-column: 1 / -1 !important;
-    grid-row: 1 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(3) {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(5) {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-  .option-panel-type .range-grid-scale {
-    grid-template-columns: repeat(4, minmax(112px, 1fr)) !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(3) .range-grid-space,
-  .option-panel-type > .panel-cluster:nth-of-type(5) .range-grid-space {
-    grid-template-columns: repeat(2, minmax(104px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 820px) {
-  .option-panel-type {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-auto-rows: max-content !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2),
-  .option-panel-type > .panel-cluster:nth-of-type(3),
-  .option-panel-type > .panel-cluster:nth-of-type(5) {
-    grid-column: 1 !important;
-    grid-row: auto !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .font-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .font-field-global {
-    grid-column: 1 / -1 !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .font-field,
-  .option-panel-type > .panel-cluster:nth-of-type(2) .font-field select {
-    min-width: 0 !important;
-    width: 100% !important;
-  }
-
-  .option-panel-type > .panel-cluster:nth-of-type(2) .range-grid-scale,
-  .option-panel-type .range-grid-scale,
-  .option-panel-type > .panel-cluster:nth-of-type(3) .range-grid-space,
-  .option-panel-type > .panel-cluster:nth-of-type(5) .range-grid-space {
-    grid-template-columns: repeat(2, minmax(124px, 1fr)) !important;
-  }
 }
 
 /* Question pagination fragments keep large question blocks from wasting page space. */
@@ -15368,27 +12376,39 @@ body.has-compact-controls .range-value,
 }
 /* Current workbench layout: clean three-column editor with SVG previews and canvas pattern. */
 :root {
-  --studio-nav-width: 74px;
-  --studio-preview-width: minmax(460px, 1fr);
-  --studio-side-width: clamp(520px, 39vw, 700px);
+  --studio-nav-width: 72px;
+  --studio-preview-width: minmax(560px, 1fr);
+  --studio-side-width: clamp(520px, 36vw, 680px);
   --studio-gap: 12px;
   --studio-panel-radius: 8px;
+  --studio-surface: rgba(255, 255, 255, 0.92);
+  --studio-surface-soft: rgba(247, 248, 248, 0.92);
+  --studio-line: rgba(17, 19, 21, 0.08);
+  --studio-shadow-soft: 0 14px 34px rgba(17, 19, 21, 0.07);
+}
+
+html,
+body {
+  min-width: 1180px !important;
+  overflow-x: auto !important;
 }
 
 .app-shell {
   display: grid !important;
   grid-template-columns: var(--studio-nav-width) var(--studio-preview-width) var(--studio-side-width) !important;
-  grid-template-rows: 42px minmax(280px, 0.58fr) minmax(220px, 0.42fr) !important;
+  grid-template-rows: 44px minmax(0, 1fr) minmax(210px, 30vh) !important;
   grid-template-areas:
     "brand preview tools"
     "nav preview settings"
     "nav preview editor" !important;
-  gap: var(--studio-gap) !important;
+  gap: 10px !important;
+  width: max(100vw, 1180px) !important;
+  min-width: 1180px !important;
   height: 100vh !important;
-  min-height: 100vh !important;
+  min-height: 720px !important;
   padding: 12px !important;
   overflow: hidden !important;
-  background: linear-gradient(180deg, rgba(248, 249, 250, 0.98), rgba(241, 243, 244, 0.96)) !important;
+  background: linear-gradient(180deg, rgba(250, 250, 249, 0.98), rgba(239, 241, 243, 0.98)) !important;
 }
 
 .control-panel,
@@ -15414,10 +12434,10 @@ body.has-compact-controls .range-value,
   align-content: center !important;
   justify-items: center !important;
   padding: 6px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border: 1px solid var(--studio-line) !important;
   border-radius: var(--studio-panel-radius) !important;
-  background: rgba(255, 255, 255, 0.84) !important;
-  box-shadow: 0 10px 24px rgba(17, 19, 21, 0.05) !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-soft) !important;
   overflow: hidden !important;
 }
 
@@ -15449,10 +12469,10 @@ body.has-compact-controls .range-value,
   height: 100% !important;
   margin: 0 !important;
   padding: 8px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border: 1px solid var(--studio-line) !important;
   border-radius: var(--studio-panel-radius) !important;
-  background: rgba(255, 255, 255, 0.84) !important;
-  box-shadow: 0 10px 24px rgba(17, 19, 21, 0.05) !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-soft) !important;
   overflow: auto !important;
 }
 
@@ -15570,10 +12590,10 @@ body.has-compact-controls .range-value,
   height: 100% !important;
   margin: 0 !important;
   padding: 14px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border: 1px solid var(--studio-line) !important;
   border-radius: var(--studio-panel-radius) !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 14px 34px rgba(17, 19, 21, 0.07) !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-soft) !important;
   overflow: auto !important;
 }
 
@@ -15605,6 +12625,135 @@ body.has-compact-controls .range-value,
   overflow: visible !important;
 }
 
+.settings-section {
+  display: grid !important;
+  gap: 0 !important;
+  min-width: 0 !important;
+  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  box-shadow: 0 8px 18px rgba(17, 19, 21, 0.035) !important;
+  overflow: hidden !important;
+}
+
+.settings-section-trigger {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: auto auto !important;
+  align-items: center !important;
+  gap: 3px 10px !important;
+  width: 100% !important;
+  min-height: 54px !important;
+  padding: 10px 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  text-align: left !important;
+  cursor: pointer !important;
+}
+
+.settings-section-trigger::after {
+  content: "";
+  grid-column: 2 !important;
+  grid-row: 1 / 3 !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-right: 2px solid currentColor !important;
+  border-bottom: 2px solid currentColor !important;
+  opacity: 0.52 !important;
+  transform: rotate(45deg) translateY(-2px) !important;
+  transition: transform 160ms ease, opacity 160ms ease !important;
+}
+
+.settings-section.is-open > .settings-section-trigger::after {
+  opacity: 0.88 !important;
+  transform: rotate(-135deg) translateY(-1px) !important;
+}
+
+.settings-section-label {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  font-size: 13px !important;
+  font-weight: 950 !important;
+  line-height: 1.15 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.settings-section-summary {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  color: var(--muted) !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  line-height: 1.2 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.settings-section-body {
+  display: none !important;
+  min-width: 0 !important;
+  padding: 0 12px 12px !important;
+}
+
+.settings-section.is-open > .settings-section-body {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.settings-section:not(.is-open):hover {
+  border-color: rgba(32, 74, 115, 0.18) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.settings-section.is-open {
+  border-color: rgba(32, 74, 115, 0.2) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.settings-section-body > .option-heading,
+.settings-section-body > .element-style-head {
+  display: none !important;
+}
+
+.settings-grid .option-heading,
+.settings-grid .cluster-head,
+.layout-preset-head,
+.question-answer-layout-head {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+.settings-grid :is(.option-label, .cluster-title, .layout-preset-kicker, .question-answer-layout-kicker),
+.settings-grid :is(.option-note, .cluster-note, .layout-preset-note, .question-answer-layout-note) {
+  margin: 0 !important;
+  min-width: 0 !important;
+  line-height: 1.25 !important;
+}
+
+.settings-grid :is(.option-label, .cluster-title, .layout-preset-kicker, .question-answer-layout-kicker) {
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.settings-grid :is(.option-note, .cluster-note, .layout-preset-note, .question-answer-layout-note) {
+  overflow: hidden !important;
+  color: var(--muted) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
 .settings-grid > .element-style-panel {
   position: static !important;
   display: grid !important;
@@ -15613,11 +12762,15 @@ body.has-compact-controls .range-value,
   padding: 12px !important;
   border: 1px solid rgba(17, 19, 21, 0.08) !important;
   border-radius: var(--studio-panel-radius) !important;
-  background: rgba(247, 248, 248, 0.9) !important;
+  background: var(--studio-surface-soft) !important;
   box-shadow: none !important;
   opacity: 1 !important;
   pointer-events: auto !important;
   transform: none !important;
+}
+
+.settings-grid > .element-style-panel[hidden] {
+  display: none !important;
 }
 
 .settings-grid > .card-layout-panel[hidden] {
@@ -15636,6 +12789,97 @@ body.has-compact-controls .range-value,
   overflow: visible !important;
 }
 
+.settings-grid > .option-panel-type {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.settings-grid > .option-panel-type > .option-heading {
+  order: -1 !important;
+}
+
+.settings-grid > .option-panel-type .panel-cluster {
+  display: grid !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  padding: 12px !important;
+  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: rgba(247, 248, 248, 0.76) !important;
+  overflow: visible !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-size-cluster {
+  order: 1 !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster {
+  order: 2 !important;
+}
+
+.settings-grid > .option-panel-type .layout-background-cluster {
+  order: 3 !important;
+}
+
+.settings-grid > .option-panel-spacing {
+  order: -20 !important;
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  gap: 5px !important;
+  width: 100% !important;
+  padding: 4px !important;
+  border: 1px solid rgba(53, 93, 77, 0.18) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: rgba(248, 250, 246, 0.94) !important;
+}
+
+.settings-grid > .option-panel-spacing .option-heading {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.settings-grid > .option-panel-spacing .option-label,
+.settings-grid > .option-panel-spacing .option-note {
+  margin: 10 !important;
+  line-height: 1.2 !important;
+}
+
+.settings-grid > .option-panel-spacing .option-label {
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.settings-grid > .option-panel-spacing .option-note {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  color: var(--muted) !important;
+  font-size: 10px !important;
+  font-weight: 750 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.settings-grid > .option-panel-spacing .range-grid-space {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field {
+  min-width: 0 !important;
+  min-height: 58px !important;
+  padding: 6px 7px !important;
+}
+
 .settings-grid > .option-panel-mode > .option-heading,
 .settings-grid > .option-panel-mode > .segmented-control,
 .settings-grid > .option-panel-mode > .layout-preset-panel,
@@ -15650,16 +12894,29 @@ body.has-compact-controls .range-value,
 .settings-grid > .option-panel-mode > .segmented-control {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 6px !important;
+  gap: 8px !important;
 }
 
 .option-panel-mode .segmented-chip {
-  min-height: 34px !important;
+  display: grid !important;
+  align-content: center !important;
+  min-height: 48px !important;
   height: auto !important;
-  padding: 0 8px !important;
+  padding: 8px 10px !important;
   border-radius: 7px !important;
-  font-size: 11px !important;
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
   white-space: normal !important;
+}
+
+.option-panel-mode .segmented-chip::after {
+  margin-top: 3px !important;
+  color: currentColor !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  line-height: 1.1 !important;
+  opacity: 0.62 !important;
 }
 
 .option-panel-mode .mode-benefit-card {
@@ -15689,8 +12946,8 @@ body.has-compact-controls .range-value,
 .layout-preset-grid {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 8px !important;
-  max-height: 238px !important;
+  gap: 10px !important;
+  max-height: 270px !important;
   min-width: 0 !important;
   overflow: auto !important;
   padding-right: 2px !important;
@@ -15699,12 +12956,12 @@ body.has-compact-controls .range-value,
 .layout-preset-button {
   position: relative !important;
   display: grid !important;
-  grid-template-rows: 72px auto !important;
-  gap: 6px !important;
+  grid-template-rows: 86px auto !important;
+  gap: 8px !important;
   min-width: 0 !important;
   width: auto !important;
   max-width: none !important;
-  min-height: 112px !important;
+  min-height: 132px !important;
   height: auto !important;
   padding: 8px !important;
   border: 1px solid rgba(17, 19, 21, 0.1) !important;
@@ -15738,8 +12995,8 @@ body.has-compact-controls .range-value,
   color: rgba(17, 19, 21, 0.72) !important;
   display: block !important;
   width: 100% !important;
-  height: 72px !important;
-  min-height: 72px !important;
+  height: 86px !important;
+  min-height: 86px !important;
   padding: 2px !important;
   border: 1px solid rgba(17, 19, 21, 0.08) !important;
   border-radius: 8px !important;
@@ -15819,14 +13076,14 @@ body.has-compact-controls .range-value,
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 8px !important;
-  max-height: 136px !important;
+  max-height: 156px !important;
   overflow: auto !important;
 }
 
 .question-answer-layout-button {
   min-width: 0 !important;
-  min-height: 58px !important;
-  padding: 8px !important;
+  min-height: 70px !important;
+  padding: 10px !important;
   border-radius: 8px !important;
 }
 
@@ -15905,17 +13162,25 @@ body.has-compact-controls .range-value,
 
 .editor-card {
   display: grid !important;
-  grid-template-rows: auto auto minmax(180px, 1fr) auto !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
   gap: 10px !important;
   width: 100% !important;
   min-height: 0 !important;
   padding: 12px !important;
   border-radius: var(--studio-panel-radius) !important;
-  overflow: auto !important;
+  overflow: hidden !important;
+}
+
+.ai-note-panel,
+.syntax-guide {
+  display: none !important;
 }
 
 #markdownInput {
-  min-height: 180px !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  margin-top: 0 !important;
+  border-radius: var(--studio-panel-radius) !important;
 }
 
 .syntax-guide {
@@ -15927,26 +13192,35 @@ body.has-compact-controls .range-value,
   grid-area: preview !important;
   position: relative !important;
   display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) !important;
+  grid-template-rows: 46px minmax(0, 1fr) !important;
+  gap: 10px !important;
   max-width: 100% !important;
   overflow: hidden !important;
 }
 
 .preview-toolbar {
-  min-height: 42px !important;
-  margin: 0 0 10px !important;
-  padding: 7px 9px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  position: relative !important;
+  z-index: 40 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  min-height: 46px !important;
+  height: 46px !important;
+  max-height: 46px !important;
+  margin: 0 !important;
+  padding: 6px 8px 6px 12px !important;
+  border: 1px solid var(--studio-line) !important;
   border-radius: var(--studio-panel-radius) !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 10px 24px rgba(17, 19, 21, 0.05) !important;
+  background: var(--studio-surface) !important;
+  box-shadow: var(--studio-shadow-soft) !important;
+  overflow: visible !important;
 }
 
 .preview-stage {
   min-height: 0 !important;
   height: 100% !important;
-  padding: 16px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  padding: 18px !important;
+  border: 1px solid var(--studio-line) !important;
   border-radius: var(--studio-panel-radius) !important;
   background-color: #eef1f3 !important;
   background-image:
@@ -15968,241 +13242,145 @@ body.has-compact-controls .range-value,
   }
 }
 
-@media (max-width: 1120px) {
-  .app-shell {
-    --studio-nav-width: 66px;
-    --studio-preview-width: minmax(390px, 1fr);
-    --studio-side-width: 430px;
-    grid-template-columns: var(--studio-nav-width) var(--studio-preview-width) var(--studio-side-width) !important;
-  }
-
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .layout-preset-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-    max-height: 220px !important;
-  }
-}
-
-@media (max-width: 860px) {
-  .app-shell {
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: auto auto var(--workspace-tab-height) minmax(0, 1fr) !important;
-    grid-template-areas:
-      "nav"
-      "tools"
-      "tabs"
-      "stage" !important;
-    height: 100vh !important;
-    min-height: 100vh !important;
-    padding: 8px !important;
-    overflow: hidden !important;
-  }
-
-  .control-brand {
-    display: none !important;
-  }
-
-  .ribbon-tabs {
-    grid-area: nav !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    grid-auto-rows: minmax(36px, auto) !important;
-    padding: 4px !important;
-    gap: 4px !important;
-    overflow: hidden !important;
-  }
-
-  .ribbon-tab {
-    min-height: 34px !important;
-    padding: 0 6px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  .ribbon-tab-icon {
-    width: 21px !important;
-    height: 21px !important;
-  }
-
-  .toolbar {
-    grid-area: tools !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .toolbar button,
-  .file-trigger {
-    height: 34px !important;
-    min-height: 34px !important;
-    font-size: 10px !important;
-  }
-
-  .workspace-tabs {
-    grid-area: tabs !important;
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 5px !important;
-    min-height: var(--workspace-tab-height) !important;
-    padding: 4px !important;
-    border: 1px solid rgba(17, 19, 21, 0.08) !important;
-    border-radius: var(--studio-panel-radius) !important;
-    background: rgba(255, 255, 255, 0.88) !important;
-  }
-
-  .workspace-tab {
-    min-width: 0 !important;
-    min-height: 28px !important;
-    border-radius: 6px !important;
-    color: var(--muted) !important;
-    font-size: 12px !important;
-    font-weight: 900 !important;
-  }
-
-  .workspace-tab.is-active {
-    background: #111315 !important;
-    color: #ffffff !important;
-  }
-
-  .preview-panel,
-  .editor-panel,
-  .settings-grid {
-    grid-area: stage !important;
-    min-height: 0 !important;
-    display: none !important;
-  }
-
-  .workspace-shell[data-workspace-view="preview"] .preview-panel,
-  .workspace-shell[data-workspace-view="editor"] .editor-panel {
-    display: grid !important;
-  }
-
-  .workspace-shell[data-workspace-view="inspector"] .preview-panel {
-    display: none !important;
-  }
-
-  .app-shell:has(.workspace-shell[data-workspace-view="inspector"]) .settings-grid {
-    display: grid !important;
-  }
-
-  .settings-grid,
-  .editor-card,
-  .preview-stage {
-    height: 100% !important;
-  }
-
-  .settings-grid {
-    padding: 10px !important;
-  }
-
-  .layout-preset-grid,
-  .question-answer-layout-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 8px !important;
-    max-height: 260px !important;
-    overflow: auto !important;
-  }
-
-  .layout-preset-button {
-    grid-template-rows: 64px auto !important;
-    min-height: 102px !important;
-  }
-
-  .layout-preset-preview {
-    height: 64px !important;
-    min-height: 64px !important;
-  }
-
-  .preview-toolbar {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .preview-toolbar-controls {
-    display: none !important;
-  }
-
-  .preview-stage {
-    padding: 10px !important;
-  }
-
-  .ribbon-flyout-panel,
-  .settings-grid > .ribbon-flyout-panel {
-    inset: 10px !important;
-  }
-}
-
-@media (max-width: 520px) {
-  .toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .option-panel-mode > .segmented-control,
-  .option-panel-type.ribbon-flyout-panel .range-grid-scale,
-  .option-panel-type.ribbon-flyout-panel .range-grid-space,
-  .option-panel-page.ribbon-flyout-panel .range-grid-page,
-  .option-panel-page.ribbon-flyout-panel .range-grid-page-meta,
-  .option-panel-page.ribbon-flyout-panel .page-inline-tools,
-  .option-panel-page.ribbon-flyout-panel .background-preset-grid,
-  .option-panel-theme.ribbon-flyout-panel .theme-grid,
-  .option-panel-brush.ribbon-flyout-panel .brush-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-}
-
-/* Final precision controls override: keep basic parameters tactile and visible. */
+/* Precision controls: readable parameter cards inside the inspector. */
 :root {
   --precision-track: rgba(17, 19, 21, 0.12);
   --precision-fill: #204a73;
   --precision-focus: rgba(32, 74, 115, 0.16);
 }
 
+.font-grid {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.font-field {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+  min-height: 40px !important;
+  padding: 6px 8px !important;
+  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border-radius: 7px !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+}
+
+.font-title {
+  color: var(--ink) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+.font-field select {
+  min-width: 0 !important;
+  height: 28px !important;
+  padding: 0 24px 0 8px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.font-import-row {
+  display: grid !important;
+  grid-template-columns: 98px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+
+.font-import-button {
+  min-height: 32px !important;
+  padding: 0 10px !important;
+  border-radius: 7px !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.font-import-status {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.range-grid-scale,
+.option-panel-type .range-grid-space,
+.settings-grid > .option-panel-spacing .range-grid-space {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+.layout-page-size-cluster .range-grid-scale,
+.option-panel-type .layout-page-size-cluster .range-grid-scale {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  overflow: visible !important;
+}
+
+.layout-page-size-cluster .range-grid-scale .range-field {
+  min-width: 0 !important;
+  width: auto !important;
+}
+
 body.has-compact-controls .option-panel-type .range-field,
 body.has-compact-controls .option-panel-page .range-field,
-body.has-compact-controls .page-inline-range {
+body.has-compact-controls .page-inline-range,
+.settings-grid > .option-panel-spacing .range-field {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) minmax(56px, 70px) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(64px, auto) !important;
   grid-template-rows: auto 18px !important;
   align-items: center !important;
-  gap: 5px 7px !important;
+  gap: 4px 8px !important;
   height: auto !important;
-  min-height: 58px !important;
-  padding: 6px 7px !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
   overflow: hidden !important;
   border-color: rgba(17, 19, 21, 0.08) !important;
-  border-radius: 7px !important;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 248, 248, 0.84)) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 249, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
 }
 
 body.has-compact-controls .option-panel-type .range-field:hover,
 body.has-compact-controls .option-panel-page .range-field:hover,
+body.has-compact-controls .page-inline-range:hover,
 body.has-compact-controls .range-field.is-tuning {
   border-color: rgba(32, 74, 115, 0.28) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     0 0 0 3px var(--precision-focus),
-    0 10px 22px rgba(39, 56, 72, 0.1) !important;
+    0 8px 16px rgba(39, 56, 72, 0.08) !important;
 }
 
 body.has-compact-controls .option-panel-type .range-title-row,
-body.has-compact-controls .option-panel-page .range-title-row {
+body.has-compact-controls .option-panel-page .range-title-row,
+.settings-grid > .option-panel-spacing .range-title-row {
   display: contents !important;
 }
 
 body.has-compact-controls .option-panel-type .range-title,
-body.has-compact-controls .option-panel-page .range-title {
+body.has-compact-controls .option-panel-page .range-title,
+.page-inline-range .page-inline-title,
+.settings-grid > .option-panel-spacing .range-title {
   grid-column: 1 !important;
   grid-row: 1 !important;
   min-width: 0 !important;
-  overflow: hidden !important;
   color: var(--ink) !important;
-  font-size: 10px !important;
-  font-weight: 850 !important;
-  line-height: 1.1 !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
 body.has-compact-controls .option-panel-type .range-help,
@@ -16211,14 +13389,24 @@ body.has-compact-controls .option-panel-page .range-help {
 }
 
 body.has-compact-controls .option-panel-type .range-value,
-body.has-compact-controls .option-panel-page .range-value {
+body.has-compact-controls .option-panel-page .range-value,
+.page-inline-range .range-value,
+.settings-grid > .option-panel-spacing .range-value {
   grid-column: 2 !important;
   grid-row: 1 !important;
+  align-self: start !important;
+  justify-self: end !important;
+  min-width: 0 !important;
+  color: var(--muted) !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  text-align: right !important;
 }
 
 body.has-compact-controls .option-panel-type .range-field input[type="range"],
 body.has-compact-controls .option-panel-page .range-field input[type="range"],
 body.has-compact-controls .page-inline-range input[type="range"],
+.settings-grid > .option-panel-spacing .range-field input[type="range"],
 body.has-compact-controls .range-field input[type="range"].precision-range {
   display: block !important;
   grid-column: 1 / -1 !important;
@@ -16245,68 +13433,74 @@ body.has-compact-controls .range-field input[type="range"].precision-range {
 
 body.has-compact-controls .range-field input[type="range"].precision-range::-webkit-slider-runnable-track,
 body.has-compact-controls .option-panel-type .range-field input[type="range"]::-webkit-slider-runnable-track,
-body.has-compact-controls .option-panel-page .range-field input[type="range"]::-webkit-slider-runnable-track {
+body.has-compact-controls .option-panel-page .range-field input[type="range"]::-webkit-slider-runnable-track,
+body.has-compact-controls .page-inline-range input[type="range"]::-webkit-slider-runnable-track {
   height: 6px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border: 0 !important;
   border-radius: 999px !important;
   background: transparent !important;
 }
 
 body.has-compact-controls .range-field input[type="range"].precision-range::-webkit-slider-thumb,
 body.has-compact-controls .option-panel-type .range-field input[type="range"]::-webkit-slider-thumb,
-body.has-compact-controls .option-panel-page .range-field input[type="range"]::-webkit-slider-thumb {
+body.has-compact-controls .option-panel-page .range-field input[type="range"]::-webkit-slider-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none !important;
   width: 16px !important;
   height: 16px !important;
-  margin-top: -6px !important;
+  margin-top: -5px !important;
   border: 2px solid #ffffff !important;
   border-radius: 999px !important;
-  background: #111315 !important;
+  background: var(--precision-fill) !important;
   box-shadow:
-    0 1px 2px rgba(17, 19, 21, 0.24),
-    0 0 0 1px rgba(17, 19, 21, 0.12) !important;
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
 }
 
 body.has-compact-controls .range-field input[type="range"].precision-range:hover::-webkit-slider-thumb,
 body.has-compact-controls .range-field input[type="range"].precision-range:focus-visible::-webkit-slider-thumb,
 body.has-compact-controls .range-field input[type="range"].precision-range.is-tuning::-webkit-slider-thumb {
-  width: 20px !important;
-  height: 20px !important;
-  margin-top: -8px !important;
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -6px !important;
   background: var(--precision-fill) !important;
   box-shadow:
-    0 3px 8px rgba(32, 74, 115, 0.28),
-    0 0 0 4px rgba(32, 74, 115, 0.14) !important;
+    0 4px 10px rgba(32, 74, 115, 0.2),
+    0 0 0 3px rgba(32, 74, 115, 0.12) !important;
 }
 
-body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-track {
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-track,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-track {
   height: 6px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border: 0 !important;
   border-radius: 999px !important;
   background: var(--precision-track) !important;
 }
 
-body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-progress {
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-progress,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-progress {
   height: 6px !important;
   border-radius: 999px !important;
   background: var(--precision-fill) !important;
 }
 
-body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-thumb {
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-thumb {
   width: 16px !important;
   height: 16px !important;
   border: 2px solid #ffffff !important;
   border-radius: 999px !important;
-  background: #111315 !important;
+  background: var(--precision-fill) !important;
   box-shadow:
-    0 1px 2px rgba(17, 19, 21, 0.24),
-    0 0 0 1px rgba(17, 19, 21, 0.12) !important;
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
 }
 
 body.has-compact-controls .option-panel-type .range-combo-editor,
-body.has-compact-controls .option-panel-page .range-combo-editor {
-  height: 24px !important;
-  padding: 0 6px !important;
+body.has-compact-controls .option-panel-page .range-combo-editor,
+.settings-grid > .option-panel-spacing .range-combo-editor {
+  height: 28px !important;
+  padding: 0 8px !important;
   border-color: rgba(17, 19, 21, 0.1) !important;
   border-radius: 7px !important;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 247, 249, 0.9)) !important;
@@ -16319,21 +13513,20 @@ body.has-compact-controls .range-combo-editor:focus-within {
 }
 
 body.has-compact-controls .option-panel-type .range-combo-input,
-body.has-compact-controls .option-panel-page .range-combo-input {
-  height: 22px !important;
-  font-size: 11px !important;
-  font-weight: 850 !important;
+body.has-compact-controls .option-panel-page .range-combo-input,
+.settings-grid > .option-panel-spacing .range-combo-input {
+  height: 26px !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
 }
 
 body.has-compact-controls .option-panel-type .range-grid-scale .range-field,
 body.has-compact-controls .option-panel-type .range-grid-space .range-field,
-body.has-compact-controls .option-panel-type > .panel-cluster:nth-of-type(2) .range-field,
-body.has-compact-controls .option-panel-type > .panel-cluster:nth-of-type(3) .range-field,
 body.has-compact-controls .option-panel-page .range-grid-page .range-field,
 body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field {
   height: auto !important;
-  min-height: 58px !important;
-  padding: 6px 7px !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
 }
 
 /* Preview drawer controls: keep element parameter buttons visible. */
@@ -16382,7 +13575,6 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 
 .preview-actions.preview-actions-editor,
 .element-style-panel.preview-drawer-panel {
-  grid-column: 3 !important;
   min-width: 0 !important;
 }
 
@@ -16392,10 +13584,10 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   align-content: start !important;
   width: 100% !important;
   margin: 0 !important;
-  padding: 6px !important;
-  border: 1px solid rgba(17, 19, 21, 0.08) !important;
-  border-radius: 8px !important;
-  background: rgba(255, 255, 255, 0.78) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
 }
 
 .element-style-head {
@@ -16475,7 +13667,7 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 
 .element-style-group-fields {
   display: none !important;
-  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(144px, 1fr)) !important;
   gap: 7px !important;
   min-width: 0 !important;
 }
@@ -16495,42 +13687,118 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .element-style-field {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-rows: auto 20px !important;
+  grid-template-rows: auto 18px !important;
   align-items: center !important;
   gap: 4px 8px !important;
   min-width: 0 !important;
-  min-height: 46px !important;
-  padding: 6px 7px !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
   border: 1px solid rgba(17, 19, 21, 0.08) !important;
-  border-radius: 8px !important;
-  background: rgba(247, 248, 248, 0.92) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 249, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
 }
 
 .element-style-label,
 .element-style-value {
   min-width: 0 !important;
-  overflow: hidden !important;
   font-size: 11px !important;
   line-height: 1.1 !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
 }
 
 .element-style-label {
+  display: block !important;
+  overflow: visible !important;
   color: var(--ink) !important;
   font-weight: 850 !important;
+  line-height: 1.18 !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
 }
 
 .element-style-value {
+  overflow: hidden !important;
   color: var(--muted) !important;
   font-variant-numeric: tabular-nums !important;
   font-weight: 800 !important;
   text-align: right !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 .element-style-field > input[type="range"] {
   grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
   width: 100% !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  appearance: none !important;
+  cursor: ew-resize !important;
+  outline: none !important;
+  background:
+    linear-gradient(
+      90deg,
+      var(--precision-fill) 0,
+      var(--precision-fill) var(--range-progress, 0%),
+      var(--precision-track) var(--range-progress, 0%),
+      var(--precision-track) 100%
+    ) !important;
+  border-radius: 999px !important;
+}
+
+.element-style-field > input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+}
+
+.element-style-field > input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: -5px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 999px !important;
+  background: var(--precision-fill) !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
+}
+
+.element-style-field > input[type="range"]:hover::-webkit-slider-thumb,
+.element-style-field > input[type="range"]:focus-visible::-webkit-slider-thumb,
+.element-style-field > input[type="range"].is-tuning::-webkit-slider-thumb {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -6px !important;
+}
+
+.element-style-field > input[type="range"]::-moz-range-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: var(--precision-track) !important;
+}
+
+.element-style-field > input[type="range"]::-moz-range-progress {
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: var(--precision-fill) !important;
+}
+
+.element-style-field > input[type="range"]::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 999px !important;
+  background: var(--precision-fill) !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
 }
 
 .element-style-reset {
@@ -16584,7 +13852,7 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   --element-card-padding-x: 18px;
   --element-card-padding-y: 16px;
   --element-card-radius: 16px;
-  --element-card-gap: 12px;
+  --element-card-gap: var(--user-block-inner-spacing, 12px);
   --element-card-space-after: 14px;
 }
 
@@ -16777,8 +14045,10 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .card-layout-panel {
   display: grid !important;
   gap: 8px !important;
-  padding-top: 8px !important;
-  border-top: 1px solid rgba(17, 19, 21, 0.08) !important;
+  padding: 10px !important;
+  border: 1px solid rgba(17, 19, 21, 0.08) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: rgba(247, 248, 248, 0.78) !important;
 }
 
 .card-layout-panel[hidden] {
@@ -16823,21 +14093,6 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)) !important;
   gap: 6px !important;
-}
-
-@media (max-width: 860px) {
-  .preview-toolbar {
-    grid-template-columns: minmax(0, 1fr) auto !important;
-  }
-
-  .preview-toolbar-controls {
-    display: inline-flex !important;
-  }
-
-  .preview-actions.preview-actions-editor,
-  .element-style-panel.preview-drawer-panel {
-    grid-column: 1 / -1 !important;
-  }
 }
 
 /* Export menu: keep the dropdown above the compact control grid. */
@@ -16887,4 +14142,1684 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+}
+
+/* Studio layout guardrails: final desktop layer for collision-free panels. */
+.preview-toolbar-meta {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+.preview-label,
+.status-text {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.preview-label {
+  flex: 0 0 auto !important;
+  color: #111315 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.status-text {
+  flex: 1 1 auto !important;
+  text-align: left !important;
+  font-size: 12px !important;
+}
+
+.preview-actions.preview-actions-editor {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  z-index: 60 !important;
+  grid-column: auto !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  width: min(760px, calc(100vw - 24px)) !important;
+  max-height: min(52vh, 420px) !important;
+  padding: 10px !important;
+  border: 1px solid rgba(17, 19, 21, 0.1) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 18px 42px rgba(17, 19, 21, 0.16) !important;
+  overflow: auto !important;
+}
+
+.preview-actions.preview-actions-editor[hidden],
+.settings-grid > .element-style-panel.preview-drawer-panel[hidden] {
+  display: none !important;
+}
+
+.settings-grid > .element-style-panel.preview-drawer-panel {
+  position: static !important;
+  grid-column: auto !important;
+  width: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 10px !important;
+  border: 1px solid var(--studio-line) !important;
+  border-radius: var(--studio-panel-radius) !important;
+  background: var(--studio-surface-soft) !important;
+  box-shadow: none !important;
+}
+
+@media (min-width: 1280px) {
+  .app-shell {
+    --studio-side-width: clamp(480px, 34vw, 620px);
+  }
+}
+
+.option-panel-type .layout-page-meta-cluster .range-grid-space {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(76px, 1fr)) !important;
+  gap: 6px !important;
+}
+
+.option-panel-type .layout-page-meta-cluster .range-field {
+  min-height: 44px !important;
+}
+
+/* Global block spacing controls. Keep this late so presets inherit the same sliders. */
+.article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item, .question-panel, .question-answer-box, .mindmap-card),
+.page-sheet .article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item, .question-panel, .question-answer-box, .mindmap-card) {
+  gap: var(--user-block-inner-spacing, var(--element-card-gap)) !important;
+  margin-bottom: var(--user-paragraph-spacing, var(--element-card-space-after)) !important;
+}
+
+.article-canvas :is(.callout-box, .note-quote, .brush-block, blockquote),
+.page-sheet .article-canvas :is(.callout-box, .note-quote, .brush-block, blockquote) {
+  row-gap: var(--user-block-inner-spacing, 12px) !important;
+  margin-bottom: var(--user-paragraph-spacing, var(--element-callout-space-after)) !important;
+}
+
+.article-canvas :is(.article-table-editor, table, .ordered-list, .bullet-list, .note-list),
+.page-sheet .article-canvas :is(.article-table-editor, table, .ordered-list, .bullet-list, .note-list) {
+  margin-bottom: var(--user-paragraph-spacing, 10px) !important;
+}
+
+.article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item, .question-panel, .question-answer-box, .callout-box, .note-quote, .brush-block, .mindmap-card, blockquote) > :is(.knowledge-cluster-title, .question-card-title, .question-answer-item-title, .question-answer-bank-title, .question-body-title, .callout-title, .brush-block-title, h2, h3):not(:last-child),
+.page-sheet .article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item, .question-panel, .question-answer-box, .callout-box, .note-quote, .brush-block, .mindmap-card, blockquote) > :is(.knowledge-cluster-title, .question-card-title, .question-answer-item-title, .question-answer-bank-title, .question-body-title, .callout-title, .brush-block-title, h2, h3):not(:last-child) {
+  margin-bottom: var(--user-block-title-spacing, 8px) !important;
+}
+
+.article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag),
+.page-sheet .article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag) {
+  margin-right: calc(var(--user-block-title-spacing, 8px) * 0.5) !important;
+}
+
+.article-canvas :is(.question-role, .question-answer-box-row, .fact-row) > :is(.content-kicker, .question-answer-box-label):not(:last-child),
+.page-sheet .article-canvas :is(.question-role, .question-answer-box-row, .fact-row) > :is(.content-kicker, .question-answer-box-label):not(:last-child) {
+  margin-bottom: var(--user-block-title-spacing, 8px) !important;
+}
+
+.article-canvas[data-mode="question"] .question-panel-stem + .question-panel-detail,
+.page-sheet .article-canvas[data-mode="question"] .question-panel-stem + .question-panel-detail,
+.article-canvas[data-mode="question"] .question-answer-box,
+.page-sheet .article-canvas[data-mode="question"] .question-answer-box {
+  margin-top: var(--user-block-inner-spacing, 12px) !important;
+}
+
+.article-canvas[data-mode="question"] .question-detail-section + .question-detail-section,
+.page-sheet .article-canvas[data-mode="question"] .question-detail-section + .question-detail-section,
+.article-canvas[data-mode="question"] .question-answer-box-row + .question-answer-box-row,
+.page-sheet .article-canvas[data-mode="question"] .question-answer-box-row + .question-answer-box-row {
+  padding-top: var(--user-block-title-spacing, 8px) !important;
+}
+
+/* Right inspector refinement: calmer, denser, more editorial. */
+.settings-grid > .option-panel-type {
+  gap: 14px !important;
+}
+
+.settings-grid > .option-panel-type > .option-heading {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 12px !important;
+  padding: 2px 2px 0 !important;
+}
+
+.settings-grid > .option-panel-type > .option-heading .option-label {
+  color: #12161c !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1.06 !important;
+  letter-spacing: 0 !important;
+}
+
+.settings-grid > .option-panel-type > .option-heading .option-note {
+  margin-top: 4px !important;
+  color: rgba(73, 82, 94, 0.88) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  white-space: normal !important;
+}
+
+.settings-grid > .option-panel-type .panel-cluster {
+  gap: 14px !important;
+  padding: 16px 18px 18px !important;
+  border: 1px solid rgba(18, 22, 28, 0.08) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 251, 0.94)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 28px rgba(18, 22, 28, 0.04) !important;
+}
+
+.settings-grid > .option-panel-type .cluster-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: 10px 16px !important;
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid rgba(18, 22, 28, 0.06) !important;
+}
+
+.settings-grid > .option-panel-type .cluster-title {
+  color: #171b21 !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0 !important;
+}
+
+.settings-grid > .option-panel-type .cluster-note {
+  color: rgba(85, 95, 108, 0.82) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  text-align: right !important;
+}
+
+.settings-grid > .option-panel-type .font-grid {
+  grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.settings-grid > .option-panel-type .font-field {
+  min-height: 50px !important;
+  padding: 8px 10px !important;
+  border-color: rgba(18, 22, 28, 0.08) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 250, 0.92)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+.settings-grid > .option-panel-type .font-field-global {
+  border-color: rgba(38, 66, 96, 0.14) !important;
+  background:
+    linear-gradient(180deg, rgba(249, 251, 255, 0.98), rgba(242, 246, 251, 0.94)) !important;
+}
+
+.settings-grid > .option-panel-type .font-title {
+  color: rgba(41, 48, 58, 0.92) !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.settings-grid > .option-panel-type .font-field select {
+  height: 32px !important;
+  padding: 0 30px 0 10px !important;
+  border-radius: 10px !important;
+  background: rgba(20, 24, 29, 0.045) !important;
+  color: #161b22 !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+.settings-grid > .option-panel-type .font-import-row {
+  grid-template-columns: 112px minmax(0, 1fr) !important;
+  gap: 10px !important;
+  padding-top: 2px !important;
+}
+
+.settings-grid > .option-panel-type .font-import-button {
+  min-height: 36px !important;
+  border-color: rgba(18, 22, 28, 0.1) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(244, 246, 248, 0.96)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 6px 16px rgba(18, 22, 28, 0.05) !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.settings-grid > .option-panel-type .font-import-status {
+  color: rgba(91, 100, 112, 0.88) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+.settings-grid > .option-panel-type .range-grid-scale {
+  gap: 10px !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field {
+  grid-template-columns: minmax(0, 1fr) minmax(64px, auto) !important;
+  grid-template-rows: auto 18px !important;
+  gap: 4px 8px !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
+  border: 1px solid rgba(18, 22, 28, 0.08) !important;
+  border-radius: 12px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 249, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field:hover,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field.is-tuning {
+  border-color: rgba(34, 63, 92, 0.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 0 0 3px rgba(36, 65, 94, 0.08),
+    0 8px 16px rgba(24, 34, 46, 0.06) !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-title {
+  align-self: start !important;
+  color: #181d24 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-value {
+  align-self: start !important;
+  justify-self: end !important;
+}
+
+body.has-compact-controls .option-panel-type .range-combo-editor {
+  height: 28px !important;
+  padding: 0 8px !important;
+  border: 1px solid rgba(18, 22, 28, 0.1) !important;
+  border-radius: 10px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(244, 246, 249, 0.94)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 4px 10px rgba(18, 22, 28, 0.04) !important;
+}
+
+body.has-compact-controls .option-panel-type .range-combo-input {
+  height: 26px !important;
+  color: #13181f !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+}
+
+body.has-compact-controls .option-panel-type .range-combo-unit {
+  color: rgba(80, 89, 101, 0.8) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"],
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range {
+  height: 18px !important;
+  min-height: 18px !important;
+  background:
+    linear-gradient(
+      90deg,
+      #274e74 0,
+      #274e74 var(--range-progress, 0%),
+      rgba(39, 78, 116, 0.14) var(--range-progress, 0%),
+      rgba(39, 78, 116, 0.14) 100%
+    ) !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"]::-webkit-slider-runnable-track,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range::-webkit-slider-runnable-track {
+  height: 6px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"]::-webkit-slider-thumb,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range::-webkit-slider-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: -5px !important;
+  border: 2px solid rgba(255, 255, 255, 0.98) !important;
+  background: var(--precision-fill) !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"]::-moz-range-track,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range::-moz-range-track {
+  height: 6px !important;
+  border: 0 !important;
+  background: rgba(39, 78, 116, 0.14) !important;
+  border-radius: 999px !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"]::-moz-range-progress,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range::-moz-range-progress {
+  height: 6px !important;
+  background: #274e74 !important;
+  border-radius: 999px !important;
+}
+
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"]::-moz-range-thumb,
+body.has-compact-controls .option-panel-type .range-grid-scale .range-field input[type="range"].precision-range::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid rgba(255, 255, 255, 0.98) !important;
+  background: var(--precision-fill) !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(23, 33, 43, 0.08) !important;
+}
+
+@media (max-width: 1180px) {
+  .settings-grid > .option-panel-type > .option-heading,
+  .settings-grid > .option-panel-type .cluster-head {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .settings-grid > .option-panel-type .cluster-note {
+    text-align: left !important;
+  }
+
+  .settings-grid > .option-panel-type .font-grid,
+  .settings-grid > .option-panel-type .range-grid-scale {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Menu panel refinement: clearer hierarchy, more breathing room, better reading rhythm. */
+.settings-grid > .option-panel-mode {
+  gap: 14px !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 8px !important;
+  padding: 16px 18px !important;
+  border: 1px solid rgba(28, 40, 52, 0.08) !important;
+  border-radius: 16px !important;
+  background:
+    radial-gradient(circle at top right, rgba(32, 74, 115, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 250, 0.95)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 14px 34px rgba(20, 30, 40, 0.06) !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading::after {
+  content: "MODE" !important;
+  position: absolute !important;
+  top: 14px !important;
+  right: 16px !important;
+  color: rgba(32, 74, 115, 0.22) !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.28em !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading .option-label {
+  max-width: calc(100% - 72px) !important;
+  font-size: 17px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.1 !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading .option-note {
+  max-width: 62ch !important;
+  overflow: visible !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.settings-grid > .option-panel-mode > .segmented-control {
+  gap: 12px !important;
+}
+
+.option-panel-mode .segmented-chip {
+  position: relative !important;
+  min-height: 98px !important;
+  padding: 18px 16px 16px !important;
+  border: 1px solid rgba(28, 40, 52, 0.1) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 247, 249, 0.96)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 24px rgba(18, 26, 33, 0.05) !important;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease !important;
+}
+
+.option-panel-mode .segmented-chip::before {
+  content: "" !important;
+  width: 34px !important;
+  height: 34px !important;
+  margin-bottom: 10px !important;
+  border-radius: 12px !important;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), transparent 55%),
+    linear-gradient(180deg, rgba(32, 74, 115, 0.12), rgba(32, 74, 115, 0.05)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 8px 18px rgba(32, 74, 115, 0.12) !important;
+}
+
+.option-panel-mode .segmented-chip[data-mode-option="knowledge"]::before {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 55%),
+    linear-gradient(180deg, rgba(141, 101, 59, 0.16), rgba(141, 101, 59, 0.05)) !important;
+}
+
+.option-panel-mode .segmented-chip[data-mode-option="article"]::before {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 55%),
+    linear-gradient(180deg, rgba(79, 76, 69, 0.14), rgba(79, 76, 69, 0.05)) !important;
+}
+
+.option-panel-mode .segmented-chip:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(32, 74, 115, 0.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 18px 34px rgba(18, 26, 33, 0.08) !important;
+}
+
+.option-panel-mode .segmented-chip.is-active {
+  transform: translateY(-1px) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 74, 115, 0.12),
+    inset 0 4px 0 currentColor,
+    0 20px 40px rgba(18, 26, 33, 0.1) !important;
+}
+
+.option-panel-mode .segmented-chip::after {
+  margin-top: 6px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  opacity: 0.72 !important;
+}
+
+.option-panel-mode .mode-benefit-card {
+  display: grid !important;
+  gap: 10px !important;
+  padding: 16px 18px !important;
+  border: 1px solid rgba(28, 40, 52, 0.08) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(135deg, rgba(250, 251, 252, 0.98), rgba(245, 247, 248, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+}
+
+.option-panel-mode .mode-benefit-tag {
+  color: rgba(32, 74, 115, 0.54) !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.22em !important;
+}
+
+.option-panel-mode .mode-benefit-title {
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+}
+
+.option-panel-mode .mode-benefit-summary {
+  max-width: 56ch !important;
+  color: rgba(50, 61, 72, 0.82) !important;
+  font-size: 12px !important;
+  line-height: 1.7 !important;
+}
+
+.option-panel-mode .mode-benefit-list {
+  gap: 8px !important;
+  margin-top: 2px !important;
+}
+
+.option-panel-mode .mode-benefit-list li {
+  padding: 6px 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(32, 74, 115, 0.1) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+
+.layout-preset-panel,
+.question-answer-layout-panel {
+  gap: 12px !important;
+  padding: 16px !important;
+  border: 1px solid rgba(28, 40, 52, 0.08) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 251, 0.94), rgba(244, 246, 248, 0.9)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 14px 32px rgba(18, 26, 33, 0.05) !important;
+}
+
+.layout-preset-panel .layout-preset-head,
+.question-answer-layout-panel .question-answer-layout-head {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: baseline !important;
+  gap: 8px 14px !important;
+}
+
+.layout-preset-panel .layout-preset-kicker,
+.question-answer-layout-panel .question-answer-layout-kicker {
+  font-size: 14px !important;
+  font-weight: 900 !important;
+}
+
+.layout-preset-panel .layout-preset-note,
+.question-answer-layout-panel .question-answer-layout-note {
+  overflow: visible !important;
+  text-align: right !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.layout-preset-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+}
+
+.layout-preset-button {
+  grid-template-rows: 98px auto auto !important;
+  gap: 10px !important;
+  min-height: 164px !important;
+  padding: 10px !important;
+  border-radius: 16px !important;
+  border-color: rgba(28, 40, 52, 0.1) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 248, 246, 0.94)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 24px rgba(18, 26, 33, 0.06) !important;
+}
+
+.layout-preset-button:hover,
+.layout-preset-button.is-active {
+  transform: translateY(-2px) !important;
+  border-color: rgba(32, 74, 115, 0.22) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 250, 252, 0.98)) !important;
+}
+
+.layout-preset-button.is-active {
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 74, 115, 0.16),
+    0 18px 36px rgba(18, 26, 33, 0.1) !important;
+}
+
+.layout-preset-preview {
+  height: 98px !important;
+  min-height: 98px !important;
+  padding: 4px !important;
+  border-radius: 12px !important;
+}
+
+.layout-preset-title {
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  text-align: left !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.layout-preset-summary {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  color: rgba(80, 91, 103, 0.82) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.55 !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+.question-answer-layout-panel {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.question-answer-layout-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.question-answer-layout-button {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 88px auto auto !important;
+  gap: 8px !important;
+  min-height: 156px !important;
+  padding: 10px !important;
+  border: 1px solid rgba(28, 40, 52, 0.1) !important;
+  border-radius: 16px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 250, 0.96)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 10px 22px rgba(18, 26, 33, 0.05) !important;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+.question-answer-layout-button:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(32, 74, 115, 0.18) !important;
+  box-shadow: 0 16px 32px rgba(18, 26, 33, 0.08) !important;
+}
+
+.question-answer-layout-button.is-active {
+  border-color: rgba(32, 74, 115, 0.22) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(32, 74, 115, 0.12),
+    0 18px 34px rgba(18, 26, 33, 0.1) !important;
+}
+
+.question-answer-layout-preview {
+  display: block !important;
+  width: 100% !important;
+  height: 88px !important;
+  min-height: 88px !important;
+}
+
+.question-answer-layout-svg {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.question-answer-layout-svg-backdrop { fill: rgba(244, 247, 249, 0.98); }
+.question-answer-layout-svg-wash { fill: rgba(32, 74, 115, 0.08); }
+.question-answer-layout-svg-page { fill: rgba(255, 255, 255, 0.96); stroke: rgba(28, 40, 52, 0.1); stroke-width: 1.1; }
+.question-answer-layout-svg-card { fill: rgba(70, 86, 102, 0.08); stroke: rgba(28, 40, 52, 0.1); stroke-width: 1; }
+.question-answer-layout-svg-card-primary { fill: rgba(32, 74, 115, 0.08); }
+.question-answer-layout-svg-card-accent { fill: rgba(32, 74, 115, 0.12); }
+.question-answer-layout-svg-line { fill: rgba(28, 40, 52, 0.34); }
+.question-answer-layout-svg-line-strong { fill: rgba(32, 74, 115, 0.78); }
+.question-answer-layout-svg-divider { fill: none; stroke: rgba(32, 74, 115, 0.4); stroke-width: 1.4; stroke-linecap: round; }
+
+.question-answer-layout-title {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.question-answer-layout-summary {
+  color: rgba(80, 91, 103, 0.82) !important;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+  -webkit-line-clamp: 3 !important;
+}
+
+
+@media (max-width: 1280px) {
+  .layout-preset-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .settings-grid > .option-panel-mode > .segmented-control,
+  .question-answer-layout-grid,
+  .layout-preset-grid,
+  .settings-grid > .option-panel-spacing .range-grid-space {
+    grid-template-columns: 1fr !important;
+  }
+
+  .layout-preset-panel .layout-preset-head,
+  .question-answer-layout-panel .question-answer-layout-head {
+    grid-template-columns: 1fr !important;
+  }
+
+  .layout-preset-panel .layout-preset-note,
+  .question-answer-layout-panel .question-answer-layout-note {
+    text-align: left !important;
+  }
+}
+
+/* Mode section vertical stack override: avoid side-by-side squeezing. */
+.settings-section[data-settings-section="mode"] > .settings-section-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .option-heading,
+.settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control,
+.settings-section[data-settings-section="mode"] > .settings-section-body > .mode-benefit-card,
+.settings-section[data-settings-section="mode"] > .settings-section-body > .question-answer-layout-panel,
+.settings-section[data-settings-section="mode"] > .settings-section-body > .layout-preset-panel {
+  order: initial !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .option-heading {
+  order: 1 !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control {
+  order: 2 !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .mode-benefit-card {
+  order: 3 !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .question-answer-layout-panel {
+  order: 4 !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .layout-preset-panel {
+  order: 5 !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-panel,
+.settings-section[data-settings-section="mode"] .layout-preset-panel {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-button,
+.settings-section[data-settings-section="mode"] .layout-preset-button {
+  min-height: 148px !important;
+}
+
+@media (max-width: 900px) {
+  .settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control,
+  .settings-section[data-settings-section="mode"] .question-answer-layout-grid,
+  .settings-section[data-settings-section="mode"] .layout-preset-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Spacing panel: single-column professional compact layout for desktop. */
+.settings-grid > .option-panel-spacing {
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(180deg, rgba(251, 252, 253, 0.98), rgba(248, 249, 250, 0.96)) !important;
+  border: 1px solid rgba(28, 40, 52, 0.05) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 4px 12px rgba(18, 26, 33, 0.03) !important;
+}
+
+.settings-grid > .option-panel-spacing .option-heading {
+  margin-bottom: 4px !important;
+  display: block !important;
+}
+
+.settings-grid > .option-panel-spacing .option-label {
+  margin: 0 !important;
+  color: #1c2430 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+}
+
+.settings-grid > .option-panel-spacing .option-note {
+  display: none !important;
+}
+
+.settings-grid > .option-panel-spacing .range-grid-space {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  padding: 2px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  border: 1px solid rgba(28, 40, 52, 0.04) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(64px, auto) !important;
+  grid-template-rows: auto 18px !important;
+  align-items: center !important;
+  gap: 4px 8px !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
+  border: 1px solid rgba(28, 40, 52, 0.03) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 249, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+.settings-grid > .option-panel-spacing .range-title-row {
+  display: contents !important;
+}
+
+.settings-grid > .option-panel-spacing .range-title {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  color: rgba(31, 41, 51, 0.78) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.18 !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+.settings-grid > .option-panel-spacing .range-value {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  text-align: right !important;
+  box-shadow: none !important;
+}
+
+.settings-grid > .option-panel-spacing .range-combo-editor {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.settings-grid > .option-panel-spacing .range-combo-input {
+  width: auto !important;
+  min-width: 2.6ch !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  text-align: right !important;
+  box-shadow: none !important;
+}
+
+.settings-grid > .option-panel-spacing .range-combo-unit {
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"],
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range {
+  display: block !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  appearance: none !important;
+  cursor: ew-resize !important;
+  outline: none !important;
+  background:
+    linear-gradient(
+      90deg,
+      #355c7d 0,
+      #355c7d var(--range-progress, 0%),
+      rgba(31, 41, 51, 0.12) var(--range-progress, 0%),
+      rgba(31, 41, 51, 0.12) 100%
+    ) !important;
+  border-radius: 999px !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-webkit-slider-runnable-track,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range::-webkit-slider-runnable-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: -5px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: #355c7d !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(20, 28, 36, 0.06) !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]:hover::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]:focus-visible::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].is-tuning::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range:hover::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range:focus-visible::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range.is-tuning::-webkit-slider-thumb {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -6px !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-track,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range::-moz-range-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(31, 41, 51, 0.12) !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-progress,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range::-moz-range-progress {
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: #355c7d !important;
+}
+
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"].precision-range::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: #355c7d !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(20, 28, 36, 0.06) !important;
+}
+
+/* Compact mode section pass: keep everything smaller and tighter. */
+.settings-section[data-settings-section="mode"] > .settings-section-body {
+  gap: 12px !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading {
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading::after {
+  top: 11px !important;
+  right: 13px !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading .option-label {
+  font-size: 15px !important;
+}
+
+.settings-grid > .option-panel-mode > .option-heading .option-note {
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control,
+.settings-grid > .option-panel-mode > .segmented-control {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.option-panel-mode .segmented-chip {
+  min-height: 76px !important;
+  padding: 12px 12px 11px !important;
+  border-radius: 14px !important;
+}
+
+.option-panel-mode .segmented-chip::before {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 8px !important;
+  border-radius: 9px !important;
+}
+
+.option-panel-mode .segmented-chip::after {
+  margin-top: 4px !important;
+  font-size: 10px !important;
+}
+
+.option-panel-mode .mode-benefit-card {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border-radius: 14px !important;
+}
+
+.option-panel-mode .mode-benefit-tag {
+  font-size: 9px !important;
+}
+
+.option-panel-mode .mode-benefit-title {
+  font-size: 13px !important;
+}
+
+.option-panel-mode .mode-benefit-summary {
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+
+.option-panel-mode .mode-benefit-list {
+  gap: 6px !important;
+}
+
+.option-panel-mode .mode-benefit-list li {
+  padding: 4px 8px !important;
+  font-size: 10px !important;
+}
+
+.layout-preset-panel,
+.question-answer-layout-panel {
+  gap: 10px !important;
+  padding: 12px !important;
+  border-radius: 14px !important;
+}
+
+.layout-preset-panel .layout-preset-kicker,
+.question-answer-layout-panel .question-answer-layout-kicker {
+  font-size: 13px !important;
+}
+
+.layout-preset-panel .layout-preset-note,
+.question-answer-layout-panel .question-answer-layout-note {
+  font-size: 10px !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.question-answer-layout-button {
+  grid-template-rows: 56px auto auto !important;
+  gap: 6px !important;
+  min-height: 112px !important;
+  padding: 8px !important;
+  border-radius: 12px !important;
+}
+
+.question-answer-layout-preview {
+  height: 56px !important;
+  min-height: 56px !important;
+}
+
+.question-answer-layout-title {
+  font-size: 12px !important;
+}
+
+.question-answer-layout-summary {
+  font-size: 10px !important;
+  line-height: 1.4 !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-panel {
+  overflow: hidden !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-grid,
+.layout-preset-grid {
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: calc((100% - 36px) / 4) !important;
+  grid-template-columns: none !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x proximity !important;
+  padding: 0 2px 2px 0 !important;
+  scrollbar-width: thin !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-grid::-webkit-scrollbar,
+.layout-preset-grid::-webkit-scrollbar {
+  height: 6px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-grid::-webkit-scrollbar-thumb,
+.layout-preset-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px !important;
+  background: rgba(32, 74, 115, 0.18) !important;
+}
+
+.layout-preset-button {
+  grid-template-rows: 68px auto auto !important;
+  gap: 7px !important;
+  min-height: 118px !important;
+  padding: 8px !important;
+  border-radius: 12px !important;
+  scroll-snap-align: start !important;
+}
+
+.layout-preset-preview {
+  height: 68px !important;
+  min-height: 68px !important;
+  padding: 3px !important;
+  border-radius: 10px !important;
+}
+
+.layout-preset-title {
+  font-size: 12px !important;
+}
+
+.layout-preset-summary {
+  font-size: 10px !important;
+  line-height: 1.4 !important;
+}
+
+@media (max-width: 980px) {
+  .settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control {
+    grid-template-columns: 1fr !important;
+  }
+
+  .settings-section[data-settings-section="mode"] .layout-preset-grid,
+  .layout-preset-grid {
+    grid-auto-columns: minmax(170px, 74%) !important;
+  }
+}
+
+/* Minimal labels only: hide descriptive copy in compact mode section. */
+.settings-section[data-settings-section="mode"] .option-note,
+.settings-section[data-settings-section="mode"] .layout-preset-note,
+.settings-section[data-settings-section="mode"] .question-answer-layout-note,
+.settings-section[data-settings-section="mode"] .mode-benefit-tag,
+.settings-section[data-settings-section="mode"] .mode-benefit-summary,
+.settings-section[data-settings-section="mode"] .mode-benefit-list,
+.settings-section[data-settings-section="mode"] .layout-preset-summary,
+.settings-section[data-settings-section="mode"] .question-answer-layout-summary,
+.settings-section[data-settings-section="mode"] .segmented-chip::after {
+  display: none !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body {
+  gap: 10px !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .option-heading,
+.settings-section[data-settings-section="mode"] .mode-benefit-card,
+.settings-section[data-settings-section="mode"] .layout-preset-panel,
+.settings-section[data-settings-section="mode"] .question-answer-layout-panel {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.settings-section[data-settings-section="mode"] .mode-benefit-card {
+  gap: 0 !important;
+  min-height: 0 !important;
+}
+
+.settings-section[data-settings-section="mode"] .mode-benefit-title {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+.settings-section[data-settings-section="mode"] > .settings-section-body > .segmented-control {
+  gap: 8px !important;
+}
+
+.settings-section[data-settings-section="mode"] .segmented-chip {
+  min-height: 58px !important;
+  padding: 10px 10px 9px !important;
+  align-content: center !important;
+}
+
+.settings-section[data-settings-section="mode"] .segmented-chip::before {
+  width: 18px !important;
+  height: 18px !important;
+  margin-bottom: 6px !important;
+  border-radius: 7px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-head,
+.settings-section[data-settings-section="mode"] .question-answer-layout-head {
+  gap: 6px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-kicker,
+.settings-section[data-settings-section="mode"] .question-answer-layout-kicker {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-button {
+  grid-template-rows: 52px auto !important;
+  min-height: 88px !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-preview {
+  height: 52px !important;
+  min-height: 52px !important;
+}
+
+.settings-section[data-settings-section="mode"] .question-answer-layout-title {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-button {
+  grid-template-rows: 62px auto !important;
+  min-height: 94px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-preview {
+  height: 62px !important;
+  min-height: 62px !important;
+}
+
+.settings-section[data-settings-section="mode"] .layout-preset-title {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+/* Reading rhythm controls: give line-height / heading spacing cards enough room. */
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-grid-space,
+.settings-grid > .option-panel-type .layout-background-cluster .range-grid-space,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-grid-space {
+  grid-template-columns: repeat(2, minmax(168px, 1fr)) !important;
+  gap: 12px !important;
+  overflow: visible !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-field,
+.settings-grid > .option-panel-type .layout-background-cluster .range-field,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-field {
+  width: 100% !important;
+  flex: 1 1 auto !important;
+  justify-self: stretch !important;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, auto) !important;
+  grid-template-rows: auto 20px !important;
+  gap: 8px 12px !important;
+  min-width: 0 !important;
+  min-height: 68px !important;
+  padding: 12px 14px !important;
+  overflow: visible !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-title,
+.settings-grid > .option-panel-type .layout-background-cluster .range-title,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-title {
+  align-self: center !important;
+  font-size: 13px !important;
+  line-height: 1.22 !important;
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-value,
+.settings-grid > .option-panel-type .layout-background-cluster .range-value,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-value {
+  align-self: center !important;
+  justify-self: end !important;
+  min-width: 92px !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-combo-editor,
+.settings-grid > .option-panel-type .layout-background-cluster .range-combo-editor,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-combo-editor {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 92px !important;
+  height: 32px !important;
+  padding: 0 10px !important;
+  border-radius: 10px !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-combo-input,
+.settings-grid > .option-panel-type .layout-background-cluster .range-combo-input,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-combo-input {
+  width: 3.8ch !important;
+  min-width: 3.8ch !important;
+  height: 30px !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  text-align: right !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-combo-unit,
+.settings-grid > .option-panel-type .layout-background-cluster .range-combo-unit,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-combo-unit {
+  font-size: 12px !important;
+  white-space: nowrap !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-field input[type="range"],
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-field input[type="range"].precision-range,
+.settings-grid > .option-panel-type .layout-background-cluster .range-field input[type="range"],
+.settings-grid > .option-panel-type .layout-background-cluster .range-field input[type="range"].precision-range,
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-field input[type="range"],
+.settings-grid > .option-panel-type .layout-heading-space-cluster .range-field input[type="range"].precision-range {
+  height: 20px !important;
+  min-height: 20px !important;
+}
+
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-field-body-line,
+.settings-grid > .option-panel-type .layout-page-meta-cluster .range-field-body-letter {
+  min-width: 0 !important;
+}
+
+@media (max-width: 980px) {
+  .settings-grid > .option-panel-type .layout-page-meta-cluster .range-grid-space,
+  .settings-grid > .option-panel-type .layout-background-cluster .range-grid-space,
+  .settings-grid > .option-panel-type .layout-heading-space-cluster .range-grid-space {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Unified slider style: match all sliders to the global spacing control. */
+body.has-compact-controls .range-field,
+body.has-compact-controls .page-inline-range,
+.settings-grid > .option-panel-spacing .range-field,
+.element-style-field {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(64px, auto) !important;
+  grid-template-rows: auto 18px !important;
+  align-items: center !important;
+  gap: 4px 8px !important;
+  height: auto !important;
+  min-height: 44px !important;
+  padding: 6px 8px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(28, 40, 52, 0.03) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 248, 249, 0.94)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
+}
+
+body.has-compact-controls .range-field:hover,
+body.has-compact-controls .page-inline-range:hover,
+body.has-compact-controls .range-field.is-tuning,
+body.has-compact-controls .element-style-field:hover,
+body.has-compact-controls .element-style-field.is-tuning {
+  border-color: rgba(32, 74, 115, 0.28) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 3px var(--precision-focus),
+    0 8px 16px rgba(39, 56, 72, 0.08) !important;
+}
+
+body.has-compact-controls .range-title-row,
+.settings-grid > .option-panel-spacing .range-title-row {
+  display: contents !important;
+}
+
+body.has-compact-controls .range-title,
+body.has-compact-controls .page-inline-range .page-inline-title,
+.settings-grid > .option-panel-spacing .range-title,
+.element-style-label {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  align-self: center !important;
+  color: rgba(31, 41, 51, 0.78) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.18 !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  text-overflow: clip !important;
+}
+
+body.has-compact-controls .option-panel-type .range-help,
+body.has-compact-controls .option-panel-page .range-help {
+  display: none !important;
+}
+
+body.has-compact-controls .range-value,
+body.has-compact-controls .page-inline-range .range-value,
+.settings-grid > .option-panel-spacing .range-value,
+.element-style-value {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  text-align: right !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  box-shadow: none !important;
+}
+
+body.has-compact-controls .range-combo-editor,
+.settings-grid > .option-panel-spacing .range-combo-editor,
+.element-style-field .range-combo-editor {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: end !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.has-compact-controls .range-combo-input,
+.settings-grid > .option-panel-spacing .range-combo-input,
+.element-style-field .range-combo-input {
+  width: auto !important;
+  min-width: 2.6ch !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  text-align: right !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+}
+
+body.has-compact-controls .range-combo-unit,
+.settings-grid > .option-panel-spacing .range-combo-unit,
+.element-style-field .range-combo-unit {
+  color: #355c7d !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+}
+
+body.has-compact-controls .range-field input[type="range"],
+body.has-compact-controls .page-inline-range input[type="range"],
+.settings-grid > .option-panel-spacing .range-field input[type="range"],
+.element-style-field > input[type="range"],
+body.has-compact-controls .range-field input[type="range"].precision-range {
+  display: block !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  appearance: none !important;
+  cursor: ew-resize !important;
+  outline: none !important;
+  background:
+    linear-gradient(
+      90deg,
+      #355c7d 0,
+      #355c7d var(--range-progress, 0%),
+      rgba(31, 41, 51, 0.12) var(--range-progress, 0%),
+      rgba(31, 41, 51, 0.12) 100%
+    ) !important;
+  border-radius: 999px !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]::-webkit-slider-runnable-track,
+body.has-compact-controls .page-inline-range input[type="range"]::-webkit-slider-runnable-track,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-webkit-slider-runnable-track,
+.element-style-field > input[type="range"]::-webkit-slider-runnable-track,
+body.has-compact-controls .range-field input[type="range"].precision-range::-webkit-slider-runnable-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]::-webkit-slider-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-webkit-slider-thumb,
+.element-style-field > input[type="range"]::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"].precision-range::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-top: -5px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: #355c7d !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(20, 28, 36, 0.06) !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]:hover::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"]:focus-visible::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"].is-tuning::-webkit-slider-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]:hover::-webkit-slider-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]:focus-visible::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]:hover::-webkit-slider-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]:focus-visible::-webkit-slider-thumb,
+.element-style-field > input[type="range"]:hover::-webkit-slider-thumb,
+.element-style-field > input[type="range"]:focus-visible::-webkit-slider-thumb,
+.element-style-field > input[type="range"].is-tuning::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"].precision-range:hover::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"].precision-range:focus-visible::-webkit-slider-thumb,
+body.has-compact-controls .range-field input[type="range"].precision-range.is-tuning::-webkit-slider-thumb {
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -6px !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]::-moz-range-track,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-track,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-track,
+.element-style-field > input[type="range"]::-moz-range-track,
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-track {
+  height: 6px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(31, 41, 51, 0.12) !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]::-moz-range-progress,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-progress,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-progress,
+.element-style-field > input[type="range"]::-moz-range-progress,
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-progress {
+  height: 6px !important;
+  border-radius: 999px !important;
+  background: #355c7d !important;
+}
+
+body.has-compact-controls .range-field input[type="range"]::-moz-range-thumb,
+body.has-compact-controls .page-inline-range input[type="range"]::-moz-range-thumb,
+.settings-grid > .option-panel-spacing .range-field input[type="range"]::-moz-range-thumb,
+.element-style-field > input[type="range"]::-moz-range-thumb,
+body.has-compact-controls .range-field input[type="range"].precision-range::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  background: #355c7d !important;
+  box-shadow:
+    0 4px 10px rgba(23, 33, 43, 0.16),
+    0 0 0 1px rgba(20, 28, 36, 0.06) !important;
 }

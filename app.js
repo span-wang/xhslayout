@@ -17,6 +17,8 @@ const STORAGE_KEYS = {
   lineHeight: "layout-for-xhs-line-height",
   letterSpacing: "layout-for-xhs-letter-spacing",
   paragraphSpacing: "layout-for-xhs-paragraph-spacing",
+  blockInnerSpacing: "layout-for-xhs-block-inner-spacing",
+  blockTitleSpacing: "layout-for-xhs-block-title-spacing",
   paragraphIndent: "layout-for-xhs-paragraph-indent",
   heading1LineHeight: "layout-for-xhs-heading1-line-height",
   heading2LineHeight: "layout-for-xhs-heading2-line-height",
@@ -436,6 +438,8 @@ const DEFAULT_MINDMAP_NODE_WIDTH = 220;
 const DEFAULT_LINE_HEIGHT = 1.62;
 const DEFAULT_LETTER_SPACING = 0;
 const DEFAULT_PARAGRAPH_SPACING = 10;
+const DEFAULT_BLOCK_INNER_SPACING = 12;
+const DEFAULT_BLOCK_TITLE_SPACING = 8;
 const DEFAULT_PARAGRAPH_INDENT = 0;
 const DEFAULT_HEADING1_LINE_HEIGHT = 1.18;
 const DEFAULT_HEADING2_LINE_HEIGHT = 1.28;
@@ -497,6 +501,8 @@ const READABLE_TYPOGRAPHY_BASELINE = Object.freeze({
   lineHeight: DEFAULT_LINE_HEIGHT,
   letterSpacing: DEFAULT_LETTER_SPACING,
   paragraphSpacing: DEFAULT_PARAGRAPH_SPACING,
+  blockInnerSpacing: DEFAULT_BLOCK_INNER_SPACING,
+  blockTitleSpacing: DEFAULT_BLOCK_TITLE_SPACING,
   paragraphIndent: DEFAULT_PARAGRAPH_INDENT,
   heading1LineHeight: DEFAULT_HEADING1_LINE_HEIGHT,
   heading2LineHeight: DEFAULT_HEADING2_LINE_HEIGHT,
@@ -841,6 +847,28 @@ const ARTICLE_PARAGRAPH_CONTROLS = [
     min: 0,
     max: 32,
     defaultValue: DEFAULT_PARAGRAPH_SPACING,
+    formatValue: formatPixelValue,
+  },
+  {
+    key: "blockInnerSpacing",
+    storageKey: STORAGE_KEYS.blockInnerSpacing,
+    inputId: "blockInnerSpacingRange",
+    valueId: "blockInnerSpacingValue",
+    cssVar: "--user-block-inner-spacing",
+    min: 0,
+    max: 40,
+    defaultValue: DEFAULT_BLOCK_INNER_SPACING,
+    formatValue: formatPixelValue,
+  },
+  {
+    key: "blockTitleSpacing",
+    storageKey: STORAGE_KEYS.blockTitleSpacing,
+    inputId: "blockTitleSpacingRange",
+    valueId: "blockTitleSpacingValue",
+    cssVar: "--user-block-title-spacing",
+    min: 0,
+    max: 32,
+    defaultValue: DEFAULT_BLOCK_TITLE_SPACING,
     formatValue: formatPixelValue,
   },
   {
@@ -1306,13 +1334,10 @@ const EXPORT_STYLE_FALLBACK = `
   .article-canvas { max-width: 920px; margin: 0 auto; padding: 36px; background: #fffdfa; border: 1px solid #cfd5dd; }
 `;
 
-const PDF_PAGE_WIDTH = 595.28;
-const PDF_PAGE_HEIGHT = 841.89;
-const PDF_JPEG_QUALITY = 0.94;
-const PDF_MAX_CANVAS_PIXELS = 28000000;
-const PDF_CAPTURE_PADDING = 24;
 const PDF_EXPORT_API_URL = "/api/export-pdf";
-const PNG_EXPORT_SCALE = 2;
+const PNG_ZIP_EXPORT_API_URL = "/api/export-png-zip";
+const PDF_EXPORT_REQUEST_TIMEOUT_MS = 120000;
+const PDF_EXPORT_STALL_HINT_MS = 15000;
 const PDF_INLINE_IMAGE_MAX_DIMENSION = 2200;
 const PDF_INLINE_IMAGE_JPEG_QUALITY = 0.86;
 const PDF_INLINE_IMAGE_OPTIMIZE_MIN_CHARS = 900000;
@@ -3834,7 +3859,8 @@ function syncElementStylesFromGlobalControl(elementStyles, controlKey, value) {
     heading4Size: [["heading4", "fontSize"]],
     tableFontSize: [["table", "fontSize"]],
     lineHeight: [["paragraph", "lineHeight"], ["list", "lineHeight"], ["callout", "lineHeight"]],
-    paragraphSpacing: [["paragraph", "spaceAfter"]],
+    paragraphSpacing: [["paragraph", "spaceAfter"], ["list", "spaceAfter"], ["callout", "spaceAfter"], ["table", "spaceAfter"], ["card", "spaceAfter"]],
+    blockInnerSpacing: [["card", "gap"]],
     paragraphIndent: [["paragraph", "indent"]],
     heading1LineHeight: [["heading1", "lineHeight"]],
     heading2LineHeight: [["heading2", "lineHeight"]],
@@ -4258,20 +4284,25 @@ function updateNumericDisplay(display, value, formatter, step = 1, disabled = fa
   }
 
   const formattedValue = formatter(value);
+  const plainValue = display.dataset.valueFormat === "plain-number"
+    ? String(Math.round(Number(value) || 0))
+    : formattedValue;
   const scrubberInput = display.querySelector(".range-combo-input, .range-scrubber-input");
   const scrubberUnit = display.querySelector(".range-combo-unit, .range-scrubber-unit");
   const scrubberDecrease = display.querySelector(".range-scrubber-step[data-step-dir='down']");
   const scrubberIncrease = display.querySelector(".range-scrubber-step[data-step-dir='up']");
 
   if (!scrubberInput || !scrubberUnit) {
-    display.textContent = formattedValue;
+    display.textContent = plainValue;
     return;
   }
 
   scrubberInput.value = formatNumericInputValue(value, step);
   scrubberInput.disabled = disabled;
-  scrubberInput.setAttribute("aria-label", formattedValue);
-  scrubberUnit.textContent = extractFormattedUnit(formattedValue);
+  scrubberInput.setAttribute("aria-label", plainValue);
+  scrubberUnit.textContent = display.dataset.valueFormat === "plain-number"
+    ? ""
+    : extractFormattedUnit(formattedValue);
   scrubberUnit.hidden = !scrubberUnit.textContent;
   if (scrubberDecrease) {
     scrubberDecrease.disabled = disabled;
@@ -4279,12 +4310,12 @@ function updateNumericDisplay(display, value, formatter, step = 1, disabled = fa
   if (scrubberIncrease) {
     scrubberIncrease.disabled = disabled;
   }
-  display.title = formattedValue;
+  display.title = plainValue;
   display.classList.toggle("is-disabled", disabled);
 }
 
 function getRangeControlField(rangeInput) {
-  return rangeInput?.closest?.(".range-field, .page-inline-item") || null;
+  return rangeInput?.closest?.(".range-field, .page-inline-item, .element-style-field") || null;
 }
 
 function updateRangeControlVisual(rangeInput) {
@@ -4462,6 +4493,39 @@ function initNumericScrubberLegacy({ rangeInput, display, min, max, step, defaul
 
 function initNumericScrubber({ rangeInput, display, min, max, step, defaultValue, formatValue }) {
   if (!rangeInput || !display) {
+    return;
+  }
+
+  if (display.dataset.numericControl === "plain") {
+    const resolvedStep = Number.isFinite(Number(step)) && Number(step) > 0 ? Number(step) : 1;
+    rangeInput.classList.add("range-native-input", "precision-range");
+
+    rangeInput.addEventListener("input", () => {
+      updateRangeControlVisual(rangeInput);
+      updateNumericDisplay(display, rangeInput.value, formatValue, resolvedStep, Boolean(rangeInput.disabled));
+    });
+
+    rangeInput.addEventListener("pointerdown", (event) => {
+      if (rangeInput.disabled) {
+        return;
+      }
+
+      setRangeControlTuning(rangeInput, true);
+
+      const finishTuning = () => {
+        setRangeControlTuning(rangeInput, false);
+      };
+
+      window.addEventListener("pointerup", finishTuning, { once: true });
+      window.addEventListener("pointercancel", finishTuning, { once: true });
+      event.stopPropagation();
+    });
+
+    rangeInput.addEventListener("focus", () => setRangeControlTuning(rangeInput, true));
+    rangeInput.addEventListener("blur", () => setRangeControlTuning(rangeInput, false));
+
+    updateRangeControlVisual(rangeInput);
+    updateNumericDisplay(display, rangeInput.value, formatValue, resolvedStep, Boolean(rangeInput.disabled));
     return;
   }
 
@@ -7258,6 +7322,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   const resolved = getResolvedDocumentOptions(options);
   const pageMetrics = getPageMetrics(resolved);
   const workbench = getPageLayoutWorkbench();
+  const measurementRoot = document.createElement("div");
   const preview = document.createElement("div");
   const pendingBlocks = collectPaginatedBlocks(sourceRoot);
   const pages = [];
@@ -7271,7 +7336,12 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   const isBlockFirstPagination = paginationStrategy === "block-first";
 
   workbench.innerHTML = "";
-  preview.className = "page-preview";
+  measurementRoot.className = "live-preview-canvas";
+  measurementRoot.dataset.mode = resolved.mode;
+  measurementRoot.dataset.layoutPreset = resolved.layoutPreset;
+  measurementRoot.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
+  workbench.appendChild(measurementRoot);
+  preview.className = "live-preview-canvas page-preview";
   preview.dataset.mode = resolved.mode;
   preview.dataset.layoutPreset = resolved.layoutPreset;
   preview.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
@@ -7293,7 +7363,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       className !== "article-canvas"
       && className !== "article-measure-canvas"
     )));
-    workbench.appendChild(currentPage.page);
+    measurementRoot.appendChild(currentPage.page);
     return currentPage;
   };
 
@@ -9207,7 +9277,12 @@ function serializeListMarkdown(list, indent = 0) {
     const body = item.querySelector(":scope > .list-item-body") || item;
     const copy = body.querySelector(":scope > .list-item-copy") || body;
     const paragraph = copy.querySelector(":scope > p") || copy;
-    const marker = ordered ? `${index + 1}. ` : "- ";
+    const orderedMarkerText = ordered
+      ? String(body.querySelector(":scope > .list-item-copy .inline-list-marker-ordered")?.textContent || "").trim()
+      : "";
+    const marker = ordered
+      ? `${/^\d+\.$/.test(orderedMarkerText) ? orderedMarkerText : `${index + 1}.`} `
+      : "- ";
     const blockStyle = getBlockTextStyleFromElement(paragraph);
     const stylePrefix = hasBlockTextStyle(blockStyle)
       ? `{{${BLOCK_TEXT_STYLE_TOKEN} ${serializeTextStyleMap(blockStyle, ["align", "indent", "spacing", "font", "size", "color"])}}}`
@@ -9755,6 +9830,36 @@ function markPreviewEditableNodes(root) {
   });
 }
 
+function cleanupPreviewCloneForExport(root) {
+  if (!root) {
+    return root;
+  }
+
+  Array.from(root.querySelectorAll("[contenteditable]")).forEach((element) => {
+    element.removeAttribute("contenteditable");
+  });
+
+  Array.from(root.querySelectorAll("[data-preview-editable]")).forEach((element) => {
+    element.removeAttribute("data-preview-editable");
+  });
+
+  Array.from(root.querySelectorAll("[spellcheck]")).forEach((element) => {
+    element.removeAttribute("spellcheck");
+  });
+
+  Array.from(root.querySelectorAll("[tabindex]")).forEach((element) => {
+    element.removeAttribute("tabindex");
+  });
+
+  Array.from(root.querySelectorAll(
+    ".table-resize-overlay, .table-resize-handle, .card-layout-drag-handle",
+  )).forEach((element) => {
+    element.remove();
+  });
+
+  return root;
+}
+
 function getEditablePreviewHost(root, target) {
   if (!root || !target) {
     return null;
@@ -10187,7 +10292,6 @@ function buildExportHtml(articleHtml, title, options = {}) {
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   ${baseHref ? `<base href="${escapeAttribute(baseHref)}">` : ""}
   <title>${escapeHtml(documentTitle)}</title>
   <style>${customFontCss ? `${customFontCss}\n` : ""}${getExportStyles()}</style>
@@ -10214,6 +10318,9 @@ function buildPagedExportHtml(pagesHtml, title, options = {}) {
     html,
     body {
       margin: 0;
+      width: ${resolved.pageWidth}mm;
+      min-width: ${resolved.pageWidth}mm;
+      max-width: ${resolved.pageWidth}mm;
       min-height: auto;
       background: #ffffff !important;
     }
@@ -10222,15 +10329,23 @@ function buildPagedExportHtml(pagesHtml, title, options = {}) {
       padding: 0;
     }
 
-    .page-preview {
+    .page-preview,
+    .page-export {
       display: block !important;
+      width: ${resolved.pageWidth}mm !important;
+      min-width: ${resolved.pageWidth}mm !important;
+      max-width: ${resolved.pageWidth}mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
       gap: 0 !important;
       min-height: auto !important;
     }
 
     .page-export .page-sheet {
       width: calc(var(--page-width-mm, ${resolved.pageWidth}) * 1mm) !important;
-      margin: 0 auto !important;
+      min-height: calc(var(--page-height-mm, ${resolved.pageHeight}) * 1mm) !important;
+      height: calc(var(--page-height-mm, ${resolved.pageHeight}) * 1mm) !important;
+      margin: 0 !important;
       border: 0 !important;
       box-shadow: none !important;
       break-after: page;
@@ -10253,14 +10368,13 @@ function buildPagedExportHtml(pagesHtml, title, options = {}) {
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   ${baseHref ? `<base href="${escapeAttribute(baseHref)}">` : ""}
   <title>${escapeHtml(documentTitle)}</title>
   <style>${customFontCss ? `${customFontCss}\n` : ""}${getSvgSafeExportStyles()}</style>
   <style>${pageCss}</style>
 </head>
 <body data-theme="${escapeAttribute(resolved.theme)}">
-  <main class="page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
+  <main class="live-preview-canvas page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
     ${pagesHtml}
   </main>
 </body>
@@ -10388,14 +10502,6 @@ async function inlineImagesForPdf(sourceRoot, cloneRoot) {
   }));
 }
 
-function getPdfRenderScale(width, height) {
-  const baseScale = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-  const dimensionLimit = 32760 / Math.max(width, height, 1);
-  const areaLimit = Math.sqrt(PDF_MAX_CANVAS_PIXELS / Math.max(width * height, 1));
-
-  return Math.max(1, Math.min(baseScale, dimensionLimit, areaLimit));
-}
-
 function serializeElementToXhtml(element) {
   return new XMLSerializer().serializeToString(element);
 }
@@ -10448,98 +10554,6 @@ function getSvgSafeExportStyles() {
   return styles;
 }
 
-function buildPdfSnapshotMarkup(articleMarkup, sourceCanvas) {
-  const bodyStyles = window.getComputedStyle(document.body);
-  const articleRect = sourceCanvas.getBoundingClientRect();
-  const articleWidth = Math.max(1, Math.ceil(articleRect.width));
-  const articleHeight = Math.max(1, Math.ceil(sourceCanvas.scrollHeight || articleRect.height));
-  const exportPadding = Math.max(24, Math.round(articleWidth * 0.04));
-  const totalWidth = articleWidth + exportPadding * 2;
-  const totalHeight = articleHeight + exportPadding * 2;
-  const extraStyles = `
-    .pdf-export-body,
-    .pdf-export-body * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      box-sizing: border-box;
-    }
-
-    .pdf-export-body {
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .pdf-export-body .article-export {
-      margin: 0 auto !important;
-    }
-  `;
-  const backgroundDeclarations = [
-    `background-color:${bodyStyles.backgroundColor}`,
-    bodyStyles.backgroundImage && bodyStyles.backgroundImage !== "none" ? `background-image:${bodyStyles.backgroundImage}` : "",
-    bodyStyles.backgroundRepeat ? `background-repeat:${bodyStyles.backgroundRepeat}` : "",
-    bodyStyles.backgroundPosition ? `background-position:${bodyStyles.backgroundPosition}` : "",
-    bodyStyles.backgroundSize ? `background-size:${bodyStyles.backgroundSize}` : "",
-  ].filter(Boolean).join(";");
-  const rootStyle = [
-    collectCustomProperties(bodyStyles),
-    `width:${totalWidth}px`,
-    `min-height:${totalHeight}px`,
-    `padding:${exportPadding}px`,
-    `color:${bodyStyles.color}`,
-    `font-family:${bodyStyles.fontFamily}`,
-    backgroundDeclarations,
-  ].filter(Boolean).join(";");
-
-  return {
-    totalWidth,
-    totalHeight,
-    markup: `<html xmlns="http://www.w3.org/1999/xhtml"><head><style><![CDATA[${getSvgSafeExportStyles()}
-${extraStyles}]]></style></head><body class="pdf-export-body" style="${escapeAttribute(rootStyle)}">${articleMarkup}</body></html>`,
-  };
-}
-
-function loadObjectUrlImage(url) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.decoding = "sync";
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("Failed to load the rendered export image."));
-    image.src = url;
-  });
-}
-
-async function renderMarkupToCanvas(markup, width, height) {
-  const scale = getPdfRenderScale(width, height);
-  const canvasWidth = Math.max(1, Math.round(width * scale));
-  const canvasHeight = Math.max(1, Math.round(height * scale));
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${canvasHeight}" viewBox="0 0 ${width} ${height}">
-  <foreignObject x="0" y="0" width="100%" height="100%">${markup}</foreignObject>
-</svg>`;
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-
-  try {
-    const image = await loadObjectUrlImage(url);
-    const canvas = document.createElement("canvas");
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-      throw new Error("Canvas rendering is unavailable in this browser.");
-    }
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    return canvas;
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
 function canvasToBlob(canvas, type, quality) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -10551,117 +10565,6 @@ function canvasToBlob(canvas, type, quality) {
       reject(new Error("Failed to create a downloadable file."));
     }, type, quality);
   });
-}
-
-async function sliceCanvasToJpegs(sourceCanvas) {
-  const pages = [];
-  const sourceWidth = sourceCanvas.width;
-  const pageSliceHeight = Math.max(1, Math.floor(sourceWidth * PDF_PAGE_HEIGHT / PDF_PAGE_WIDTH));
-  const pageCanvas = document.createElement("canvas");
-  pageCanvas.width = sourceWidth;
-  const context = pageCanvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Canvas slicing is unavailable in this browser.");
-  }
-
-  for (let offsetY = 0; offsetY < sourceCanvas.height; offsetY += pageSliceHeight) {
-    const sliceHeight = Math.min(pageSliceHeight, sourceCanvas.height - offsetY);
-    pageCanvas.height = sliceHeight;
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-    context.drawImage(
-      sourceCanvas,
-      0,
-      offsetY,
-      sourceWidth,
-      sliceHeight,
-      0,
-      0,
-      sourceWidth,
-      sliceHeight
-    );
-
-    const jpegBlob = await canvasToBlob(pageCanvas, "image/jpeg", PDF_JPEG_QUALITY);
-    pages.push({
-      width: sourceWidth,
-      height: sliceHeight,
-      bytes: new Uint8Array(await jpegBlob.arrayBuffer()),
-    });
-  }
-
-  return pages;
-}
-
-function buildPdfBlob(pages) {
-  const encoder = new TextEncoder();
-  const chunks = [];
-  const offsets = [0];
-  let cursor = 0;
-  const objectCount = 2 + pages.length * 3;
-
-  const pushBytes = (value) => {
-    const bytes = value instanceof Uint8Array ? value : new Uint8Array(value);
-    chunks.push(bytes);
-    cursor += bytes.length;
-  };
-
-  const pushText = (value) => {
-    pushBytes(encoder.encode(value));
-  };
-
-  const startObject = (number) => {
-    offsets[number] = cursor;
-    pushText(`${number} 0 obj\n`);
-  };
-
-  pushBytes(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a, 0x25, 0xe2, 0xe3, 0xcf, 0xd3, 0x0a]));
-
-  startObject(1);
-  pushText("<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
-
-  startObject(2);
-  pushText(`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_, index) => `${3 + index * 3} 0 R`).join(" ")}] >>\nendobj\n`);
-
-  pages.forEach((page, index) => {
-    const pageObject = 3 + index * 3;
-    const contentObject = pageObject + 1;
-    const imageObject = pageObject + 2;
-    const pageHeight = Math.min(PDF_PAGE_HEIGHT, PDF_PAGE_WIDTH * (page.height / page.width));
-    const pageYOffset = Math.max(0, PDF_PAGE_HEIGHT - pageHeight);
-    const contentStream = encoder.encode(
-      `q\n${formatPdfNumber(PDF_PAGE_WIDTH)} 0 0 ${formatPdfNumber(pageHeight)} 0 ${formatPdfNumber(pageYOffset)} cm\n/Im${index + 1} Do\nQ`
-    );
-
-    startObject(pageObject);
-    pushText(
-      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${formatPdfNumber(PDF_PAGE_WIDTH)} ${formatPdfNumber(PDF_PAGE_HEIGHT)}] /Resources << /ProcSet [/PDF /ImageC] /XObject << /Im${index + 1} ${imageObject} 0 R >> >> /Contents ${contentObject} 0 R >>\nendobj\n`
-    );
-
-    startObject(contentObject);
-    pushText(`<< /Length ${contentStream.length} >>\nstream\n`);
-    pushBytes(contentStream);
-    pushText("\nendstream\nendobj\n");
-
-    startObject(imageObject);
-    pushText(
-      `<< /Type /XObject /Subtype /Image /Width ${page.width} /Height ${page.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${page.bytes.length} >>\nstream\n`
-    );
-    pushBytes(page.bytes);
-    pushText("\nendstream\nendobj\n");
-  });
-
-  const xrefOffset = cursor;
-  pushText(`xref\n0 ${objectCount + 1}\n`);
-  pushText("0000000000 65535 f \n");
-
-  for (let objectNumber = 1; objectNumber <= objectCount; objectNumber += 1) {
-    pushText(`${String(offsets[objectNumber] || 0).padStart(10, "0")} 00000 n \n`);
-  }
-
-  pushText(`trailer\n<< /Size ${objectCount + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
-
-  return new Blob(chunks, { type: "application/pdf" });
 }
 
 function downloadBlob(fileName, blob) {
@@ -10678,6 +10581,155 @@ function downloadBlob(fileName, blob) {
   }, 1000);
 }
 
+function getZipCrc32Table() {
+  if (getZipCrc32Table.table) {
+    return getZipCrc32Table.table;
+  }
+
+  const table = new Uint32Array(256);
+
+  for (let index = 0; index < table.length; index += 1) {
+    let value = index;
+
+    for (let bit = 0; bit < 8; bit += 1) {
+      value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+    }
+
+    table[index] = value >>> 0;
+  }
+
+  getZipCrc32Table.table = table;
+  return table;
+}
+
+function getZipCrc32(bytes) {
+  const table = getZipCrc32Table();
+  let crc = 0xffffffff;
+
+  for (let index = 0; index < bytes.length; index += 1) {
+    crc = table[(crc ^ bytes[index]) & 0xff] ^ (crc >>> 8);
+  }
+
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function writeZipUint16(target, offset, value) {
+  target[offset] = value & 0xff;
+  target[offset + 1] = (value >>> 8) & 0xff;
+}
+
+function writeZipUint32(target, offset, value) {
+  target[offset] = value & 0xff;
+  target[offset + 1] = (value >>> 8) & 0xff;
+  target[offset + 2] = (value >>> 16) & 0xff;
+  target[offset + 3] = (value >>> 24) & 0xff;
+}
+
+function getZipDateTime(date = new Date()) {
+  const year = clampNumber(date.getFullYear(), 1980, 2107, 1980);
+  const month = clampNumber(date.getMonth() + 1, 1, 12, 1);
+  const day = clampNumber(date.getDate(), 1, 31, 1);
+  const hours = clampNumber(date.getHours(), 0, 23, 0);
+  const minutes = clampNumber(date.getMinutes(), 0, 59, 0);
+  const seconds = clampNumber(Math.floor(date.getSeconds() / 2), 0, 29, 0);
+
+  return {
+    date: ((year - 1980) << 9) | (month << 5) | day,
+    time: (hours << 11) | (minutes << 5) | seconds,
+  };
+}
+
+async function buildZipBlob(entries) {
+  const encoder = new TextEncoder();
+  const now = getZipDateTime();
+  const chunks = [];
+  const centralDirectory = [];
+  let offset = 0;
+
+  for (const entry of entries) {
+    const nameBytes = encoder.encode(String(entry.name || "file"));
+    const dataBytes = new Uint8Array(await entry.blob.arrayBuffer());
+    const crc32 = getZipCrc32(dataBytes);
+    const localHeader = new Uint8Array(30 + nameBytes.length);
+    const localOffset = offset;
+
+    writeZipUint32(localHeader, 0, 0x04034b50);
+    writeZipUint16(localHeader, 4, 20);
+    writeZipUint16(localHeader, 6, 0x0800);
+    writeZipUint16(localHeader, 8, 0);
+    writeZipUint16(localHeader, 10, now.time);
+    writeZipUint16(localHeader, 12, now.date);
+    writeZipUint32(localHeader, 14, crc32);
+    writeZipUint32(localHeader, 18, dataBytes.length);
+    writeZipUint32(localHeader, 22, dataBytes.length);
+    writeZipUint16(localHeader, 26, nameBytes.length);
+    writeZipUint16(localHeader, 28, 0);
+    localHeader.set(nameBytes, 30);
+
+    chunks.push(localHeader, dataBytes);
+    offset += localHeader.length + dataBytes.length;
+
+    const centralHeader = new Uint8Array(46 + nameBytes.length);
+
+    writeZipUint32(centralHeader, 0, 0x02014b50);
+    writeZipUint16(centralHeader, 4, 20);
+    writeZipUint16(centralHeader, 6, 20);
+    writeZipUint16(centralHeader, 8, 0x0800);
+    writeZipUint16(centralHeader, 10, 0);
+    writeZipUint16(centralHeader, 12, now.time);
+    writeZipUint16(centralHeader, 14, now.date);
+    writeZipUint32(centralHeader, 16, crc32);
+    writeZipUint32(centralHeader, 20, dataBytes.length);
+    writeZipUint32(centralHeader, 24, dataBytes.length);
+    writeZipUint16(centralHeader, 28, nameBytes.length);
+    writeZipUint16(centralHeader, 30, 0);
+    writeZipUint16(centralHeader, 32, 0);
+    writeZipUint16(centralHeader, 34, 0);
+    writeZipUint16(centralHeader, 36, 0);
+    writeZipUint32(centralHeader, 38, 0);
+    writeZipUint32(centralHeader, 42, localOffset);
+    centralHeader.set(nameBytes, 46);
+    centralDirectory.push(centralHeader);
+  }
+
+  const centralDirectoryOffset = offset;
+  const centralDirectorySize = centralDirectory.reduce((sum, chunk) => sum + chunk.length, 0);
+  const endRecord = new Uint8Array(22);
+
+  centralDirectory.forEach((chunk) => {
+    chunks.push(chunk);
+    offset += chunk.length;
+  });
+
+  writeZipUint32(endRecord, 0, 0x06054b50);
+  writeZipUint16(endRecord, 4, 0);
+  writeZipUint16(endRecord, 6, 0);
+  writeZipUint16(endRecord, 8, entries.length);
+  writeZipUint16(endRecord, 10, entries.length);
+  writeZipUint32(endRecord, 12, centralDirectorySize);
+  writeZipUint32(endRecord, 16, centralDirectoryOffset);
+  writeZipUint16(endRecord, 20, 0);
+  chunks.push(endRecord);
+
+  return new Blob(chunks, { type: "application/zip" });
+}
+
+async function buildPngZipBlob(sourceCanvas, options) {
+  const title = String(options && options.title ? options.title : "");
+  const baseName = sanitizeFileName(title);
+  const blobs = await buildPngPageBlobs(sourceCanvas, options);
+  const width = String(blobs.length).length < 2 ? 2 : String(blobs.length).length;
+  const entries = blobs.map((blob, index) => ({
+    name: `${baseName}-${String(index + 1).padStart(width, "0")}.png`,
+    blob,
+  }));
+
+  return {
+    blob: await buildZipBlob(entries),
+    count: entries.length,
+  };
+}
+
 async function buildExportDocumentHtml(sourceCanvas, options) {
   const resolved = getResolvedDocumentOptions(options);
   const title = String(options && options.title ? options.title : "");
@@ -10688,6 +10740,22 @@ async function buildExportDocumentHtml(sourceCanvas, options) {
   await mountSvgMindmapsForDetachedRoot(paginated.element);
 
   return buildPagedExportHtml(paginated.element.innerHTML, title, {
+    documentTitle: title,
+    customFonts: options.customFonts,
+    ...resolved,
+  });
+}
+
+async function buildExportDocumentHtmlFromPreview(previewRoot, sourceCanvas, options) {
+  const resolved = getResolvedDocumentOptions(options);
+  const title = String(options && options.title ? options.title : "");
+  const previewClone = cleanupPreviewCloneForExport(previewRoot.cloneNode(true));
+
+  await waitForDocumentFonts(document);
+  await inlineImagesForPdf(sourceCanvas, previewClone);
+  await mountSvgMindmapsForDetachedRoot(previewClone);
+
+  return buildPagedExportHtml(previewClone.innerHTML, title, {
     documentTitle: title,
     customFonts: options.customFonts,
     ...resolved,
@@ -11398,38 +11466,115 @@ function getDispositionFileName(headerValue) {
   return "";
 }
 
-async function requestNativePdfExport(html, fileName) {
-  const response = await fetch(PDF_EXPORT_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      html,
-      fileName,
-    }),
-  });
+async function requestNativePdfExport(html, fileName, options = {}) {
+  const timeoutMs = Math.max(1000, Number(options.timeoutMs) || PDF_EXPORT_REQUEST_TIMEOUT_MS);
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timeoutId = controller
+    ? window.setTimeout(() => controller.abort(), timeoutMs)
+    : 0;
 
-  if (!response.ok) {
-    let message = `PDF export failed with status ${response.status}.`;
+  try {
+    const response = await fetch(PDF_EXPORT_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: controller ? controller.signal : undefined,
+      body: JSON.stringify({
+        html,
+        fileName,
+      }),
+    });
 
-    try {
-      const payload = await response.json();
+    if (!response.ok) {
+      let message = `PDF export failed with status ${response.status}.`;
 
-      if (payload && payload.error) {
-        message = payload.error;
+      try {
+        const payload = await response.json();
+
+        if (payload && payload.error) {
+          message = payload.error;
+        }
+      } catch (_error) {
+        // Ignore non-JSON error bodies.
       }
-    } catch (_error) {
-      // Ignore non-JSON error bodies.
+
+      throw new Error(message);
     }
 
-    throw new Error(message);
-  }
+    return {
+      blob: await response.blob(),
+      fileName: getDispositionFileName(response.headers.get("content-disposition")) || fileName,
+    };
+  } catch (error) {
+    const aborted = error && (error.name === "AbortError" || /timeout/i.test(String(error.message || "")));
 
-  return {
-    blob: await response.blob(),
-    fileName: getDispositionFileName(response.headers.get("content-disposition")) || fileName,
-  };
+    if (aborted) {
+      throw new Error("PDF 导出超时，请重试；如果连续超时，通常是当前内容过大或服务端卡住了。");
+    }
+
+    throw error;
+  } finally {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
+  }
+}
+
+async function requestNativePngZipExport(html, fileName, options = {}) {
+  const timeoutMs = Math.max(1000, Number(options.timeoutMs) || PDF_EXPORT_REQUEST_TIMEOUT_MS);
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timeoutId = controller
+    ? window.setTimeout(() => controller.abort(), timeoutMs)
+    : 0;
+
+  try {
+    const response = await fetch(PNG_ZIP_EXPORT_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: controller ? controller.signal : undefined,
+      body: JSON.stringify({
+        html,
+        fileName,
+      }),
+    });
+
+    if (!response.ok) {
+      let message = `PNG ZIP export failed with status ${response.status}.`;
+
+      try {
+        const payload = await response.json();
+
+        if (payload && payload.error) {
+          message = payload.error;
+        }
+      } catch (_error) {
+        // Ignore non-JSON error bodies.
+      }
+
+      throw new Error(message);
+    }
+
+    return {
+      blob: await response.blob(),
+      fileName: getDispositionFileName(response.headers.get("content-disposition")) || fileName,
+      pageCount: Number(response.headers.get("x-export-page-count")) || 0,
+    };
+  } catch (error) {
+    const aborted = error && (error.name === "AbortError" || /timeout/i.test(String(error.message || "")));
+
+    if (aborted) {
+      throw new Error("PNG ZIP 导出超时，请重试；如果持续超时，通常是当前内容较大或导出服务卡住了。");
+    }
+
+    throw error;
+  } finally {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
+  }
 }
 
 async function requestStudyNotesGeneration({ subject, topic, sourceText }) {
@@ -11466,188 +11611,12 @@ async function requestStudyNotesGeneration({ subject, topic, sourceText }) {
   return markdown;
 }
 
-function getPdfRuntime() {
-  const html2canvasLib = typeof window !== "undefined" ? window.html2canvas : null;
-  const jsPdfCtor = typeof window !== "undefined" && window.jspdf ? window.jspdf.jsPDF : null;
-
-  if (typeof html2canvasLib !== "function" || typeof jsPdfCtor !== "function") {
-    throw new Error("PDF export libraries are unavailable.");
-  }
-
-  return {
-    html2canvas: html2canvasLib,
-    jsPDF: jsPdfCtor,
-  };
-}
-
-function copyBackgroundStyles(target, sourceStyles) {
-  target.style.backgroundColor = sourceStyles.backgroundColor;
-  target.style.backgroundImage = sourceStyles.backgroundImage;
-  target.style.backgroundRepeat = sourceStyles.backgroundRepeat;
-  target.style.backgroundPosition = sourceStyles.backgroundPosition;
-  target.style.backgroundSize = sourceStyles.backgroundSize;
-}
-
 function waitForNextPaint() {
   return new Promise((resolve) => {
     window.requestAnimationFrame(() => {
       window.requestAnimationFrame(resolve);
     });
   });
-}
-
-async function createPdfCaptureSurface(sourceCanvas, options) {
-  const bodyStyles = window.getComputedStyle(document.body);
-  const articleWidth = Math.max(1, Math.ceil(sourceCanvas.getBoundingClientRect().width));
-  const resolved = resolveArticleOptions(options);
-  const surfaceRoot = document.createElement("div");
-  const contentWrap = document.createElement("div");
-  const article = sourceCanvas.cloneNode(true);
-
-  await inlineImagesForPdf(sourceCanvas, article);
-
-  surfaceRoot.className = "pdf-capture-root";
-  surfaceRoot.setAttribute("aria-hidden", "true");
-  surfaceRoot.style.position = "absolute";
-  surfaceRoot.style.left = "-20000px";
-  surfaceRoot.style.top = "0";
-  surfaceRoot.style.width = `${articleWidth + PDF_CAPTURE_PADDING * 2}px`;
-  surfaceRoot.style.padding = `${PDF_CAPTURE_PADDING}px`;
-  surfaceRoot.style.margin = "0";
-  surfaceRoot.style.zIndex = "-1";
-  surfaceRoot.style.pointerEvents = "none";
-  surfaceRoot.style.overflow = "visible";
-  copyBackgroundStyles(surfaceRoot, bodyStyles);
-
-  contentWrap.className = "pdf-capture-content";
-  contentWrap.style.width = `${articleWidth}px`;
-  contentWrap.style.margin = "0 auto";
-  contentWrap.style.padding = "0";
-  contentWrap.style.overflow = "visible";
-  contentWrap.style.background = "transparent";
-  contentWrap.style.border = "0";
-  contentWrap.style.boxShadow = "none";
-  contentWrap.style.backdropFilter = "none";
-
-  article.removeAttribute("id");
-  article.classList.add("article-export");
-  article.dataset.mode = resolved.mode;
-  applyArticleStyleProperties(article, resolved, articleWidth);
-
-  contentWrap.appendChild(article);
-  surfaceRoot.appendChild(contentWrap);
-  document.body.appendChild(surfaceRoot);
-
-  await waitForDocumentFonts(document);
-  await Promise.all(Array.from(surfaceRoot.querySelectorAll("img")).map(waitForImage));
-  await waitForNextPaint();
-  mountSvgMindmaps(article);
-  await waitForNextPaint();
-
-  return {
-    element: surfaceRoot,
-    cleanup() {
-      surfaceRoot.remove();
-    },
-  };
-}
-
-async function renderCaptureSurfaceToCanvas(surfaceElement) {
-  const { html2canvas } = getPdfRuntime();
-  const captureWidth = Math.max(1, Math.ceil(surfaceElement.scrollWidth || surfaceElement.getBoundingClientRect().width));
-  const captureHeight = Math.max(1, Math.ceil(surfaceElement.scrollHeight || surfaceElement.getBoundingClientRect().height));
-  const scale = getPdfRenderScale(captureWidth, captureHeight);
-
-  return html2canvas(surfaceElement, {
-    backgroundColor: null,
-    scale,
-    useCORS: true,
-    logging: false,
-    imageTimeout: 0,
-    removeContainer: true,
-    foreignObjectRendering: false,
-    width: captureWidth,
-    height: captureHeight,
-    scrollX: 0,
-    scrollY: 0,
-    windowWidth: captureWidth,
-    windowHeight: captureHeight,
-  });
-}
-
-function buildPdfWithJsPdf(sourceCanvas) {
-  const { jsPDF } = getPdfRuntime();
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "pt",
-    format: "a4",
-    compress: true,
-  });
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const sourceWidth = sourceCanvas.width;
-  const pageSliceHeight = Math.max(1, Math.floor(sourceWidth * pageHeight / pageWidth));
-  const pageCanvas = document.createElement("canvas");
-  const context = pageCanvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Canvas PDF rendering is unavailable in this browser.");
-  }
-
-  pageCanvas.width = sourceWidth;
-
-  for (let offsetY = 0, pageIndex = 0; offsetY < sourceCanvas.height; offsetY += pageSliceHeight, pageIndex += 1) {
-    const sliceHeight = Math.min(pageSliceHeight, sourceCanvas.height - offsetY);
-    const renderHeight = pageWidth * (sliceHeight / sourceWidth);
-
-    pageCanvas.height = sliceHeight;
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-    context.drawImage(
-      sourceCanvas,
-      0,
-      offsetY,
-      sourceWidth,
-      sliceHeight,
-      0,
-      0,
-      sourceWidth,
-      sliceHeight
-    );
-
-    if (pageIndex > 0) {
-      pdf.addPage();
-    }
-
-    pdf.addImage(
-      pageCanvas.toDataURL("image/jpeg", PDF_JPEG_QUALITY),
-      "JPEG",
-      0,
-      0,
-      pageWidth,
-      renderHeight,
-      undefined,
-      "FAST"
-    );
-  }
-
-  return pdf.output("blob");
-}
-
-async function exportCanvasToPdf(sourceCanvas, options) {
-  const captureSurface = await createPdfCaptureSurface(sourceCanvas, options);
-
-  try {
-    const renderedCanvas = await renderCaptureSurfaceToCanvas(captureSurface.element);
-
-    if (!renderedCanvas.width || !renderedCanvas.height) {
-      throw new Error("The export result is empty.");
-    }
-
-    return buildPdfWithJsPdf(renderedCanvas);
-  } finally {
-    captureSurface.cleanup();
-  }
 }
 
 function openPrintPreview(html) {
@@ -11737,24 +11706,24 @@ function bindPdfExportButton(button, textarea, canvas, state, exportState, flash
 
     exportState.busy = true;
     button.disabled = true;
-    flashStatus("正在导出 PDF...");
+    setExportProgress(4, "正在启动 PDF 导出...");
 
     try {
       const title = extractTitle(textarea.value);
       const fileName = `${sanitizeFileName(title)}.pdf`;
-      const html = await buildExportDocumentHtml(canvas, {
+      await runPdfExportFlow({
+        sourceCanvas: canvas,
         title,
-        ...getArticleExportOptions(state),
+        fileName,
+        buildOptions: {
+          title,
+          ...getArticleExportOptions(state),
+        },
       });
-      const result = await requestNativePdfExport(html, fileName);
-
-      downloadBlob(result.fileName || fileName, result.blob);
-      flashStatus("PDF 已导出");
     } catch (error) {
       console.error(error);
-      const message = error && error.message ? error.message : "";
-      const needsServerHint = /fetch|network|failed|127\.0\.0\.1|ECONNREFUSED|ERR_CONNECTION_REFUSED/i.test(message);
-      flashStatus(needsServerHint ? "请先运行 npm start，再导出 PDF" : "PDF 导出失败，请重试");
+      clearExportProgress();
+      flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
     } finally {
       exportState.busy = false;
       button.disabled = false;
@@ -13400,6 +13369,51 @@ function createLayoutPresetPreviewSvg(preset, mode) {
   return wrap;
 }
 
+function createQuestionAnswerLayoutPreviewSvg(layout) {
+  const wrap = document.createElement("span");
+  const svg = createSvgElement("svg", {
+    viewBox: "0 0 120 72",
+    "aria-hidden": "true",
+    focusable: "false",
+  });
+  const card = (x, y, width, height, className = "question-answer-layout-svg-card") => {
+    svg.appendChild(createSvgElement("rect", { x, y, width, height, rx: 5, class: className }));
+  };
+  const line = (x, y, width, className = "question-answer-layout-svg-line") => {
+    svg.appendChild(createSvgElement("rect", { x, y, width, height: 3, rx: 1.5, class: className }));
+  };
+
+  wrap.className = `question-answer-layout-preview question-answer-layout-preview-${layout}`;
+  svg.classList.add("question-answer-layout-svg");
+  svg.appendChild(createSvgElement("rect", { x: 0, y: 0, width: 120, height: 72, rx: 12, class: "question-answer-layout-svg-backdrop" }));
+  svg.appendChild(createSvgElement("path", { d: "M0 0H120V24C95 17 75 28 52 23C29 18 15 18 0 24Z", class: "question-answer-layout-svg-wash" }));
+  svg.appendChild(createSvgElement("rect", { x: 8, y: 7, width: 104, height: 58, rx: 10, class: "question-answer-layout-svg-page" }));
+
+  if (layout === "separated") {
+    card(16, 16, 37, 16, "question-answer-layout-svg-card question-answer-layout-svg-card-primary");
+    line(22, 21, 21, "question-answer-layout-svg-line question-answer-layout-svg-line-strong");
+    line(22, 27, 17);
+    card(16, 40, 37, 11);
+    card(64, 16, 39, 36, "question-answer-layout-svg-card question-answer-layout-svg-card-accent");
+    line(70, 22, 22, "question-answer-layout-svg-line question-answer-layout-svg-line-strong");
+    line(70, 29, 27);
+    line(70, 36, 19);
+    svg.appendChild(createSvgElement("path", { d: "M58 34H61", class: "question-answer-layout-svg-divider" }));
+  } else {
+    card(15, 15, 90, 16, "question-answer-layout-svg-card question-answer-layout-svg-card-primary");
+    line(22, 21, 34, "question-answer-layout-svg-line question-answer-layout-svg-line-strong");
+    line(22, 27, 23);
+    card(15, 39, 42, 14);
+    card(63, 39, 42, 14, "question-answer-layout-svg-card question-answer-layout-svg-card-accent");
+    line(21, 45, 18);
+    line(69, 45, 17, "question-answer-layout-svg-line question-answer-layout-svg-line-strong");
+    line(69, 50, 23);
+  }
+
+  wrap.appendChild(svg);
+  return wrap;
+}
+
 function createRibbonTabIcon(tabName) {
   const svg = createSvgElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false" });
 
@@ -13472,6 +13486,9 @@ async function initPagedApp() {
   const textarea = document.getElementById("markdownInput");
   const canvas = document.getElementById("articleCanvas");
   const statusText = document.getElementById("statusText");
+  const exportProgress = document.getElementById("exportProgress");
+  const exportProgressBar = document.getElementById("exportProgressBar");
+  const exportProgressText = document.getElementById("exportProgressText");
   const previewNote = document.querySelector(".preview-note");
   const fileInput = document.getElementById("fileInput");
   const pdfInput = document.getElementById("pdfInput");
@@ -13531,6 +13548,7 @@ async function initPagedApp() {
   const inspectorToggle = document.getElementById("inspectorToggle");
   const previewEditorTools = document.getElementById("previewEditorTools");
   const elementStylePanel = document.getElementById("elementStylePanel");
+  const settingsRibbon = document.getElementById("settingsRibbon");
   const elementStyleTitle = elementStylePanel?.querySelector(".element-style-title");
   const elementStyleNote = elementStylePanel?.querySelector(".element-style-note");
   const elementStyleGrid = elementStylePanel?.querySelector(".element-style-grid");
@@ -13539,6 +13557,7 @@ async function initPagedApp() {
   let cardLayoutTarget = null;
   let cardLayoutResetBtn = null;
   let cardLayoutControls = [];
+  let activeSettingsSection = "";
   const textColorButtons = Array.from(document.querySelectorAll("[data-text-color]"));
   const selectionAlignButtons = Array.from(document.querySelectorAll("[data-selection-align]"));
   const paragraphStepButtons = Array.from(document.querySelectorAll("[data-paragraph-step]"));
@@ -13556,6 +13575,14 @@ async function initPagedApp() {
   const previewPaginationStrategySelect = document.getElementById("previewPaginationStrategySelect");
   const exportBackgroundInput = document.getElementById("exportBackgroundInput");
   const exportBackgroundName = document.getElementById("exportBackgroundName");
+
+  [document.getElementById("paragraphSpacingValue"), document.getElementById("blockInnerSpacingValue"), document.getElementById("blockTitleSpacingValue")]
+    .forEach((display) => {
+      if (display) {
+        display.dataset.numericControl = "plain";
+        display.dataset.valueFormat = "plain-number";
+      }
+    });
   const clearExportBackgroundBtn = document.getElementById("clearExportBackgroundBtn");
   const exportBackgroundPresetGrid = document.getElementById("exportBackgroundPresetGrid");
   let exportBackgroundPresetButtons = [];
@@ -13578,6 +13605,127 @@ async function initPagedApp() {
     return;
   }
 
+  if (settingsRibbon && elementStylePanel && elementStylePanel.parentElement !== settingsRibbon) {
+    settingsRibbon.appendChild(elementStylePanel);
+  }
+
+  function getSettingsSectionLabel(panel) {
+    if (!panel) {
+      return "";
+    }
+
+    if (panel.id === "elementStylePanel") {
+      return "元素参数";
+    }
+
+    const heading = panel.querySelector(":scope > .option-heading .option-label, :scope > .element-style-head .element-style-title");
+    const presetKicker = panel.querySelector(":scope > .layout-preset-head .layout-preset-kicker, :scope > .question-answer-layout-head .question-answer-layout-kicker");
+    const clusterTitle = panel.querySelector(":scope > .cluster-head .cluster-title");
+    return (heading || presetKicker || clusterTitle)?.textContent?.trim() || "参数组";
+  }
+
+  function getSettingsSectionSummary(panel) {
+    if (!panel) {
+      return "";
+    }
+
+    if (panel.id === "elementStylePanel") {
+      return elementStyleNote?.textContent?.trim() || "选中标题、段落或卡片后精调。";
+    }
+
+    const note = panel.querySelector(":scope > .option-heading .option-note, :scope > .element-style-head .element-style-note, :scope > .layout-preset-head .layout-preset-note, :scope > .question-answer-layout-head .question-answer-layout-note, :scope > .cluster-head .cluster-note");
+    return note?.textContent?.trim() || "";
+  }
+
+  function ensureSettingsSection(panel, sectionId, fallbackSummary = "") {
+    if (!settingsRibbon || !panel || panel.dataset.settingsSectionReady === "true") {
+      return;
+    }
+
+    const header = document.createElement("button");
+    const label = document.createElement("span");
+    const summary = document.createElement("span");
+    const body = document.createElement("div");
+    const content = Array.from(panel.childNodes);
+    const safeId = sectionId || panel.id || `settings-section-${Math.random().toString(36).slice(2)}`;
+
+    panel.dataset.settingsSectionReady = "true";
+    panel.dataset.settingsSection = safeId;
+    panel.classList.add("settings-section");
+
+    header.type = "button";
+    header.className = "settings-section-trigger";
+    header.dataset.settingsSectionTrigger = safeId;
+    header.setAttribute("aria-expanded", "false");
+
+    label.className = "settings-section-label";
+    label.textContent = getSettingsSectionLabel(panel);
+    summary.className = "settings-section-summary";
+    summary.textContent = getSettingsSectionSummary(panel) || fallbackSummary;
+
+    body.className = "settings-section-body";
+    body.id = `${safeId}Body`;
+    header.setAttribute("aria-controls", body.id);
+
+    content.forEach((node) => body.appendChild(node));
+    header.append(label, summary);
+    panel.append(header, body);
+
+    header.addEventListener("click", () => {
+      setActiveSettingsSection(panel.dataset.settingsSection || safeId);
+    });
+  }
+
+  function refreshSettingsSectionSummaries() {
+    if (!settingsRibbon) {
+      return;
+    }
+
+    settingsRibbon.querySelectorAll(".settings-section").forEach((panel) => {
+      const summary = panel.querySelector(":scope > .settings-section-trigger .settings-section-summary");
+      if (summary) {
+        summary.textContent = getSettingsSectionSummary(panel) || summary.textContent;
+      }
+    });
+  }
+
+  function setActiveSettingsSection(sectionId) {
+    if (!settingsRibbon || !sectionId) {
+      return;
+    }
+
+    activeSettingsSection = sectionId;
+
+    settingsRibbon.querySelectorAll(".settings-section").forEach((panel) => {
+      const selected = panel.dataset.settingsSection === activeSettingsSection;
+      const trigger = panel.querySelector(":scope > .settings-section-trigger");
+      panel.classList.toggle("is-open", selected);
+      trigger?.setAttribute("aria-expanded", String(selected));
+    });
+  }
+
+  function getDefaultSettingsSectionForRibbon(tab) {
+    if (tab === "layout") return "page";
+    if (tab === "design") return "theme";
+    return "spacing";
+  }
+
+  function setupSettingsSections() {
+    if (!settingsRibbon || settingsRibbon.dataset.settingsSectionsMounted === "true") {
+      return;
+    }
+
+    settingsRibbon.dataset.settingsSectionsMounted = "true";
+    ensureSettingsSection(document.querySelector(".option-panel-spacing"), "spacing", "块间距、块内间距、标题正文距");
+    ensureSettingsSection(document.querySelector(".option-panel-mode"), "mode", "版式模式、预览卡片、答案结构");
+    ensureSettingsSection(document.querySelector(".option-panel-type"), "type", "字体、字号、行距、标题节奏");
+    ensureSettingsSection(document.querySelector(".option-panel-page"), "page", "纸张、页边距、页眉与背景");
+    ensureSettingsSection(document.querySelector(".option-panel-theme"), "theme", "主题配色");
+    ensureSettingsSection(document.querySelector(".option-panel-brush"), "brush", "重点标记与画笔");
+    ensureSettingsSection(elementStylePanel, "element", "选中标题、段落或卡片后精调");
+    setActiveSettingsSection("spacing");
+  }
+
   function ensureLayoutPresetPicker() {
     const existingPicker = document.getElementById("layoutPresetPicker");
 
@@ -13598,7 +13746,8 @@ async function initPagedApp() {
     const select = document.createElement("select");
     const picker = document.createElement("div");
 
-    panel.className = "layout-preset-panel";
+    panel.className = "layout-preset-panel mode-subpanel mode-subpanel-layout";
+    panel.dataset.settingsSubsection = "layout-preset";
     heading.className = "layout-preset-head";
     kicker.className = "layout-preset-kicker";
     note.className = "layout-preset-note";
@@ -13619,6 +13768,7 @@ async function initPagedApp() {
     panel.appendChild(select);
     panel.appendChild(picker);
     anchor.insertAdjacentElement("afterend", panel);
+    panel.closest(".settings-section")?.classList.add("has-layout-presets");
 
     return picker;
   }
@@ -13645,7 +13795,8 @@ async function initPagedApp() {
     const select = document.createElement("select");
     const picker = document.createElement("div");
 
-    panel.className = "question-answer-layout-panel";
+    panel.className = "question-answer-layout-panel mode-subpanel mode-subpanel-answer";
+    panel.dataset.settingsSubsection = "question-answer-layout";
     heading.className = "question-answer-layout-head";
     kicker.className = "question-answer-layout-kicker";
     note.className = "question-answer-layout-note";
@@ -13662,6 +13813,7 @@ async function initPagedApp() {
 
     Object.entries(QUESTION_ANSWER_LAYOUTS).forEach(([layout, meta]) => {
       const button = document.createElement("button");
+      const preview = createQuestionAnswerLayoutPreviewSvg(layout);
       const title = document.createElement("span");
       const summary = document.createElement("span");
 
@@ -13675,6 +13827,7 @@ async function initPagedApp() {
       title.textContent = meta.label;
       summary.textContent = meta.summary;
 
+      button.appendChild(preview);
       button.appendChild(title);
       button.appendChild(summary);
       picker.appendChild(button);
@@ -13721,6 +13874,8 @@ async function initPagedApp() {
     lineHeight: DEFAULT_LINE_HEIGHT,
     letterSpacing: DEFAULT_LETTER_SPACING,
     paragraphSpacing: DEFAULT_PARAGRAPH_SPACING,
+    blockInnerSpacing: DEFAULT_BLOCK_INNER_SPACING,
+    blockTitleSpacing: DEFAULT_BLOCK_TITLE_SPACING,
     paragraphIndent: DEFAULT_PARAGRAPH_INDENT,
     heading1LineHeight: DEFAULT_HEADING1_LINE_HEIGHT,
     heading2LineHeight: DEFAULT_HEADING2_LINE_HEIGHT,
@@ -14070,6 +14225,8 @@ async function initPagedApp() {
       panel.hidden = !isVisible;
     });
 
+    setActiveSettingsSection(getDefaultSettingsSectionForRibbon(activeRibbonTab));
+
     try {
       window.localStorage.setItem(STORAGE_KEYS.ribbonTab, activeRibbonTab);
     } catch (_error) {
@@ -14087,6 +14244,11 @@ async function initPagedApp() {
 
     if (elementStylePanel) {
       elementStylePanel.hidden = !showInspector;
+    }
+
+    if (showInspector) {
+      setActiveSettingsSection("element");
+      refreshSettingsSectionSummaries();
     }
 
     previewToolsToggle?.classList.toggle("is-active", showTools);
@@ -14174,6 +14336,8 @@ async function initPagedApp() {
     if (elementStyleNote) {
       elementStyleNote.textContent = `当前：${activeGroup.label}`;
     }
+
+    refreshSettingsSectionSummaries();
   }
 
   function selectElementStyleGroup(groupId, { open = true } = {}) {
@@ -14187,6 +14351,7 @@ async function initPagedApp() {
 
     if (open) {
       setPreviewDrawer("inspector");
+      setActiveSettingsSection("element");
     }
   }
 
@@ -14294,6 +14459,7 @@ async function initPagedApp() {
 
     panel.id = "cardLayoutPanel";
     panel.className = "card-layout-panel";
+    panel.dataset.settingsSubsection = "card-layout";
     panel.hidden = true;
     head.className = "card-layout-head";
     title.className = "card-layout-title";
@@ -14751,6 +14917,133 @@ async function initPagedApp() {
     statusText.textContent = message;
   }
 
+  function setExportProgress(progress, message) {
+    if (message) {
+      showPersistentStatus(message);
+    }
+
+    if (!exportProgress || !exportProgressBar || !exportProgressText) {
+      return;
+    }
+
+    const value = clampNumber(progress, 0, 100, 0);
+    exportProgress.hidden = false;
+    exportProgress.setAttribute("aria-hidden", "false");
+    exportProgressBar.style.width = `${value}%`;
+    exportProgressText.textContent = message || "正在导出...";
+  }
+
+  function clearExportProgress() {
+    if (!exportProgress || !exportProgressBar || !exportProgressText) {
+      return;
+    }
+
+    exportProgress.hidden = true;
+    exportProgress.setAttribute("aria-hidden", "true");
+    exportProgressBar.style.width = "0%";
+    exportProgressText.textContent = "";
+  }
+
+  async function buildCurrentExportHtml(title) {
+    await waitForNextPaint();
+    return buildExportDocumentHtmlFromPreview(canvas, measureCanvas, getDocumentOptions(title));
+  }
+
+  async function runPngZipExportFlow({ title, fileName, statusLabel }) {
+    setExportProgress(8, `正在准备${statusLabel}...`);
+    setExportProgress(24, "正在整理当前预览页面...");
+    const html = await buildCurrentExportHtml(title);
+    setExportProgress(58, `正在生成${statusLabel}...`);
+    const result = await requestNativePngZipExport(html, fileName, {
+      timeoutMs: PDF_EXPORT_REQUEST_TIMEOUT_MS,
+    });
+    setExportProgress(92, `${statusLabel}已生成，正在下载...`);
+    downloadBlob(result.fileName || fileName, result.blob);
+    setExportProgress(100, `${statusLabel}已导出`);
+    flashStatus(result.pageCount > 0 ? `${statusLabel}已导出，共 ${result.pageCount} 页` : `${statusLabel}已导出`);
+  }
+
+  function openBlobInPreviewWindow(previewWindow, blob) {
+    const objectUrl = URL.createObjectURL(blob);
+    const targetWindow = previewWindow && !previewWindow.closed ? previewWindow : null;
+
+    if (targetWindow) {
+      targetWindow.location.href = objectUrl;
+    } else {
+      const openedWindow = window.open(objectUrl, "_blank", "noopener");
+      if (!openedWindow) {
+        window.setTimeout(() => {
+          URL.revokeObjectURL(objectUrl);
+        }, 1000);
+        return false;
+      }
+    }
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(objectUrl);
+    }, 60000);
+    return true;
+  }
+
+  async function runBrowserPrintFlow(previewWindow, title) {
+    const fileName = `${sanitizeFileName(title)}.pdf`;
+
+    setExportProgress(8, "正在准备浏览器打印...");
+    setExportProgress(24, "正在整理当前预览页面...");
+    const html = await buildCurrentExportHtml(title);
+    setExportProgress(58, "正在生成打印 PDF...");
+    const result = await requestNativePdfExport(html, fileName, {
+      timeoutMs: PDF_EXPORT_REQUEST_TIMEOUT_MS,
+    });
+    setExportProgress(92, "打印 PDF 已生成，正在打开...");
+
+    if (!openBlobInPreviewWindow(previewWindow, result.blob)) {
+      downloadBlob(result.fileName || fileName, result.blob);
+      throw new Error("浏览器拦截了打印预览新窗口，已直接下载 PDF。");
+    }
+
+    setExportProgress(100, "打印预览已打开");
+    flashStatus("打印预览已打开，请在新标签页中使用浏览器打印。");
+  }
+
+  async function runPdfExportFlow({ sourceCanvas, previewCanvas, title, fileName, buildOptions }) {
+    let stallHintTimer = 0;
+
+    try {
+      setExportProgress(8, "正在准备 PDF 导出...");
+      await waitForNextPaint();
+
+      setExportProgress(24, "正在整理当前预览页面...");
+      const html = previewCanvas
+        ? await buildExportDocumentHtmlFromPreview(previewCanvas, sourceCanvas, buildOptions)
+        : await buildExportDocumentHtml(sourceCanvas, buildOptions);
+
+      setExportProgress(52, "正在发送到导出服务...");
+      stallHintTimer = window.setTimeout(() => {
+        setExportProgress(68, "导出服务响应较慢，仍在继续生成，请稍等...");
+      }, PDF_EXPORT_STALL_HINT_MS);
+
+      let result = null;
+
+      result = await requestNativePdfExport(html, fileName, {
+        timeoutMs: PDF_EXPORT_REQUEST_TIMEOUT_MS,
+      });
+
+      window.clearTimeout(stallHintTimer);
+      setExportProgress(92, "PDF 已生成，正在下载...");
+      downloadBlob(result.fileName || fileName, result.blob);
+      setExportProgress(100, "PDF 已导出");
+      flashStatus("PDF 已导出");
+    } catch (error) {
+      window.clearTimeout(stallHintTimer);
+      throw error;
+    } finally {
+      window.setTimeout(() => {
+        clearExportProgress();
+      }, 1000);
+    }
+  }
+
   function setAiNoteStatus(message) {
     if (aiNoteStatus) {
       aiNoteStatus.textContent = message || "";
@@ -15170,10 +15463,10 @@ async function initPagedApp() {
     const clickedCard = getCardLayoutElementFromTarget(event.target);
     if (clickedCard && !event.target.closest?.(".card-layout-drag-handle")) {
       selectCardLayout(clickedCard);
-      selectElementStyleGroup("card", { open: false });
+      selectElementStyleGroup("card");
     } else if (!event.target.closest?.(".element-style-panel, .card-layout-panel")) {
       clearCardLayoutSelection();
-      selectElementStyleGroup(getGroupIdForPreviewElement(event.target), { open: false });
+      selectElementStyleGroup(getGroupIdForPreviewElement(event.target));
     }
 
     const mathElement = getPreviewMathElement(canvas, event.target);
@@ -15249,6 +15542,11 @@ async function initPagedApp() {
     return markdown;
   }
 
+  function cancelPendingPreviewSync() {
+    window.clearTimeout(previewSyncTimer);
+    previewHasPendingSync = false;
+  }
+
   function schedulePreviewSync() {
     previewHasPendingSync = true;
     window.clearTimeout(previewSyncTimer);
@@ -15283,7 +15581,7 @@ async function initPagedApp() {
       const selectedCard = getCardLayoutElementFromTarget(selectedElement);
       if (selectedCard) {
         selectCardLayout(selectedCard);
-        selectElementStyleGroup("card", { open: false });
+        selectElementStyleGroup("card");
         if (range.collapsed) {
           return;
         }
@@ -15291,7 +15589,7 @@ async function initPagedApp() {
         return;
       }
 
-      selectElementStyleGroup(getGroupIdForPreviewElement(selectedElement), { open: false });
+      selectElementStyleGroup(getGroupIdForPreviewElement(selectedElement));
     }
 
     if (range.collapsed) {
@@ -15696,7 +15994,11 @@ async function initPagedApp() {
 
   function renderNow() {
     if (previewHasPendingSync) {
-      syncPreviewToTextarea();
+      if (document.activeElement === textarea) {
+        cancelPendingPreviewSync();
+      } else {
+        syncPreviewToTextarea();
+      }
     }
 
     const markdown = textarea.value;
@@ -15759,7 +16061,10 @@ async function initPagedApp() {
     renderTimer = window.setTimeout(renderNow, 80);
   }
 
-  textarea.addEventListener("input", scheduleRender);
+  textarea.addEventListener("input", () => {
+    cancelPendingPreviewSync();
+    scheduleRender();
+  });
   textarea.addEventListener("focus", () => {
     previewSelectionRange = null;
     previewSelectionHost = null;
@@ -16518,26 +16823,179 @@ async function initPagedApp() {
 
     exportBusy = true;
     exportButton.disabled = true;
-    flashStatus("正在导出 PDF...");
+    setExportProgress(4, "正在启动 PDF 导出...");
 
     try {
       const title = extractTitle(textarea.value);
       const fileName = `${sanitizeFileName(title)}.pdf`;
-      const html = await buildExportDocumentHtml(measureCanvas, getDocumentOptions(title));
-      const result = await requestNativePdfExport(html, fileName);
-
-      downloadBlob(result.fileName || fileName, result.blob);
-      flashStatus("PDF 已导出");
+      await runPdfExportFlow({
+        sourceCanvas: measureCanvas,
+        previewCanvas: canvas,
+        title,
+        fileName,
+        buildOptions: getDocumentOptions(title),
+      });
     } catch (error) {
       console.error(error);
-      const message = error && error.message ? error.message : "";
-      const needsServerHint = /fetch|network|failed|127\.0\.0\.1|ECONNREFUSED|ERR_CONNECTION_REFUSED/i.test(message);
-      flashStatus(needsServerHint ? "请先运行 npm start，再导出 PDF" : "PDF 导出失败，请重试");
+      clearExportProgress();
+      flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
     } finally {
       exportBusy = false;
       exportButton.disabled = false;
     }
   });
+
+  const bindUnifiedExportButton = (button, configureButton, onClick) => {
+    if (!button || !button.parentNode) {
+      return button;
+    }
+
+    const replacementButton = button.cloneNode(true);
+    if (typeof configureButton === "function") {
+      configureButton(replacementButton);
+    }
+    button.replaceWith(replacementButton);
+    replacementButton.addEventListener("click", () => {
+      renderNow();
+    }, { capture: true });
+    replacementButton.addEventListener("click", () => onClick(replacementButton));
+    return replacementButton;
+  };
+
+  bindUnifiedExportButton(downloadPngBtn, (button) => {
+    button.textContent = "导 PNG ZIP";
+    button.setAttribute("aria-label", "导 PNG ZIP");
+  }, async (button) => {
+    if (exportBusy) {
+      return;
+    }
+
+    exportBusy = true;
+    button.disabled = true;
+
+    try {
+      const title = extractTitle(textarea.value);
+      const fileBaseName = sanitizeFileName(title);
+      await runPngZipExportFlow({
+        title,
+        fileName: `${fileBaseName}.zip`,
+        statusLabel: "PNG ZIP",
+      });
+    } catch (error) {
+      console.error(error);
+      clearExportProgress();
+      flashStatus(error && error.message ? error.message : "PNG ZIP 导出失败，请重试");
+    } finally {
+      exportBusy = false;
+      button.disabled = false;
+      window.setTimeout(() => {
+        clearExportProgress();
+      }, 1000);
+    }
+  });
+
+  bindUnifiedExportButton(downloadImageGroupBtn, (button) => {
+    button.textContent = "导图片组 ZIP";
+    button.setAttribute("aria-label", "导图片组 ZIP");
+  }, async (button) => {
+    if (exportBusy) {
+      return;
+    }
+
+    exportBusy = true;
+    button.disabled = true;
+
+    try {
+      const title = extractTitle(textarea.value);
+      const fileBaseName = sanitizeFileName(title);
+      await runPngZipExportFlow({
+        title,
+        fileName: `${fileBaseName}.zip`,
+        statusLabel: "图片组 ZIP",
+      });
+    } catch (error) {
+      console.error(error);
+      clearExportProgress();
+      flashStatus(error && error.message ? error.message : "图片组 ZIP 导出失败，请重试");
+    } finally {
+      exportBusy = false;
+      button.disabled = false;
+      window.setTimeout(() => {
+        clearExportProgress();
+      }, 1000);
+    }
+  });
+
+  exportButton = bindUnifiedExportButton(exportButton, (button) => {
+    button.textContent = "导出 PDF";
+    button.setAttribute("aria-label", "导出 PDF");
+  }, async (button) => {
+    if (exportBusy) {
+      return;
+    }
+
+    exportBusy = true;
+    button.disabled = true;
+    setExportProgress(4, "正在启动 PDF 导出...");
+
+    try {
+      const title = extractTitle(textarea.value);
+      const fileName = `${sanitizeFileName(title)}.pdf`;
+      await runPdfExportFlow({
+        sourceCanvas: measureCanvas,
+        previewCanvas: canvas,
+        title,
+        fileName,
+        buildOptions: getDocumentOptions(title),
+      });
+    } catch (error) {
+      console.error(error);
+      clearExportProgress();
+      flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
+    } finally {
+      exportBusy = false;
+      button.disabled = false;
+    }
+  });
+
+  if (toolbarExportMenu && !document.getElementById("browserPrintBtn")) {
+    const browserPrintBtn = document.createElement("button");
+    browserPrintBtn.id = "browserPrintBtn";
+    browserPrintBtn.type = "button";
+    browserPrintBtn.textContent = "浏览器打印";
+    toolbarExportMenu.appendChild(browserPrintBtn);
+    browserPrintBtn.addEventListener("click", () => {
+      renderNow();
+    }, { capture: true });
+    browserPrintBtn.addEventListener("click", async () => {
+      if (exportBusy) {
+        return;
+      }
+
+      const previewWindow = window.open("", "_blank");
+
+      exportBusy = true;
+      browserPrintBtn.disabled = true;
+
+      try {
+        const title = extractTitle(textarea.value);
+        await runBrowserPrintFlow(previewWindow, title);
+      } catch (error) {
+        console.error(error);
+        clearExportProgress();
+        if (previewWindow && !previewWindow.closed) {
+          previewWindow.close();
+        }
+        flashStatus(error && error.message ? error.message : "浏览器打印打开失败，请重试");
+      } finally {
+        exportBusy = false;
+        browserPrintBtn.disabled = false;
+        window.setTimeout(() => {
+          clearExportProgress();
+        }, 1000);
+      }
+    });
+  }
 
   let initialText = SAMPLE_MARKDOWN;
 
@@ -16679,9 +17137,10 @@ async function initPagedApp() {
   textarea.value = initialText;
   setupRibbonTabIcons(ribbonTabs);
   setupWorkspaceViewTabs();
+  setupSettingsSections();
   applyRibbonTab(activeRibbonTab);
   applyUiState();
-  setPreviewDrawer("tools");
+  setPreviewDrawer("");
   renderNow();
   cachedExportStyles = getExportStyles();
 }

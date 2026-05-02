@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown 自动排版工具</title>
   <link rel="stylesheet" href="vendor/katex/katex.min.css">
   <link rel="stylesheet" href="styles.css">
@@ -48,6 +47,36 @@
         </div>
 
         <div class="settings-grid" id="settingsRibbon">
+          <section class="option-panel option-panel-spacing" data-ribbon-panel="home">
+            <div class="option-heading">
+              <p class="option-label">全局块间距</p>
+              <p class="option-note">控制卡片、提示块、题目块、块内小标题距离。</p>
+            </div>
+            <div class="range-grid range-grid-space">
+              <label class="range-field" for="paragraphSpacingRange">
+                <span class="range-title-row">
+                  <span class="range-title">块间距</span>
+                  <span id="paragraphSpacingValue" class="range-value">10 px</span>
+                </span>
+                <input id="paragraphSpacingRange" type="range" min="0" max="32" step="1" value="10">
+              </label>
+              <label class="range-field" for="blockInnerSpacingRange">
+                <span class="range-title-row">
+                  <span class="range-title">块内间距</span>
+                  <span id="blockInnerSpacingValue" class="range-value">12 px</span>
+                </span>
+                <input id="blockInnerSpacingRange" type="range" min="0" max="40" step="1" value="12">
+              </label>
+              <label class="range-field" for="blockTitleSpacingRange">
+                <span class="range-title-row">
+                  <span class="range-title">标题正文距</span>
+                  <span id="blockTitleSpacingValue" class="range-value">8 px</span>
+                </span>
+                <input id="blockTitleSpacingRange" type="range" min="0" max="32" step="1" value="8">
+              </label>
+            </div>
+          </section>
+
           <section class="option-panel option-panel-mode" data-ribbon-panel="home">
             <div class="option-heading">
               <p class="option-label">版式模式</p>
@@ -221,13 +250,6 @@
                   </span>
                   <input id="letterSpacingRange" type="range" min="-0.5" max="2" step="0.1" value="0">
                 </label>
-                <label class="range-field" for="blockSpacingRange">
-                  <span class="range-title-row">
-                    <span class="range-title">块间距</span>
-                    <span id="blockSpacingValue" class="range-value">10 px</span>
-                  </span>
-                  <input id="blockSpacingRange" type="range" min="0" max="28" step="1" value="10">
-                </label>
               </div>
             </div>
             <div class="panel-cluster layout-background-cluster">
@@ -266,7 +288,7 @@
                 </label>
               </div>
             </div>
-            <div class="panel-cluster">
+            <div class="panel-cluster layout-heading-space-cluster">
               <div class="cluster-head">
                 <p class="cluster-title">标题间距</p>
                 <p class="cluster-note">H1 / H2 / H3 / H4</p>
@@ -600,7 +622,15 @@
           <div class="preview-toolbar">
             <div class="preview-toolbar-meta">
               <p class="preview-label">排版预览</p>
-              <p id="statusText" class="status-text">等待输入</p>
+              <div class="status-stack">
+                <p id="statusText" class="status-text">等待输入</p>
+                <div id="exportProgress" class="export-progress" hidden aria-hidden="true">
+                  <div class="export-progress-track">
+                    <div id="exportProgressBar" class="export-progress-bar"></div>
+                  </div>
+                  <p id="exportProgressText" class="export-progress-text">正在准备导出...</p>
+                </div>
+              </div>
             </div>
           <div class="preview-toolbar-controls" aria-label="预览面板">
             <button id="previewToolsToggle" type="button" class="preview-drawer-toggle" aria-controls="previewEditorTools" aria-expanded="false">工具</button>
@@ -724,6 +754,7 @@
   <script src="vendor/katex/katex.min.js" defer></script>
   <script src="vendor/katex/contrib/mhchem.min.js" defer></script>
   <script src="vendor/html2canvas.min.js" defer></script>
+  <script src="vendor/jspdf.umd.min.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
