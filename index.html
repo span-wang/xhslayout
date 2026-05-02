@@ -44,6 +44,9 @@
           <button id="ribbonTabDesign" type="button" class="ribbon-tab" data-ribbon-tab="design" role="tab" aria-selected="false" tabindex="-1">
             设计与重点
           </button>
+          <button id="ribbonTabReview" type="button" class="ribbon-tab" data-ribbon-tab="review" role="tab" aria-selected="false" tabindex="-1">
+            定位检查
+          </button>
         </div>
 
         <div class="settings-grid" id="settingsRibbon">
@@ -746,7 +749,27 @@
         </div>
 
         <div class="preview-stage">
-          <div id="articleCanvas" class="live-preview-canvas page-preview" data-mode="knowledge"></div>
+          <div class="preview-workbench">
+            <aside id="previewWorkbenchPanel" class="preview-workbench-sidebar" hidden aria-label="内容定位和排版检查">
+              <div class="preview-workbench-cluster preview-workbench-cluster-sidebar">
+                <div class="preview-workbench-head-row">
+                  <div>
+                    <p class="preview-workbench-kicker">辅助面板</p>
+                    <h2 class="preview-workbench-title">内容定位</h2>
+                  </div>
+                  <button id="previewWorkbenchRunCheck" type="button" class="preview-workbench-action">自动检查</button>
+                </div>
+                <div id="previewWorkbenchContent" class="preview-workbench-content">
+                  <div class="preview-workbench-empty">
+                    <p>输入内容后，这里会显示快速定位和自动检查结果。</p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+            <div class="preview-canvas-shell">
+              <div id="articleCanvas" class="live-preview-canvas page-preview" data-mode="knowledge"></div>
+            </div>
+          </div>
         </div>
       </main>
     </div>

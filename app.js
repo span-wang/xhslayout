@@ -752,6 +752,7 @@ const RIBBON_TABS = {
   home: "home",
   layout: "layout",
   design: "design",
+  review: "review",
 };
 
 const ARTICLE_STYLE_CONTROLS = [
@@ -1091,6 +1092,12 @@ const ELEMENT_STYLE_SCHEMA = Object.freeze([
   }),
 ]);
 
+const BODY_ELEMENT_STYLE_FIELD_MAPPINGS = Object.freeze({
+  fontSize: Object.freeze([["list", "fontSize"], ["callout", "fontSize"]]),
+  lineHeight: Object.freeze([["list", "lineHeight"], ["callout", "lineHeight"]]),
+  spaceAfter: Object.freeze([["list", "spaceAfter"], ["callout", "spaceAfter"]]),
+});
+
 const CARD_LAYOUT_DEFAULTS = Object.freeze({
   width: 0,
   height: 0,
@@ -1348,6 +1355,9 @@ const PDF_IMPORT_CMAP_URL = "vendor/pdfjs/cmaps/";
 const PDF_IMPORT_STANDARD_FONT_URL = "vendor/pdfjs/standard_fonts/";
 const PDF_IMPORT_MAX_BYTES = 80 * 1024 * 1024;
 const PDF_IMPORT_MAX_PAGES = 180;
+const PREVIEW_LOCATOR_FALLBACK_LIMIT = 18;
+const PREVIEW_PARAGRAPH_CHECK_LENGTH = 220;
+const PREVIEW_CHECK_RESULT_LIMIT = 8;
 
 let cachedExportStyles = "";
 
@@ -3882,6 +3892,21 @@ function syncElementStylesFromGlobalControl(elementStyles, controlKey, value) {
   });
 
   return nextStyles;
+}
+
+function syncBodyElementStylePeers(elementStyles, fieldKey, value) {
+  const mappings = BODY_ELEMENT_STYLE_FIELD_MAPPINGS[fieldKey] || [];
+
+  mappings.forEach(([groupId, mappedFieldKey]) => {
+    const field = getElementStyleField(groupId, mappedFieldKey);
+    if (!field || !elementStyles[groupId]) {
+      return;
+    }
+
+    elementStyles[groupId][mappedFieldKey] = clampNumber(value, field.min, field.max, field.defaultValue);
+  });
+
+  return elementStyles;
 }
 
 function normalizeCardLayoutEntry(rawValue = {}) {
@@ -9830,6 +9855,263 @@ function markPreviewEditableNodes(root) {
   });
 }
 
+function collectPrimaryPreviewBlocks(root) {
+  if (!root || typeof root.querySelectorAll !== "function") {
+    return [];
+  }
+
+  const seenBlockIds = new Set();
+  const blocks = [];
+
+  Array.from(root.querySelectorAll("[data-md-block-id]")).forEach((block) => {
+    const blockId = String(block.dataset.mdBlockId || "");
+
+    if (!blockId || seenBlockIds.has(blockId)) {
+      return;
+    }
+
+    seenBlockIds.add(blockId);
+    blocks.push(block);
+  });
+
+  return blocks;
+}
+
+function getPreviewBlockPageNumber(block) {
+  const page = block?.closest?.(".page-sheet");
+
+  if (!page || !page.parentElement) {
+    return 0;
+  }
+
+  return Array.from(page.parentElement.querySelectorAll(".page-sheet")).indexOf(page) + 1;
+}
+
+function trimPreviewWorkbenchText(value, maxLength = 28) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+
+  if (!text) {
+    return "";
+  }
+
+  return text.length > maxLength
+    ? `${text.slice(0, Math.max(1, maxLength - 1)).trim()}…`
+    : text;
+}
+
+function getPreviewBlockSummary(block, maxLength = 28) {
+  if (!block) {
+    return "";
+  }
+
+  const text = trimPreviewWorkbenchText(block.textContent || "", maxLength);
+
+  if (text) {
+    return text;
+  }
+
+  const blockType = String(block.dataset.mdBlock || "").trim();
+
+  if (blockType === "image") {
+    return trimPreviewWorkbenchText(block.getAttribute("data-image-alt") || block.getAttribute("data-image-title") || "", maxLength) || "图片";
+  }
+
+  if (blockType === "table") {
+    return "表格";
+  }
+
+  if (blockType === "mindmap") {
+    return "脑图";
+  }
+
+  if (blockType === "code") {
+    return "代码块";
+  }
+
+  if (blockType === "quote") {
+    return "引用";
+  }
+
+  return "内容块";
+}
+
+function getPreviewLocatorLabel(block) {
+  if (!block) {
+    return "未命名内容";
+  }
+
+  const tagName = String(block.tagName || "").toUpperCase();
+  const anchor = String(block.dataset.mdAnchor || "").trim();
+  const summary = getPreviewBlockSummary(block, 30);
+
+  if (/^H[1-4]$/.test(tagName)) {
+    return summary || `${tagName} 标题`;
+  }
+
+  if (anchor) {
+    return summary ? `#${anchor} · ${summary}` : `#${anchor}`;
+  }
+
+  return summary || "未命名内容";
+}
+
+function getPreviewBlockKindLabel(block) {
+  const tagName = String(block?.tagName || "").toUpperCase();
+  const blockType = String(block?.dataset?.mdBlock || "").trim();
+
+  if (/^H[1-4]$/.test(tagName)) {
+    return tagName;
+  }
+
+  if (blockType === "paragraph") return "段落";
+  if (blockType === "list") return "列表";
+  if (blockType === "table") return "表格";
+  if (blockType === "image") return "图片";
+  if (blockType === "mindmap") return "脑图";
+  if (blockType === "quote") return "引用";
+  if (blockType === "brush") return "重点块";
+  if (blockType === "callout") return "提示块";
+  return "内容";
+}
+
+function collectPreviewLocatorEntries(root) {
+  const primaryBlocks = collectPrimaryPreviewBlocks(root);
+  const headingEntries = [];
+  const anchorEntries = [];
+  const fallbackEntries = [];
+
+  primaryBlocks.forEach((block) => {
+    const blockId = String(block.dataset.mdBlockId || "");
+    const page = getPreviewBlockPageNumber(block);
+    const tagName = String(block.tagName || "").toUpperCase();
+    const blockType = String(block.dataset.mdBlock || "").trim();
+    const anchor = String(block.dataset.mdAnchor || "").trim();
+
+    if (/^H[1-4]$/.test(tagName)) {
+      headingEntries.push({
+        blockId,
+        page,
+        kind: "heading",
+        level: Number(block.dataset.mdLevel || tagName.slice(1) || 1),
+        kindLabel: tagName,
+        title: getPreviewLocatorLabel(block),
+      });
+      return;
+    }
+
+    if (anchor) {
+      anchorEntries.push({
+        blockId,
+        page,
+        kind: "anchor",
+        level: 1,
+        kindLabel: "定位",
+        title: getPreviewLocatorLabel(block),
+      });
+      return;
+    }
+
+    if (["paragraph", "list", "table", "image", "mindmap", "quote", "brush", "callout"].includes(blockType)) {
+      fallbackEntries.push({
+        blockId,
+        page,
+        kind: "block",
+        level: 1,
+        kindLabel: getPreviewBlockKindLabel(block),
+        title: getPreviewLocatorLabel(block),
+      });
+    }
+  });
+
+  if (headingEntries.length || anchorEntries.length) {
+    return [...headingEntries, ...anchorEntries];
+  }
+
+  return fallbackEntries.slice(0, PREVIEW_LOCATOR_FALLBACK_LIMIT);
+}
+
+function collectPreviewLayoutDiagnostics(root) {
+  const diagnostics = [];
+  const primaryBlocks = collectPrimaryPreviewBlocks(root);
+  const headings = primaryBlocks.filter((block) => /^H[1-4]$/i.test(String(block.tagName || "")));
+
+  if (!headings.some((heading) => Number(heading.dataset.mdLevel || heading.tagName.slice(1) || 0) === 1)) {
+    diagnostics.push({
+      severity: "warn",
+      blockId: headings[0]?.dataset?.mdBlockId || primaryBlocks[0]?.dataset?.mdBlockId || "",
+      title: "缺少一级标题",
+      detail: "建议补一个 H1 主标题，方便整篇内容快速识别。",
+    });
+  }
+
+  let previousHeadingLevel = 0;
+  headings.forEach((heading) => {
+    const level = Number(heading.dataset.mdLevel || heading.tagName.slice(1) || 0);
+
+    if (previousHeadingLevel && level > previousHeadingLevel + 1) {
+      diagnostics.push({
+        severity: "warn",
+        blockId: String(heading.dataset.mdBlockId || ""),
+        title: `标题层级从 H${previousHeadingLevel} 跳到了 H${level}`,
+        detail: `建议在这一段前补一个 H${previousHeadingLevel + 1}，层级会更顺。`,
+      });
+    }
+
+    previousHeadingLevel = level;
+  });
+
+  primaryBlocks
+    .filter((block) => String(block.dataset.mdBlock || "") === "paragraph")
+    .forEach((paragraph) => {
+      const textLength = String(paragraph.textContent || "").replace(/\s+/g, "").length;
+
+      if (textLength < PREVIEW_PARAGRAPH_CHECK_LENGTH) {
+        return;
+      }
+
+      diagnostics.push({
+        severity: "info",
+        blockId: String(paragraph.dataset.mdBlockId || ""),
+        title: "段落偏长，阅读压力会增大",
+        detail: `这一段约 ${textLength} 字，适合拆成 2 到 3 段。`,
+      });
+    });
+
+  const seenOverflowBlocks = new Set();
+  Array.from(root.querySelectorAll(".article-table-editor, table, pre, .mindmap-card")).forEach((element) => {
+    const host = element.closest("[data-md-block-id]");
+    const blockId = String(host?.dataset?.mdBlockId || "");
+
+    if (!host || !blockId || seenOverflowBlocks.has(blockId)) {
+      return;
+    }
+
+    const hasHorizontalOverflow = element.scrollWidth > element.clientWidth + 6;
+
+    if (!hasHorizontalOverflow) {
+      return;
+    }
+
+    seenOverflowBlocks.add(blockId);
+    diagnostics.push({
+      severity: "warn",
+      blockId,
+      title: `${getPreviewBlockKindLabel(host)}宽度偏大`,
+      detail: "当前块可能需要缩短内容、减小字号，或拆开排版。",
+    });
+  });
+
+  return diagnostics
+    .sort((left, right) => {
+      if (left.severity === right.severity) {
+        return 0;
+      }
+
+      return left.severity === "warn" ? -1 : 1;
+    })
+    .slice(0, PREVIEW_CHECK_RESULT_LIMIT);
+}
+
 function cleanupPreviewCloneForExport(root) {
   if (!root) {
     return root;
@@ -9872,7 +10154,11 @@ function getEditablePreviewHost(root, target) {
 }
 
 function isBlockStyleEditableHost(element) {
-  return Boolean(element && element.tagName && /^(H[1-4]|P)$/i.test(element.tagName));
+  return Boolean(element && element.tagName && (
+    /^(H[1-4]|P)$/i.test(element.tagName)
+    || element.classList?.contains("list-item-copy")
+    || element.classList?.contains("list-item-body")
+  ));
 }
 
 function isRangeInsideRoot(root, range) {
@@ -13424,6 +13710,11 @@ function createRibbonTabIcon(tabName) {
     svg.appendChild(createSvgElement("rect", { x: 6.5, y: 6.5, width: 11, height: 11, rx: 2, class: "ribbon-tab-icon-line" }));
     svg.appendChild(createSvgElement("path", { d: "M6.5 10.2h11M10.2 6.5v11M13.5 10.2v7.3", class: "ribbon-tab-icon-line" }));
     svg.appendChild(createSvgElement("rect", { x: 13.7, y: 12.4, width: 3, height: 3.6, rx: 1, class: "ribbon-tab-icon-fill" }));
+  } else if (tabName === "review") {
+    svg.appendChild(createSvgElement("path", { d: "M8 7.4h6.2l2.8 2.8v6.9H8z", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M14.2 7.4v2.8H17M10 11.2h5M10 13.8h4", class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 14.6, cy: 15.6, r: 2.1, class: "ribbon-tab-icon-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M16.1 17.1l1.4 1.4", class: "ribbon-tab-icon-line" }));
   } else if (tabName === "design") {
     svg.appendChild(createSvgElement("path", { d: "M12 6.2c3.5 0 5.8 2 5.8 4.8 0 1.7-.9 2.6-2.4 2.6h-1.1c-.8 0-1.2.4-1.2 1.2 0 1-.8 1.8-2.1 1.8-2.7 0-4.9-2.1-4.9-5 0-3.1 2.4-5.4 5.9-5.4z", class: "ribbon-tab-icon-line" }));
     svg.appendChild(createSvgElement("circle", { cx: 9, cy: 10.5, r: 0.9, class: "ribbon-tab-icon-fill" }));
@@ -13548,6 +13839,9 @@ async function initPagedApp() {
   const inspectorToggle = document.getElementById("inspectorToggle");
   const previewEditorTools = document.getElementById("previewEditorTools");
   const elementStylePanel = document.getElementById("elementStylePanel");
+  const previewWorkbenchPanel = document.getElementById("previewWorkbenchPanel");
+  const previewWorkbenchRunCheck = document.getElementById("previewWorkbenchRunCheck");
+  const previewWorkbenchContent = document.getElementById("previewWorkbenchContent");
   const settingsRibbon = document.getElementById("settingsRibbon");
   const elementStyleTitle = elementStylePanel?.querySelector(".element-style-title");
   const elementStyleNote = elementStylePanel?.querySelector(".element-style-note");
@@ -13558,6 +13852,9 @@ async function initPagedApp() {
   let cardLayoutResetBtn = null;
   let cardLayoutControls = [];
   let activeSettingsSection = "";
+  let previewWorkbenchRefreshFrame = 0;
+  let previewWorkbenchFlashTimer = 0;
+  let activePreviewWorkbenchBlockId = "";
   const textColorButtons = Array.from(document.querySelectorAll("[data-text-color]"));
   const selectionAlignButtons = Array.from(document.querySelectorAll("[data-selection-align]"));
   const paragraphStepButtons = Array.from(document.querySelectorAll("[data-paragraph-step]"));
@@ -13719,6 +14016,7 @@ async function initPagedApp() {
     ensureSettingsSection(document.querySelector(".option-panel-spacing"), "spacing", "块间距、块内间距、标题正文距");
     ensureSettingsSection(document.querySelector(".option-panel-mode"), "mode", "版式模式、预览卡片、答案结构");
     ensureSettingsSection(document.querySelector(".option-panel-type"), "type", "字体、字号、行距、标题节奏");
+    ensureSettingsSection(document.querySelector(".option-panel-review"), "review", "内容定位与自动排版检查");
     ensureSettingsSection(document.querySelector(".option-panel-page"), "page", "纸张、页边距、页眉与背景");
     ensureSettingsSection(document.querySelector(".option-panel-theme"), "theme", "主题配色");
     ensureSettingsSection(document.querySelector(".option-panel-brush"), "brush", "重点标记与画笔");
@@ -14225,6 +14523,10 @@ async function initPagedApp() {
       panel.hidden = !isVisible;
     });
 
+    if (previewWorkbenchPanel) {
+      previewWorkbenchPanel.hidden = activeRibbonTab !== "review";
+    }
+
     setActiveSettingsSection(getDefaultSettingsSectionForRibbon(activeRibbonTab));
 
     try {
@@ -14288,7 +14590,8 @@ async function initPagedApp() {
     if (target.matches("h2")) return "heading2";
     if (target.matches("h3")) return "heading3";
     if (target.matches("h4")) return "heading4";
-    if (target.matches("ul, ol, li")) return "list";
+    if (target.matches("li, .list-item-body, .list-item-copy, .list-item-text")) return "paragraph";
+    if (target.matches("ul, ol")) return "list";
     if (target.matches(".callout-box, .note-quote, .brush-block, blockquote")) return "callout";
     if (target.matches("table, .article-table-editor")) return "table";
     if (target.matches(".knowledge-cluster, .question-card, .question-panel, .mindmap-card, figure")) return "card";
@@ -14411,6 +14714,9 @@ async function initPagedApp() {
         range.addEventListener("input", () => {
           const normalizedStyles = normalizeElementStyles(state.elementStyles);
           normalizedStyles[group.id][field.key] = clampNumber(range.value, field.min, field.max, field.defaultValue);
+          if (group.id === "paragraph") {
+            syncBodyElementStylePeers(normalizedStyles, field.key, normalizedStyles[group.id][field.key]);
+          }
           state.elementStyles = normalizedStyles;
           applyElementStyleProperties(measureCanvas, state.elementStyles);
           syncElementStylePanel();
@@ -14427,6 +14733,11 @@ async function initPagedApp() {
       const defaults = getElementStyleDefaults(state);
 
       normalizedStyles[group.id] = { ...defaults[group.id] };
+      if (group.id === "paragraph") {
+        Object.entries(BODY_ELEMENT_STYLE_FIELD_MAPPINGS).forEach(([fieldKey]) => {
+          syncBodyElementStylePeers(normalizedStyles, fieldKey, normalizedStyles[group.id][fieldKey]);
+        });
+      }
       state.elementStyles = normalizedStyles;
       syncElementStylePanel();
       applyUiState({ rerender: true });
@@ -14915,6 +15226,162 @@ async function initPagedApp() {
   function showPersistentStatus(message) {
     window.clearTimeout(statusTimer);
     statusText.textContent = message;
+  }
+
+  function findPreviewWorkbenchTarget(blockId) {
+    if (!blockId) {
+      return null;
+    }
+
+    return Array.from(canvas.querySelectorAll("[data-md-block-id]")).find((element) => (
+      String(element.dataset.mdBlockId || "") === String(blockId)
+    )) || null;
+  }
+
+  function setActivePreviewWorkbenchItem(blockId) {
+    activePreviewWorkbenchBlockId = String(blockId || "");
+
+    if (!previewWorkbenchContent) {
+      return;
+    }
+
+    Array.from(previewWorkbenchContent.querySelectorAll(".preview-workbench-item[data-target-block-id]")).forEach((button) => {
+      button.classList.toggle("is-active", String(button.dataset.targetBlockId || "") === activePreviewWorkbenchBlockId);
+    });
+  }
+
+  function focusPreviewWorkbenchTarget(blockId, options = {}) {
+    const target = findPreviewWorkbenchTarget(blockId);
+
+    if (!target) {
+      return false;
+    }
+
+    setActivePreviewWorkbenchItem(blockId);
+    window.clearTimeout(previewWorkbenchFlashTimer);
+    target.classList.remove("is-preview-workbench-target");
+    void target.offsetWidth;
+    target.classList.add("is-preview-workbench-target");
+    target.scrollIntoView({
+      behavior: options.behavior || "smooth",
+      block: options.block || "center",
+      inline: "nearest",
+    });
+    previewWorkbenchFlashTimer = window.setTimeout(() => {
+      target.classList.remove("is-preview-workbench-target");
+    }, 1800);
+    return true;
+  }
+
+  function buildPreviewWorkbenchMarkup(locatorEntries, diagnostics) {
+    const sections = [];
+
+    if (locatorEntries.length) {
+      sections.push(`
+        <section class="preview-workbench-section">
+          <div class="preview-workbench-section-head">
+            <h3 class="preview-workbench-section-title">内容快速定位</h3>
+            <span class="preview-workbench-count">${locatorEntries.length}</span>
+          </div>
+          <div class="preview-workbench-list">
+            ${locatorEntries.map((entry) => `
+              <button
+                type="button"
+                class="preview-workbench-item${entry.blockId === activePreviewWorkbenchBlockId ? " is-active" : ""}"
+                data-target-block-id="${escapeAttribute(entry.blockId)}"
+                data-level="${escapeAttribute(String(entry.level || 1))}"
+              >
+                <span class="preview-workbench-item-title">${escapeHtml(entry.title)}</span>
+                <span class="preview-workbench-item-meta">
+                  <span class="preview-workbench-item-kind">${escapeHtml(entry.kindLabel || "内容")}</span>
+                  <span class="preview-workbench-item-page">第 ${entry.page || 1} 页</span>
+                </span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      `);
+    }
+
+    if (diagnostics.length) {
+      sections.push(`
+        <section class="preview-workbench-section">
+          <div class="preview-workbench-section-head">
+            <h3 class="preview-workbench-section-title">排版自动检查</h3>
+            <span class="preview-workbench-count">${diagnostics.length}</span>
+          </div>
+          <div class="preview-workbench-list">
+            ${diagnostics.map((item) => `
+              <button
+                type="button"
+                class="preview-workbench-item${item.blockId === activePreviewWorkbenchBlockId ? " is-active" : ""}"
+                data-target-block-id="${escapeAttribute(item.blockId || "")}"
+              >
+                <span class="preview-workbench-item-title">${escapeHtml(item.title)}</span>
+                <span class="preview-workbench-item-meta">
+                  <span class="preview-workbench-item-severity" data-severity="${escapeAttribute(item.severity || "info")}">${item.severity === "warn" ? "建议优先处理" : "可继续优化"}</span>
+                </span>
+                <span class="preview-workbench-item-detail">${escapeHtml(item.detail || "")}</span>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      `);
+    }
+
+    if (!sections.length) {
+      return `
+        <div class="preview-workbench-empty">
+          <p>当前排版比较干净，暂时没有额外检查项。继续输入内容后，这里也会自动补充定位入口。</p>
+        </div>
+      `;
+    }
+
+    return sections.join("");
+  }
+
+  function refreshPreviewWorkbench() {
+    previewWorkbenchRefreshFrame = 0;
+
+    if (!previewWorkbenchContent) {
+      return;
+    }
+
+    const locatorEntries = collectPreviewLocatorEntries(canvas);
+    const diagnostics = collectPreviewLayoutDiagnostics(canvas);
+    previewWorkbenchContent.innerHTML = buildPreviewWorkbenchMarkup(locatorEntries, diagnostics);
+    setActivePreviewWorkbenchItem(activePreviewWorkbenchBlockId);
+  }
+
+  function schedulePreviewWorkbenchRefresh() {
+    if (previewWorkbenchRefreshFrame) {
+      return;
+    }
+
+    previewWorkbenchRefreshFrame = window.requestAnimationFrame(refreshPreviewWorkbench);
+  }
+
+  function runPreviewWorkbenchCheck() {
+    refreshPreviewWorkbench();
+    const diagnostics = collectPreviewLayoutDiagnostics(canvas);
+
+    if (!diagnostics.length) {
+      setActiveSettingsSection("review");
+      flashStatus("暂未发现明显排版问题");
+      return;
+    }
+
+    setActiveSettingsSection("review");
+    const firstIssue = diagnostics.find((item) => item.blockId) || diagnostics[0];
+
+    if (firstIssue?.blockId) {
+      focusPreviewWorkbenchTarget(firstIssue.blockId, {
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
+    flashStatus(`已检查到 ${diagnostics.length} 处可优化位置，先定位到第 1 处`);
   }
 
   function setExportProgress(progress, message) {
@@ -16046,6 +16513,7 @@ async function initPagedApp() {
     }
 
     updateStatusText();
+    schedulePreviewWorkbenchRefresh();
     window.requestAnimationFrame(() => {
       syncMountedTableEditors(canvas);
       mountSvgMindmaps(canvas);
@@ -16053,6 +16521,7 @@ async function initPagedApp() {
       syncCardLayoutSelection();
       fitCardTextToFixedHeight(canvas);
       refreshActiveTableCellSelection();
+      schedulePreviewWorkbenchRefresh();
     });
   }
 
@@ -16074,9 +16543,32 @@ async function initPagedApp() {
   canvas.addEventListener("keydown", handlePreviewKeydown);
   canvas.addEventListener("paste", handlePreviewPaste);
   canvas.addEventListener("input", handlePreviewInput);
+  previewWorkbenchContent?.addEventListener("click", (event) => {
+    const trigger = event.target instanceof Element
+      ? event.target.closest("[data-target-block-id]")
+      : null;
+
+    if (!trigger) {
+      return;
+    }
+
+    const blockId = String(trigger.getAttribute("data-target-block-id") || "");
+
+    if (!blockId || !focusPreviewWorkbenchTarget(blockId)) {
+      flashStatus("当前定位项暂时无法跳转，请重新渲染预览后再试");
+      return;
+    }
+
+    const target = findPreviewWorkbenchTarget(blockId);
+    flashStatus(`已定位到：${getPreviewLocatorLabel(target)}`);
+  });
+  previewWorkbenchRunCheck?.addEventListener("click", () => {
+    runPreviewWorkbenchCheck();
+  });
   window.addEventListener("pointermove", updateCardLayoutDrag);
   window.addEventListener("pointerup", finishCardLayoutDrag);
   window.addEventListener("pointercancel", finishCardLayoutDrag);
+  window.addEventListener("resize", schedulePreviewWorkbenchRefresh);
   document.addEventListener("selectionchange", handlePreviewSelectionChange);
   bindMindmapSvgResizeUpdates();
 
