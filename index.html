@@ -23,6 +23,8 @@
             <input id="fileInput" type="file" accept=".md,.markdown,text/markdown">
             <label id="pdfImportLabel" class="file-trigger" for="pdfInput">导入 PDF</label>
             <input id="pdfInput" type="file" accept=".pdf,application/pdf">
+            <button id="saveLayoutBtn" type="button">保存排版</button>
+            <button id="layoutHistoryBtn" type="button">排版历史</button>
             <button id="toolbarExportToggle" class="toolbar-menu-toggle" type="button" aria-expanded="false" aria-controls="toolbarExportMenu">导出</button>
             <div id="toolbarExportMenu" class="toolbar-export-menu" hidden>
             <button id="downloadHtmlBtn" type="button">导 HTML</button>
@@ -636,6 +638,7 @@
               </div>
             </div>
           <div class="preview-toolbar-controls" aria-label="预览面板">
+            <div id="previewHeaderActions" class="preview-header-actions" aria-label="预览快捷操作"></div>
             <button id="previewToolsToggle" type="button" class="preview-drawer-toggle" aria-controls="previewEditorTools" aria-expanded="false">工具</button>
             <button id="inspectorToggle" type="button" class="preview-drawer-toggle" aria-controls="elementStylePanel" aria-expanded="false">参数</button>
           </div>

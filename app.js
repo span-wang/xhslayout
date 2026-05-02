@@ -51,6 +51,7 @@ const STORAGE_KEYS = {
   cardLayouts: "layout-for-xhs-card-layouts",
   cardOrder: "layout-for-xhs-card-order",
   typographyVersion: "layout-for-xhs-typography-version",
+  layoutHistoryEntries: "layout-for-xhs-layout-history-entries",
 };
 
 const THEME_LABELS = {
@@ -89,6 +90,11 @@ const MODE_METADATA = {
     ],
   },
 };
+
+const LAYOUT_HISTORY_MAX_ENTRIES = 24;
+const LAYOUT_HISTORY_MAX_TITLE_LENGTH = 40;
+const LAYOUT_HISTORY_AUTO_LABEL = "自动保存";
+const LAYOUT_HISTORY_MANUAL_LABEL = "手动保存";
 
 const MODE_LAYOUT_PRESETS = Object.freeze({
   knowledge: Object.freeze([
@@ -1276,7 +1282,6 @@ const ELEMENT_STYLE_SCHEMA = Object.freeze([
     label: "Math",
     selector: ".math-block",
     fields: Object.freeze([
-      Object.freeze({ key: "fontSize", label: "Font Size", cssVar: "--element-math-font-size", min: 12, max: 32, step: 1, defaultValue: DEFAULT_FONT_SIZE + 1, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "paddingX", label: "Padding X", cssVar: "--element-math-padding-x", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "paddingY", label: "Padding Y", cssVar: "--element-math-padding-y", min: 0, max: 30, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-math-radius", min: 0, max: 24, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
@@ -1611,6 +1616,9 @@ const PDF_IMPORT_MAX_PAGES = 180;
 const PREVIEW_LOCATOR_FALLBACK_LIMIT = 18;
 const PREVIEW_PARAGRAPH_CHECK_LENGTH = 220;
 const PREVIEW_CHECK_RESULT_LIMIT = 8;
+const PREVIEW_GARBLED_CHAR_PATTERN = /[\uFFFD\uFFFC\uFFFE\uFFFF]|[ÃÂÐÑØÞðþ]{2,}|[�]{1,}/;
+const PREVIEW_SYMBOL_RUN_PATTERN = /[^\p{L}\p{N}\p{Script=Han}\s，。；：？！、“”‘’（）()《》【】\[\]—…,.!?;:'"%+\-*/=&]/u;
+const PREVIEW_REPEATED_SYMBOL_RUN_PATTERN = /([~!@#$%^&_=|<>\\\/`])\1{2,}|[·•◆■□★☆]{3,}|[(){}\[\]<>]{3,}/;
 
 let cachedExportStyles = "";
 
@@ -1705,6 +1713,183 @@ function normalizeBackgroundSource(value, fallback = "") {
 
 function normalizeBackgroundName(value, fallback = "") {
   return String(value == null ? fallback : value).trim();
+}
+
+function clampLayoutHistoryText(value, maxLength, fallback = "") {
+  const normalized = String(value == null ? fallback : value).replace(/\s+/g, " ").trim();
+  if (!normalized) {
+    return fallback;
+  }
+
+  return normalized.length > maxLength ? `${normalized.slice(0, Math.max(1, maxLength - 1))}…` : normalized;
+}
+
+function formatLayoutHistoryTime(value) {
+  const timestamp = Number(value);
+
+  if (!Number.isFinite(timestamp) || timestamp <= 0) {
+    return "";
+  }
+
+  try {
+    return new Intl.DateTimeFormat("zh-CN", {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date(timestamp));
+  } catch (_error) {
+    return "";
+  }
+}
+
+function getLayoutHistoryTitle(markdown, fallback = "未命名排版") {
+  const extracted = clampLayoutHistoryText(extractTitle(markdown), LAYOUT_HISTORY_MAX_TITLE_LENGTH, "");
+  return extracted || fallback;
+}
+
+function getLayoutHistorySummary(markdown) {
+  const text = normalizeMarkdown(markdown)
+    .replace(/^#+\s+/gm, "")
+    .replace(/\{\{[^}]+\}\}/g, "")
+    .replace(/:::[^\n]*/g, "")
+    .replace(/[`>*_-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return clampLayoutHistoryText(text, 72, "暂无摘要");
+}
+
+function sanitizeLayoutHistorySnapshot(snapshot = {}) {
+  const exportBackgroundSrc = normalizeBackgroundSource(snapshot.exportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC);
+  const safeBackgroundSrc = exportBackgroundSrc && exportBackgroundSrc.length <= MAX_PERSISTED_BACKGROUND_LENGTH
+    ? exportBackgroundSrc
+    : DEFAULT_EXPORT_BACKGROUND_SRC;
+  const mode = sanitizeChoice(snapshot.mode, MODE_METADATA, DEFAULT_MODE);
+  const layoutPresetByMode = normalizeLayoutPresetByMode(snapshot.layoutPresetByMode);
+  const layoutPreset = isLayoutPresetForMode(snapshot.layoutPreset, mode)
+    ? snapshot.layoutPreset
+    : sanitizeLayoutPresetForMode(layoutPresetByMode[mode], mode);
+  const controlValues = {};
+
+  ARTICLE_STYLE_CONTROLS.forEach((control) => {
+    controlValues[control.key] = clampNumber(snapshot[control.key], control.min, control.max, control.defaultValue);
+  });
+  ARTICLE_PARAGRAPH_CONTROLS.forEach((control) => {
+    controlValues[control.key] = clampNumber(snapshot[control.key], control.min, control.max, control.defaultValue);
+  });
+  HEADING_LINE_HEIGHT_CONTROLS.forEach((control) => {
+    controlValues[control.key] = clampNumber(snapshot[control.key], control.min, control.max, control.defaultValue);
+  });
+  HEADING_SPACE_CONTROLS.forEach((control) => {
+    controlValues[control.key] = clampNumber(snapshot[control.key], control.min, control.max, control.defaultValue);
+  });
+  PAGE_STYLE_CONTROLS.forEach((control) => {
+    controlValues[control.key] = clampNumber(snapshot[control.key], control.min, control.max, control.defaultValue);
+  });
+
+  return {
+    theme: sanitizeChoice(snapshot.theme, THEME_LABELS, DEFAULT_THEME),
+    mode,
+    questionAnswerLayout: sanitizeChoice(
+      snapshot.questionAnswerLayout,
+      QUESTION_ANSWER_LAYOUTS,
+      DEFAULT_QUESTION_ANSWER_LAYOUT,
+    ),
+    layoutPreset,
+    layoutPresetByMode,
+    bodyFontFamily: sanitizeChoice(snapshot.bodyFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_BODY_FONT_FAMILY),
+    headingFontFamily: sanitizeChoice(snapshot.headingFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_HEADING_FONT_FAMILY),
+    paragraphAlign: sanitizeChoice(snapshot.paragraphAlign, PARAGRAPH_ALIGN_OPTIONS, DEFAULT_PARAGRAPH_ALIGN),
+    elementStyles: normalizeElementStyles(snapshot.elementStyles),
+    elementStylePresets: normalizeElementStylePresets(snapshot.elementStylePresets),
+    tableLayouts: normalizeTableLayouts(snapshot.tableLayouts || {}),
+    cardLayouts: normalizeCardLayouts(snapshot.cardLayouts || {}),
+    cardOrder: normalizeCardOrder(snapshot.cardOrder || []),
+    pageHeaderEnabled: normalizeBoolean(snapshot.pageHeaderEnabled, DEFAULT_PAGE_HEADER_ENABLED),
+    pageHeaderText: String(snapshot.pageHeaderText == null ? DEFAULT_PAGE_HEADER_TEXT : snapshot.pageHeaderText),
+    watermarkEnabled: normalizeBoolean(snapshot.watermarkEnabled, DEFAULT_WATERMARK_ENABLED),
+    watermarkText: String(snapshot.watermarkText == null ? DEFAULT_WATERMARK_TEXT : snapshot.watermarkText),
+    exportBackgroundSrc: safeBackgroundSrc,
+    exportBackgroundName: safeBackgroundSrc
+      ? normalizeBackgroundName(snapshot.exportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME)
+      : DEFAULT_EXPORT_BACKGROUND_NAME,
+    paginationStrategy: sanitizeChoice(
+      snapshot.paginationStrategy,
+      PAGINATION_STRATEGIES,
+      DEFAULT_PAGINATION_STRATEGY,
+    ),
+    lineHeight: clampNumber(snapshot.lineHeight, 1.1, 2.4, DEFAULT_LINE_HEIGHT),
+    letterSpacing: clampNumber(snapshot.letterSpacing, -0.5, 2, DEFAULT_LETTER_SPACING),
+    ...controlValues,
+  };
+}
+
+function sanitizeLayoutHistoryEntry(entry = {}) {
+  const markdown = normalizeMarkdown(entry.markdown);
+
+  if (!markdown) {
+    return null;
+  }
+
+  return {
+    id: String(entry.id || `layout-history-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+    name: clampLayoutHistoryText(entry.name, LAYOUT_HISTORY_MAX_TITLE_LENGTH, "") || getLayoutHistoryTitle(markdown),
+    title: getLayoutHistoryTitle(markdown),
+    summary: getLayoutHistorySummary(markdown),
+    markdown,
+    savedAt: Number.isFinite(Number(entry.savedAt)) ? Number(entry.savedAt) : Date.now(),
+    source: entry.source === "manual" ? "manual" : "auto",
+    snapshot: sanitizeLayoutHistorySnapshot(entry.snapshot || {}),
+  };
+}
+
+function normalizeLayoutHistoryEntries(rawValue) {
+  let parsed = rawValue;
+
+  if (typeof rawValue === "string") {
+    try {
+      parsed = JSON.parse(rawValue);
+    } catch (_error) {
+      parsed = [];
+    }
+  }
+
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+
+  const entries = [];
+  const seenFingerprints = new Set();
+
+  parsed.forEach((item) => {
+    const normalized = sanitizeLayoutHistoryEntry(item);
+
+    if (!normalized) {
+      return;
+    }
+
+    const fingerprint = [
+      normalized.source,
+      normalized.name,
+      normalized.markdown,
+      normalized.snapshot.mode,
+      normalized.snapshot.layoutPreset,
+      normalized.snapshot.theme,
+    ].join("::");
+
+    if (seenFingerprints.has(fingerprint)) {
+      return;
+    }
+
+    seenFingerprints.add(fingerprint);
+    entries.push(normalized);
+  });
+
+  return entries
+    .sort((left, right) => Number(right.savedAt || 0) - Number(left.savedAt || 0))
+    .slice(0, LAYOUT_HISTORY_MAX_ENTRIES);
 }
 
 function buildCssUrlValue(url) {
@@ -10425,6 +10610,49 @@ function collectPreviewLayoutDiagnostics(root) {
   const diagnostics = [];
   const primaryBlocks = collectPrimaryPreviewBlocks(root);
   const headings = primaryBlocks.filter((block) => /^H[1-4]$/i.test(String(block.tagName || "")));
+  const contentBlocks = primaryBlocks.filter((block) => {
+    const text = String(block.textContent || "").replace(/\s+/g, "").trim();
+    return Boolean(text);
+  });
+
+  const seenContentQualityBlocks = new Set();
+
+  contentBlocks.forEach((block) => {
+    const blockId = String(block.dataset.mdBlockId || "");
+    const text = String(block.textContent || "").replace(/\s+/g, " ").trim();
+
+    if (!blockId || !text || seenContentQualityBlocks.has(blockId)) {
+      return;
+    }
+
+    if (PREVIEW_GARBLED_CHAR_PATTERN.test(text)) {
+      seenContentQualityBlocks.add(blockId);
+      diagnostics.push({
+        severity: "warn",
+        blockId,
+        title: "疑似出现乱码",
+        detail: `这一段里有异常字符，建议检查原文编码或重新粘贴。示例：${trimPreviewWorkbenchText(text, 20)}`,
+      });
+      return;
+    }
+
+    if (PREVIEW_REPEATED_SYMBOL_RUN_PATTERN.test(text) || PREVIEW_SYMBOL_RUN_PATTERN.test(text)) {
+      const suspiciousSegments = text.match(/[~!@#$%^&_=|<>\\\/`·•◆■□★☆(){}\[\]]{2,}|[^ \u4E00-\u9FFF\w，。；：？！、“”‘’（）()《》【】—…,.!?;:'"%+\-*/=&]+/gu) || [];
+      const suspiciousPreview = trimPreviewWorkbenchText(suspiciousSegments[0] || text, 18);
+
+      if (!suspiciousPreview) {
+        return;
+      }
+
+      seenContentQualityBlocks.add(blockId);
+      diagnostics.push({
+        severity: "warn",
+        blockId,
+        title: "疑似存在异常符号",
+        detail: `检测到不太正常的符号片段：${suspiciousPreview}`,
+      });
+    }
+  });
 
   if (!headings.some((heading) => Number(heading.dataset.mdLevel || heading.tagName.slice(1) || 0) === 1)) {
     diagnostics.push({
@@ -14443,6 +14671,8 @@ async function initPagedApp() {
   const pdfInput = document.getElementById("pdfInput");
   const pdfImportLabel = document.getElementById("pdfImportLabel");
   const loadSampleBtn = document.getElementById("loadSampleBtn");
+  const saveLayoutBtn = document.getElementById("saveLayoutBtn");
+  const layoutHistoryBtn = document.getElementById("layoutHistoryBtn");
   const toolbarExportToggle = document.getElementById("toolbarExportToggle");
   const toolbarExportMenu = document.getElementById("toolbarExportMenu");
   const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
@@ -14493,6 +14723,7 @@ async function initPagedApp() {
   const previewFontFamilySelect = document.getElementById("previewFontFamilySelect");
   const previewFontSizeSelect = document.getElementById("previewFontSizeSelect");
   const previewTextColorInput = document.getElementById("previewTextColorInput");
+  const previewHeaderActions = document.getElementById("previewHeaderActions");
   const previewToolsToggle = document.getElementById("previewToolsToggle");
   const inspectorToggle = document.getElementById("inspectorToggle");
   const previewEditorTools = document.getElementById("previewEditorTools");
@@ -14531,6 +14762,45 @@ async function initPagedApp() {
   const previewPaginationStrategySelect = document.getElementById("previewPaginationStrategySelect");
   const exportBackgroundInput = document.getElementById("exportBackgroundInput");
   const exportBackgroundName = document.getElementById("exportBackgroundName");
+
+  if (previewHeaderActions) {
+    const toolbar = document.querySelector(".toolbar");
+    const hiddenInputs = [
+      document.getElementById("fileInput"),
+      document.getElementById("pdfInput"),
+    ].filter(Boolean);
+    const toolbarButtons = [
+      document.getElementById("loadSampleBtn"),
+      document.querySelector('label[for="fileInput"]'),
+      document.getElementById("pdfImportLabel"),
+      document.getElementById("saveLayoutBtn"),
+      document.getElementById("layoutHistoryBtn"),
+    ].filter(Boolean);
+
+    toolbarButtons.forEach((element) => {
+      element.classList.add("preview-header-action");
+      previewHeaderActions.appendChild(element);
+    });
+
+    hiddenInputs.forEach((element) => {
+      previewHeaderActions.appendChild(element);
+    });
+
+    const exportToggle = document.getElementById("toolbarExportToggle");
+    const exportMenu = document.getElementById("toolbarExportMenu");
+    if (exportToggle && exportMenu) {
+      const exportWrap = document.createElement("div");
+      exportWrap.className = "preview-header-action preview-header-action-menu";
+      exportToggle.classList.add("preview-header-action-button");
+      exportWrap.appendChild(exportToggle);
+      exportWrap.appendChild(exportMenu);
+      previewHeaderActions.appendChild(exportWrap);
+    }
+
+    if (toolbar) {
+      toolbar.hidden = true;
+    }
+  }
 
   [document.getElementById("paragraphSpacingValue"), document.getElementById("blockInnerSpacingValue"), document.getElementById("blockTitleSpacingValue")]
     .forEach((display) => {
@@ -14860,6 +15130,7 @@ async function initPagedApp() {
     elementStylePresets: {},
     cardLayouts: {},
     cardOrder: [],
+    layoutHistoryEntries: [],
     activeElementStyleGroup: ELEMENT_STYLE_SCHEMA[0].id,
     tableLayouts: {},
     latestCharacterCount: 0,
@@ -15072,9 +15343,278 @@ async function initPagedApp() {
     }
   }
 
+  function buildLayoutHistorySnapshot() {
+    const snapshot = {
+      theme: state.theme,
+      mode: state.mode,
+      questionAnswerLayout: state.questionAnswerLayout,
+      layoutPreset: state.layoutPreset,
+      layoutPresetByMode: state.layoutPresetByMode,
+      bodyFontFamily: state.bodyFontFamily,
+      headingFontFamily: state.headingFontFamily,
+      paragraphAlign: state.paragraphAlign,
+      lineHeight: state.lineHeight,
+      letterSpacing: state.letterSpacing,
+      pageHeaderEnabled: state.pageHeaderEnabled,
+      pageHeaderText: state.pageHeaderText,
+      watermarkEnabled: state.watermarkEnabled,
+      watermarkText: state.watermarkText,
+      exportBackgroundSrc: state.exportBackgroundSrc,
+      exportBackgroundName: state.exportBackgroundName,
+      paginationStrategy: state.paginationStrategy,
+      elementStyles: normalizeElementStyles(state.elementStyles),
+      elementStylePresets: normalizeElementStylePresets(state.elementStylePresets),
+      tableLayouts: normalizeTableLayouts(state.tableLayouts),
+      cardLayouts: normalizeCardLayouts(state.cardLayouts),
+      cardOrder: normalizeCardOrder(state.cardOrder),
+    };
+
+    ARTICLE_STYLE_CONTROLS.forEach((control) => {
+      snapshot[control.key] = state[control.key];
+    });
+    ARTICLE_PARAGRAPH_CONTROLS.forEach((control) => {
+      snapshot[control.key] = state[control.key];
+    });
+    HEADING_LINE_HEIGHT_CONTROLS.forEach((control) => {
+      snapshot[control.key] = state[control.key];
+    });
+    HEADING_SPACE_CONTROLS.forEach((control) => {
+      snapshot[control.key] = state[control.key];
+    });
+    PAGE_STYLE_CONTROLS.forEach((control) => {
+      snapshot[control.key] = state[control.key];
+    });
+
+    return sanitizeLayoutHistorySnapshot(snapshot);
+  }
+
+  function persistLayoutHistoryEntries() {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEYS.layoutHistoryEntries,
+        JSON.stringify(normalizeLayoutHistoryEntries(state.layoutHistoryEntries)),
+      );
+    } catch (_error) {
+      // Ignore storage failures in restricted browsers.
+    }
+  }
+
+  function addLayoutHistoryEntry(options = {}) {
+    const markdown = normalizeMarkdown(options.markdown != null ? options.markdown : textarea.value);
+
+    if (!markdown) {
+      return null;
+    }
+
+    const source = options.source === "manual" ? "manual" : "auto";
+    const snapshot = buildLayoutHistorySnapshot();
+    const nextEntry = sanitizeLayoutHistoryEntry({
+      id: options.id,
+      name: options.name,
+      markdown,
+      savedAt: options.savedAt || Date.now(),
+      source,
+      snapshot,
+    });
+
+    if (!nextEntry) {
+      return null;
+    }
+
+    const nextFingerprint = JSON.stringify({
+      markdown: nextEntry.markdown,
+      source: nextEntry.source,
+      mode: nextEntry.snapshot.mode,
+      layoutPreset: nextEntry.snapshot.layoutPreset,
+      theme: nextEntry.snapshot.theme,
+      questionAnswerLayout: nextEntry.snapshot.questionAnswerLayout,
+    });
+    const deduped = state.layoutHistoryEntries.filter((entry) => {
+      const fingerprint = JSON.stringify({
+        markdown: entry.markdown,
+        source: entry.source,
+        mode: entry.snapshot?.mode,
+        layoutPreset: entry.snapshot?.layoutPreset,
+        theme: entry.snapshot?.theme,
+        questionAnswerLayout: entry.snapshot?.questionAnswerLayout,
+      });
+      return fingerprint !== nextFingerprint;
+    });
+
+    state.layoutHistoryEntries = normalizeLayoutHistoryEntries([nextEntry, ...deduped]);
+    persistLayoutHistoryEntries();
+    return nextEntry;
+  }
+
+  function scheduleAutoLayoutHistory(markdown) {
+    window.clearTimeout(autoLayoutHistoryTimer);
+    autoLayoutHistoryTimer = window.setTimeout(() => {
+      addLayoutHistoryEntry({
+        markdown,
+        source: "auto",
+        name: getLayoutHistoryTitle(markdown),
+      });
+    }, 900);
+  }
+
+  function applyLayoutHistoryEntry(entry) {
+    const normalized = sanitizeLayoutHistoryEntry(entry);
+
+    if (!normalized) {
+      return false;
+    }
+
+    textarea.value = normalized.markdown;
+
+    const snapshot = normalized.snapshot;
+    state.theme = snapshot.theme;
+    state.mode = snapshot.mode;
+    state.questionAnswerLayout = snapshot.questionAnswerLayout;
+    state.layoutPresetByMode = normalizeLayoutPresetByMode(snapshot.layoutPresetByMode);
+    state.layoutPreset = sanitizeLayoutPresetForMode(snapshot.layoutPreset, state.mode);
+    state.bodyFontFamily = snapshot.bodyFontFamily;
+    state.headingFontFamily = snapshot.headingFontFamily;
+    state.paragraphAlign = snapshot.paragraphAlign;
+    state.lineHeight = snapshot.lineHeight;
+    state.letterSpacing = snapshot.letterSpacing;
+    state.pageHeaderEnabled = snapshot.pageHeaderEnabled;
+    state.pageHeaderText = snapshot.pageHeaderText;
+    state.watermarkEnabled = snapshot.watermarkEnabled;
+    state.watermarkText = snapshot.watermarkText;
+    state.exportBackgroundSrc = snapshot.exportBackgroundSrc;
+    state.exportBackgroundName = snapshot.exportBackgroundName;
+    state.paginationStrategy = snapshot.paginationStrategy;
+    state.elementStyles = normalizeElementStyles(snapshot.elementStyles);
+    state.elementStylePresets = normalizeElementStylePresets(snapshot.elementStylePresets);
+    state.tableLayouts = normalizeTableLayouts(snapshot.tableLayouts);
+    state.cardLayouts = normalizeCardLayouts(snapshot.cardLayouts);
+    state.cardOrder = normalizeCardOrder(snapshot.cardOrder);
+
+    ARTICLE_STYLE_CONTROLS.forEach((control) => {
+      state[control.key] = snapshot[control.key];
+    });
+    ARTICLE_PARAGRAPH_CONTROLS.forEach((control) => {
+      state[control.key] = snapshot[control.key];
+    });
+    HEADING_LINE_HEIGHT_CONTROLS.forEach((control) => {
+      state[control.key] = snapshot[control.key];
+    });
+    HEADING_SPACE_CONTROLS.forEach((control) => {
+      state[control.key] = snapshot[control.key];
+    });
+    PAGE_STYLE_CONTROLS.forEach((control) => {
+      state[control.key] = snapshot[control.key];
+    });
+
+    applyUiState();
+    renderNow();
+    return true;
+  }
+
+  function ensureLayoutHistoryDialog() {
+    let dialog = document.getElementById("layoutHistoryDialog");
+
+    if (dialog) {
+      return dialog;
+    }
+
+    dialog = document.createElement("div");
+    dialog.id = "layoutHistoryDialog";
+    dialog.className = "formula-editor-backdrop";
+    dialog.hidden = true;
+    dialog.innerHTML = `
+      <section class="formula-editor-panel layout-history-panel" role="dialog" aria-modal="true" aria-labelledby="layoutHistoryTitle">
+        <div class="formula-editor-head">
+          <div>
+            <h2 id="layoutHistoryTitle" class="formula-editor-title">排版历史</h2>
+            <p class="formula-editor-note">自动记录最近排版内容，也支持手动保存常用版本。</p>
+          </div>
+          <button type="button" class="formula-editor-close" data-layout-history-close aria-label="关闭">×</button>
+        </div>
+        <div class="layout-history-toolbar">
+          <label class="font-field">
+            <span class="font-title">保存名称</span>
+            <input id="layoutHistoryNameInput" type="text" maxlength="40" placeholder="留空则自动取标题">
+          </label>
+          <div class="layout-history-toolbar-actions">
+            <button type="button" class="page-inline-item page-inline-button" data-layout-history-save>保存当前排版</button>
+            <button type="button" class="page-inline-item page-inline-button" data-layout-history-clear>清空历史</button>
+          </div>
+        </div>
+        <div id="layoutHistoryList" class="layout-history-list"></div>
+      </section>
+    `;
+
+    document.body.appendChild(dialog);
+    return dialog;
+  }
+
+  function renderLayoutHistoryList() {
+    const dialog = ensureLayoutHistoryDialog();
+    const list = dialog.querySelector("#layoutHistoryList");
+
+    if (!list) {
+      return;
+    }
+
+    if (!state.layoutHistoryEntries.length) {
+      list.innerHTML = `
+        <div class="layout-history-empty">
+          <p>还没有历史记录。输入内容后点“保存排版”，或直接开始排版，系统会自动记录最近内容。</p>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = state.layoutHistoryEntries.map((entry) => {
+      const label = entry.source === "manual" ? LAYOUT_HISTORY_MANUAL_LABEL : LAYOUT_HISTORY_AUTO_LABEL;
+      const savedAt = formatLayoutHistoryTime(entry.savedAt);
+      const modeLabel = MODE_METADATA[entry.snapshot.mode]?.title || "排版";
+      const themeLabel = THEME_LABELS[entry.snapshot.theme] || "";
+
+      return `
+        <article class="layout-history-item" data-layout-history-id="${escapeAttribute(entry.id)}">
+          <div class="layout-history-item-main">
+            <div class="layout-history-item-head">
+              <h3 class="layout-history-item-title">${escapeHtml(entry.name || entry.title)}</h3>
+              <span class="layout-history-item-badge" data-source="${escapeAttribute(entry.source)}">${escapeHtml(label)}</span>
+            </div>
+            <p class="layout-history-item-meta">${escapeHtml([savedAt, modeLabel, themeLabel].filter(Boolean).join(" · "))}</p>
+            <p class="layout-history-item-summary">${escapeHtml(entry.summary || "暂无摘要")}</p>
+          </div>
+          <div class="layout-history-item-actions">
+            <button type="button" class="page-inline-item page-inline-button" data-layout-history-apply="${escapeAttribute(entry.id)}">恢复</button>
+            <button type="button" class="page-inline-item page-inline-button" data-layout-history-delete="${escapeAttribute(entry.id)}">删除</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function openLayoutHistoryDialog() {
+    const dialog = ensureLayoutHistoryDialog();
+    renderLayoutHistoryList();
+    dialog.hidden = false;
+    const nameInput = dialog.querySelector("#layoutHistoryNameInput");
+    window.requestAnimationFrame(() => {
+      nameInput?.focus();
+      nameInput?.select();
+    });
+  }
+
+  function closeLayoutHistoryDialog() {
+    const dialog = document.getElementById("layoutHistoryDialog");
+    if (!dialog) {
+      return;
+    }
+
+    dialog.hidden = true;
+  }
+
   let renderTimer = null;
   let statusTimer = null;
   let previewSyncTimer = null;
+  let autoLayoutHistoryTimer = null;
   let exportBusy = false;
   let activeRibbonTab = DEFAULT_RIBBON_TAB;
   let previewHasPendingSync = false;
@@ -16968,6 +17508,10 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
       window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
       window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
+      window.localStorage.setItem(
+        STORAGE_KEYS.layoutHistoryEntries,
+        JSON.stringify(normalizeLayoutHistoryEntries(state.layoutHistoryEntries)),
+      );
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
@@ -17271,6 +17815,8 @@ async function initPagedApp() {
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
+
+    scheduleAutoLayoutHistory(markdown);
 
     updateStatusText();
     schedulePreviewWorkbenchRefresh();
@@ -17725,6 +18271,31 @@ async function initPagedApp() {
     renderNow();
   });
 
+  saveLayoutBtn?.addEventListener("click", () => {
+    const dialog = ensureLayoutHistoryDialog();
+    const nameInput = dialog.querySelector("#layoutHistoryNameInput");
+    const entry = addLayoutHistoryEntry({
+      name: String(nameInput?.value || "").trim(),
+      source: "manual",
+    });
+
+    if (!entry) {
+      flashStatus("请先输入或导入要排版的内容");
+      return;
+    }
+
+    if (nameInput) {
+      nameInput.value = "";
+    }
+
+    renderLayoutHistoryList();
+    flashStatus(`已保存排版：${entry.name}`);
+  });
+
+  layoutHistoryBtn?.addEventListener("click", () => {
+    openLayoutHistoryDialog();
+  });
+
   layoutDataPresetBtn?.addEventListener("click", () => {
     openElementStylePresetDialog();
   });
@@ -17858,6 +18429,72 @@ async function initPagedApp() {
     }
 
     closeToolbarExportMenu();
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+
+    if (!target) {
+      return;
+    }
+
+    const closeTrigger = target.closest("[data-layout-history-close]");
+    if (closeTrigger) {
+      closeLayoutHistoryDialog();
+      return;
+    }
+
+    const saveTrigger = target.closest("[data-layout-history-save]");
+    if (saveTrigger) {
+      saveLayoutBtn?.click();
+      return;
+    }
+
+    const clearTrigger = target.closest("[data-layout-history-clear]");
+    if (clearTrigger) {
+      state.layoutHistoryEntries = [];
+      persistLayoutHistoryEntries();
+      renderLayoutHistoryList();
+      flashStatus("已清空排版历史");
+      return;
+    }
+
+    const applyTrigger = target.closest("[data-layout-history-apply]");
+    if (applyTrigger) {
+      const entryId = String(applyTrigger.getAttribute("data-layout-history-apply") || "");
+      const entry = state.layoutHistoryEntries.find((item) => item.id === entryId);
+
+      if (!entry || !applyLayoutHistoryEntry(entry)) {
+        flashStatus("该历史记录已失效，请删除后重新保存");
+        return;
+      }
+
+      closeLayoutHistoryDialog();
+      flashStatus(`已恢复：${entry.name}`);
+      return;
+    }
+
+    const deleteTrigger = target.closest("[data-layout-history-delete]");
+    if (deleteTrigger) {
+      const entryId = String(deleteTrigger.getAttribute("data-layout-history-delete") || "");
+      const targetEntry = state.layoutHistoryEntries.find((item) => item.id === entryId);
+      state.layoutHistoryEntries = state.layoutHistoryEntries.filter((item) => item.id !== entryId);
+      persistLayoutHistoryEntries();
+      renderLayoutHistoryList();
+      flashStatus(targetEntry ? `已删除：${targetEntry.name}` : "已删除历史记录");
+      return;
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    const layoutHistoryDialog = document.getElementById("layoutHistoryDialog");
+    if (layoutHistoryDialog && !layoutHistoryDialog.hidden) {
+      closeLayoutHistoryDialog();
+    }
   });
 
   document.addEventListener("keydown", (event) => {
@@ -18281,6 +18918,7 @@ async function initPagedApp() {
     const savedTableLayouts = window.localStorage.getItem(STORAGE_KEYS.tableLayouts);
     const savedCardLayouts = window.localStorage.getItem(STORAGE_KEYS.cardLayouts);
     const savedCardOrder = window.localStorage.getItem(STORAGE_KEYS.cardOrder);
+    const savedLayoutHistoryEntries = window.localStorage.getItem(STORAGE_KEYS.layoutHistoryEntries);
 
     if (savedMarkdown && savedMarkdown.trim()) {
       initialText = savedMarkdown;
@@ -18388,6 +19026,7 @@ async function initPagedApp() {
     state.tableLayouts = normalizeTableLayouts(savedTableLayouts ? JSON.parse(savedTableLayouts) : {});
     state.cardLayouts = normalizeCardLayouts(savedCardLayouts);
     state.cardOrder = normalizeCardOrder(savedCardOrder);
+    state.layoutHistoryEntries = normalizeLayoutHistoryEntries(savedLayoutHistoryEntries);
   } catch (_error) {
     // Ignore storage failures in restricted browsers.
   }
