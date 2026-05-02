@@ -42,6 +42,7 @@ const STORAGE_KEYS = {
   exportBackgroundSrc: "layout-for-xhs-export-background-src",
   exportBackgroundName: "layout-for-xhs-export-background-name",
   elementStyles: "layout-for-xhs-element-styles",
+  elementStylePresets: "layout-for-xhs-element-style-presets",
   paginationStrategy: "layout-for-xhs-pagination-strategy",
   ribbonTab: "layout-for-xhs-ribbon-tab",
   layoutPreset: "layout-for-xhs-layout-preset",
@@ -156,6 +157,61 @@ const MODE_LAYOUT_PRESETS = Object.freeze({
       label: "秋日索引卡",
       summary: "枫叶、麦穗和旧书签，适合成熟温暖的复习提纲",
     }),
+    Object.freeze({
+      id: "knowledge-obsidian-vault",
+      label: "黑曜金匣",
+      summary: "黑金角框、压纹标题和展陈式信息块，适合高价值知识卡",
+    }),
+    Object.freeze({
+      id: "knowledge-chrome-matrix",
+      label: "银翼矩阵",
+      summary: "银灰模块、数据栅格和仪表式标签，适合结构化知识",
+    }),
+    Object.freeze({
+      id: "knowledge-museum-catalog",
+      label: "策展手册",
+      summary: "展签、编号绳牌和留白卡片，适合专题梳理与归档",
+    }),
+    Object.freeze({
+      id: "knowledge-atelier-board",
+      label: "建筑竞图板",
+      summary: "轴线、尺度标和构造框，适合框架型知识图谱",
+    }),
+    Object.freeze({
+      id: "knowledge-abyss-chart",
+      label: "深海航图册",
+      summary: "航线弧线、浮标节点和深海索引，适合路径型知识",
+    }),
+    Object.freeze({
+      id: "knowledge-prism-glass",
+      label: "琉璃折光卡",
+      summary: "玻璃折射、彩膜边框和半透模块，适合高颜值知识整理",
+    }),
+    Object.freeze({
+      id: "knowledge-velvet-theater",
+      label: "绒幕剧场录",
+      summary: "绒幕边框、舞台灯标和剧场分幕，适合记忆型知识",
+    }),
+    Object.freeze({
+      id: "knowledge-neon-circuit",
+      label: "霓虹电路图",
+      summary: "霓虹走线、芯片卡片和发光节点，适合高冲击知识图",
+    }),
+    Object.freeze({
+      id: "knowledge-solar-folio",
+      label: "日曜典藏册",
+      summary: "旭日放射、鎏金标签和暖色档案块，适合重点总结",
+    }),
+    Object.freeze({
+      id: "knowledge-astral-orbit",
+      label: "星轨观测图",
+      summary: "星点网络、轨道环和深空节点，适合关系型知识图",
+    }),
+    Object.freeze({
+      id: "knowledge-central-editorial",
+      label: "集中高级",
+      summary: "中轴聚焦、主次块更清晰，适合更有展陈感的知识整理",
+    }),
   ]),
   question: Object.freeze([
     Object.freeze({
@@ -223,6 +279,56 @@ const MODE_LAYOUT_PRESETS = Object.freeze({
       label: "秋日错题本",
       summary: "暗红批注与麦色提示区，适合稳重的错题归纳",
     }),
+    Object.freeze({
+      id: "question-obsidian-vault",
+      label: "黑曜判题台",
+      summary: "黑曜答题区、金线步骤栏和批注章，适合重点题型拆解",
+    }),
+    Object.freeze({
+      id: "question-chrome-matrix",
+      label: "银翼拆题板",
+      summary: "银灰题面、模块答案仓和参数线，适合公式与步骤拆解",
+    }),
+    Object.freeze({
+      id: "question-museum-catalog",
+      label: "策展批注卷",
+      summary: "展品标签式题干与批注区，适合错题复盘和释义",
+    }),
+    Object.freeze({
+      id: "question-atelier-board",
+      label: "结构推演板",
+      summary: "制图步骤框和测量线答案区，适合推导题与证明题",
+    }),
+    Object.freeze({
+      id: "question-abyss-chart",
+      label: "深海解题舱",
+      summary: "航段式步骤区和坐标答案仓，适合分步分析",
+    }),
+    Object.freeze({
+      id: "question-prism-glass",
+      label: "琉璃解析卡",
+      summary: "透明答案层和折射标签，适合轻盈但高级的题目解析",
+    }),
+    Object.freeze({
+      id: "question-velvet-theater",
+      label: "绒幕批注卷",
+      summary: "舞台分场题干和聚光答案区，适合情境题与错题本",
+    }),
+    Object.freeze({
+      id: "question-neon-circuit",
+      label: "电路演算室",
+      summary: "发光步骤链和芯片答案块，适合理科推导与公式题",
+    }),
+    Object.freeze({
+      id: "question-solar-folio",
+      label: "日曜解题册",
+      summary: "日轮题号和高亮答案章，适合高频考点与结论题",
+    }),
+    Object.freeze({
+      id: "question-astral-orbit",
+      label: "星轨拆题图",
+      summary: "轨道步骤线和星点批注区，适合多分支题型解析",
+    }),
   ]),
   article: Object.freeze([
     Object.freeze({
@@ -289,6 +395,56 @@ const MODE_LAYOUT_PRESETS = Object.freeze({
       id: "article-autumn-note",
       label: "秋日札记",
       summary: "暖纸感、枫叶角标和书签页码，适合复盘与读书笔记",
+    }),
+    Object.freeze({
+      id: "article-obsidian-vault",
+      label: "黑曜社论页",
+      summary: "黑金社论标题与压纹引用块，适合观点型长文",
+    }),
+    Object.freeze({
+      id: "article-chrome-matrix",
+      label: "银翼专题页",
+      summary: "舱室式标题与面板表格，适合科技感教程和报告",
+    }),
+    Object.freeze({
+      id: "article-museum-catalog",
+      label: "策展长页",
+      summary: "博物馆手册页眉与展签引用，适合人文叙事长文",
+    }),
+    Object.freeze({
+      id: "article-atelier-board",
+      label: "竞图长刊页",
+      summary: "建筑竞图标题和制图表格，适合严谨教程长文",
+    }),
+    Object.freeze({
+      id: "article-abyss-chart",
+      label: "深海专题图",
+      summary: "航海页眉与经纬信息块，适合层级清晰的专题长文",
+    }),
+    Object.freeze({
+      id: "article-prism-glass",
+      label: "琉璃专栏页",
+      summary: "折光标题和晶体引用块，适合审美向教程长文",
+    }),
+    Object.freeze({
+      id: "article-velvet-theater",
+      label: "绒幕长页",
+      summary: "剧场题头和幕布式段落节奏，适合叙事型长文",
+    }),
+    Object.freeze({
+      id: "article-neon-circuit",
+      label: "电路报告页",
+      summary: "赛博标题和电路式表格，适合先锋风教程长文",
+    }),
+    Object.freeze({
+      id: "article-solar-folio",
+      label: "日曜长卷页",
+      summary: "太阳纹页眉和鎏金引文块，适合高识别长文",
+    }),
+    Object.freeze({
+      id: "article-astral-orbit",
+      label: "星轨论文页",
+      summary: "深空页眉和轨道式标题结构，适合冷感学术长文",
     }),
   ]),
 });
@@ -979,6 +1135,8 @@ const HEADING_SPACE_CONTROLS = [
   },
 ];
 
+const ELEMENT_STYLE_PRESET_MAX_ENTRIES = 120;
+
 const ELEMENT_STYLE_SCHEMA = Object.freeze([
   Object.freeze({
     id: "heading1",
@@ -1088,6 +1246,101 @@ const ELEMENT_STYLE_SCHEMA = Object.freeze([
       Object.freeze({ key: "radius", label: "圆角", cssVar: "--element-card-radius", min: 0, max: 32, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "gap", label: "内部间距", cssVar: "--element-card-gap", min: 0, max: 32, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "spaceAfter", label: "下间距", cssVar: "--element-card-space-after", min: 0, max: 48, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "image",
+    label: "Image",
+    selector: "figure.image-card",
+    fields: Object.freeze([
+      Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-image-radius", min: 0, max: 36, step: 1, defaultValue: 18, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "captionFontSize", label: "Caption Size", cssVar: "--element-image-caption-font-size", min: 10, max: 26, step: 1, defaultValue: DEFAULT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "captionGap", label: "Caption Gap", cssVar: "--element-image-caption-gap", min: 0, max: 24, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "Bottom Space", cssVar: "--element-image-space-after", min: 0, max: 48, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "code",
+    label: "Code",
+    selector: "pre[data-md-block='code']",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "Font Size", cssVar: "--element-code-font-size", min: 10, max: 24, step: 1, defaultValue: DEFAULT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingX", label: "Padding X", cssVar: "--element-code-padding-x", min: 0, max: 40, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingY", label: "Padding Y", cssVar: "--element-code-padding-y", min: 0, max: 36, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-code-radius", min: 0, max: 28, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "Bottom Space", cssVar: "--element-code-space-after", min: 0, max: 48, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "math",
+    label: "Math",
+    selector: ".math-block",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "Font Size", cssVar: "--element-math-font-size", min: 12, max: 32, step: 1, defaultValue: DEFAULT_FONT_SIZE + 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingX", label: "Padding X", cssVar: "--element-math-padding-x", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingY", label: "Padding Y", cssVar: "--element-math-padding-y", min: 0, max: 30, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-math-radius", min: 0, max: 24, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "Bottom Space", cssVar: "--element-math-space-after", min: 0, max: 40, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "mindmap",
+    label: "Mindmap",
+    selector: ".mindmap-card, .mindmap-root, .mindmap-node",
+    fields: Object.freeze([
+      Object.freeze({ key: "rootWidth", label: "Root Width", cssVar: "--element-mindmap-root-width", min: 40, max: 160, step: 2, defaultValue: 56, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "nodeFontSize", label: "Node Size", cssVar: "--element-mindmap-node-font-size", min: 10, max: 24, step: 1, defaultValue: DEFAULT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "nodePaddingX", label: "Node Pad X", cssVar: "--element-mindmap-node-padding-x", min: 0, max: 24, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "nodePaddingY", label: "Node Pad Y", cssVar: "--element-mindmap-node-padding-y", min: 0, max: 18, step: 1, defaultValue: 6, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "spaceAfter", label: "Bottom Space", cssVar: "--element-mindmap-space-after", min: 0, max: 48, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "label",
+    label: "Label",
+    selector: ".section-stamp, .content-kicker, .question-answer-box-label",
+    fields: Object.freeze([
+      Object.freeze({ key: "fontSize", label: "Font Size", cssVar: "--element-label-font-size", min: 10, max: 24, step: 1, defaultValue: DEFAULT_ACCENT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingX", label: "Padding X", cssVar: "--element-label-padding-x", min: 0, max: 22, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "paddingY", label: "Padding Y", cssVar: "--element-label-padding-y", min: 0, max: 14, step: 1, defaultValue: 3, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-label-radius", min: 0, max: 20, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "gap", label: "Gap", cssVar: "--element-label-gap", min: 0, max: 20, step: 1, defaultValue: 4, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "knowledge",
+    label: "Knowledge",
+    selector: ".knowledge-cluster, .knowledge-group, .knowledge-divider, .fact-row",
+    fields: Object.freeze([
+      Object.freeze({ key: "headerGap", label: "Header Gap", cssVar: "--element-knowledge-header-gap", min: 0, max: 32, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "groupGap", label: "Group Gap", cssVar: "--element-knowledge-group-gap", min: 0, max: 32, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "factPaddingX", label: "Fact Pad X", cssVar: "--element-knowledge-fact-padding-x", min: 0, max: 28, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "factPaddingY", label: "Fact Pad Y", cssVar: "--element-knowledge-fact-padding-y", min: 0, max: 20, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "dividerSpace", label: "Divider Space", cssVar: "--element-knowledge-divider-space", min: 0, max: 30, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "question",
+    label: "Question",
+    selector: ".question-role, .question-answer-box, .question-answer-box-row, .question-answer-box-label, .question-answer-bank-title, .question-body-title",
+    fields: Object.freeze([
+      Object.freeze({ key: "blockPaddingX", label: "Block Pad X", cssVar: "--element-question-block-padding-x", min: 0, max: 30, step: 1, defaultValue: 16, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "blockPaddingY", label: "Block Pad Y", cssVar: "--element-question-block-padding-y", min: 0, max: 24, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "blockRadius", label: "Block Radius", cssVar: "--element-question-block-radius", min: 0, max: 28, step: 1, defaultValue: 18, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "labelFontSize", label: "Label Size", cssVar: "--element-question-label-font-size", min: 10, max: 24, step: 1, defaultValue: DEFAULT_ACCENT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "sectionGap", label: "Section Gap", cssVar: "--element-question-section-gap", min: 0, max: 24, step: 1, defaultValue: 8, unit: "px", formatValue: formatPixelValue }),
+    ]),
+  }),
+  Object.freeze({
+    id: "article",
+    label: "Article",
+    selector: ".lead-paragraph, .article-pullquote, .article-insight",
+    fields: Object.freeze([
+      Object.freeze({ key: "leadPaddingLeft", label: "Lead Pad Left", cssVar: "--element-article-lead-padding-left", min: 0, max: 32, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "leadSpaceAfter", label: "Lead Space", cssVar: "--element-article-lead-space-after", min: 0, max: 32, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "pullquotePaddingX", label: "Quote Pad X", cssVar: "--element-article-pullquote-padding-x", min: 0, max: 28, step: 1, defaultValue: 14, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "pullquotePaddingY", label: "Quote Pad Y", cssVar: "--element-article-pullquote-padding-y", min: 0, max: 24, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
+      Object.freeze({ key: "pullquoteSpaceAfter", label: "Quote Space", cssVar: "--element-article-pullquote-space-after", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
     ]),
   }),
 ]);
@@ -3807,6 +4060,51 @@ function normalizeElementStyles(rawValue) {
   return getElementStyleDefaults(rawValue);
 }
 
+function normalizeElementStylePresets(rawValue) {
+  let source = rawValue;
+
+  if (typeof source === "string") {
+    try {
+      source = JSON.parse(source);
+    } catch (_error) {
+      source = {};
+    }
+  }
+
+  if (!source || typeof source !== "object" || Array.isArray(source)) {
+    return {};
+  }
+
+  const normalized = {};
+  Object.entries(source).slice(0, ELEMENT_STYLE_PRESET_MAX_ENTRIES).forEach(([groupId, entries]) => {
+    const group = getElementStyleGroup(groupId);
+    if (!group || !Array.isArray(entries)) {
+      return;
+    }
+
+    const nextEntries = entries
+      .slice(0, ELEMENT_STYLE_PRESET_MAX_ENTRIES)
+      .map((entry) => {
+        const name = String(entry?.name || "").trim().slice(0, 40);
+        if (!name) {
+          return null;
+        }
+        return {
+          id: sanitizeBlockToken(String(entry.id || name), `${group.id}-${name}`),
+          name,
+          styles: getElementStyleDefaults({ [group.id]: entry.styles || {} })[group.id],
+        };
+      })
+      .filter(Boolean);
+
+    if (nextEntries.length) {
+      normalized[group.id] = nextEntries;
+    }
+  });
+
+  return normalized;
+}
+
 function resolveElementStyles(options = {}, resolvedOptions = {}) {
   if (options.elementStyles) {
     return normalizeElementStyles(options.elementStyles);
@@ -6041,6 +6339,96 @@ function resolveHeaderText(documentTitle, options) {
   return modeMeta ? modeMeta.title : "Markdown Document";
 }
 
+const DISTINCT_LAYOUT_FAMILIES = Object.freeze([
+  "obsidian-vault",
+  "chrome-matrix",
+  "museum-catalog",
+  "atelier-board",
+  "abyss-chart",
+  "prism-glass",
+  "velvet-theater",
+  "neon-circuit",
+  "solar-folio",
+  "astral-orbit",
+]);
+
+function getLayoutPresetFamilyKey(presetId) {
+  const id = String(presetId || "");
+  return DISTINCT_LAYOUT_FAMILIES.find((family) => id.includes(family)) || "";
+}
+
+function ensureDirectChild(parent, tagName, className, options = {}) {
+  if (!parent) {
+    return null;
+  }
+
+  const selectorClass = String(className || "").trim().split(/\s+/)[0];
+  let child = selectorClass ? parent.querySelector(`:scope > .${selectorClass}`) : null;
+
+  if (!child) {
+    child = document.createElement(tagName);
+    child.className = className;
+
+    if (options.text) {
+      child.textContent = options.text;
+    }
+
+    if (options.ariaHidden) {
+      child.setAttribute("aria-hidden", "true");
+    }
+
+    if (options.prepend) {
+      parent.insertBefore(child, parent.firstChild);
+    } else if (options.before && parent.contains(options.before)) {
+      parent.insertBefore(child, options.before);
+    } else {
+      parent.appendChild(child);
+    }
+  }
+
+  return child;
+}
+
+function decoratePageHeaderShell(header, family, headerText, pageLabel) {
+  if (!header || !family) {
+    return;
+  }
+
+  header.classList.add("page-sheet-header-distinct", `page-sheet-header-${family}`);
+  headerText?.classList.add("page-sheet-header-text-distinct", `page-sheet-header-text-${family}`);
+  pageLabel?.classList.add("page-sheet-page-number-distinct", `page-sheet-page-number-${family}`);
+
+  if (family === "obsidian-vault") {
+    ensureDirectChild(header, "span", "page-header-glyph page-header-glyph-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-glyph page-header-glyph-right", { ariaHidden: true });
+  } else if (family === "chrome-matrix") {
+    ensureDirectChild(header, "span", "page-header-rail page-header-rail-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-rail page-header-rail-right", { ariaHidden: true });
+  } else if (family === "museum-catalog") {
+    ensureDirectChild(header, "span", "page-header-tag-hole", { ariaHidden: true, before: headerText });
+  } else if (family === "atelier-board") {
+    ensureDirectChild(header, "span", "page-header-axis page-header-axis-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-axis page-header-axis-right", { ariaHidden: true });
+  } else if (family === "abyss-chart") {
+    ensureDirectChild(header, "span", "page-header-wave page-header-wave-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-wave page-header-wave-right", { ariaHidden: true });
+  } else if (family === "prism-glass") {
+    ensureDirectChild(header, "span", "page-header-prism page-header-prism-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-prism page-header-prism-right", { ariaHidden: true });
+  } else if (family === "velvet-theater") {
+    ensureDirectChild(header, "span", "page-header-curtain page-header-curtain-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-curtain page-header-curtain-right", { ariaHidden: true });
+  } else if (family === "neon-circuit") {
+    ensureDirectChild(header, "span", "page-header-node page-header-node-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-node page-header-node-right", { ariaHidden: true });
+  } else if (family === "solar-folio") {
+    ensureDirectChild(header, "span", "page-header-halo", { ariaHidden: true, before: headerText });
+  } else if (family === "astral-orbit") {
+    ensureDirectChild(header, "span", "page-header-orbit page-header-orbit-left", { ariaHidden: true, prepend: true });
+    ensureDirectChild(header, "span", "page-header-orbit page-header-orbit-right", { ariaHidden: true });
+  }
+}
+
 function createPaginatedPage(options, pageNumber, documentTitle) {
   const resolved = getResolvedDocumentOptions(options);
   const page = document.createElement("section");
@@ -6052,6 +6440,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
   page.className = "page-sheet";
   page.dataset.pageNumber = String(pageNumber);
   page.dataset.layoutPreset = resolved.layoutPreset;
+  page.dataset.layoutFamily = getLayoutPresetFamilyKey(resolved.layoutPreset);
   applyPageShellStyleProperties(page, resolved);
 
   if (resolved.watermarkEnabled && resolved.watermarkText) {
@@ -6079,6 +6468,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
     pageLabel.textContent = `${pageNumber}`;
     header.appendChild(headerText);
     header.appendChild(pageLabel);
+    decoratePageHeaderShell(header, page.dataset.layoutFamily, headerText, pageLabel);
     frame.appendChild(header);
   }
 
@@ -6086,6 +6476,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
   article.className = "article-canvas page-sheet-article";
   article.dataset.mode = resolved.mode;
   article.dataset.layoutPreset = resolved.layoutPreset;
+  article.dataset.layoutFamily = page.dataset.layoutFamily;
   article.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
   applyArticleStyleProperties(article, resolved);
   body.appendChild(article);
@@ -12330,6 +12721,10 @@ function getQuestionLayoutPreset(root) {
   return String(root?.dataset?.layoutPreset || "");
 }
 
+function getDistinctQuestionFamily(root) {
+  return getLayoutPresetFamilyKey(getQuestionLayoutPreset(root));
+}
+
 function getQuestionAnswerLayout(root) {
   return sanitizeChoice(
     root?.dataset?.questionAnswerLayout,
@@ -12563,6 +12958,79 @@ function buildQuestionCard(title, blocks) {
   }
 
   return card;
+}
+
+function buildQuestionCardWithFamily(title, blocks, family = "") {
+  const card = buildQuestionCard(title, blocks);
+
+  if (!family) {
+    return card;
+  }
+
+  card.dataset.layoutFamily = family;
+  card.classList.add("question-card-distinct", `question-card-family-${family}`);
+
+  if (family === "chrome-matrix" || family === "prism-glass") {
+    const split = ensureDirectChild(card, "div", "question-card-structure-split", { prepend: true });
+    Array.from(card.querySelectorAll(":scope > .question-panel")).forEach((panel) => split.appendChild(panel));
+  }
+
+  if (family === "obsidian-vault") {
+    ensureDirectChild(card, "div", "question-card-corners", { ariaHidden: true, prepend: true });
+  } else if (family === "museum-catalog") {
+    ensureDirectChild(card, "div", "question-card-side-tag", { ariaHidden: true, prepend: true });
+  } else if (family === "atelier-board") {
+    ensureDirectChild(card, "div", "question-card-axis-strip", { ariaHidden: true, prepend: true });
+  } else if (family === "abyss-chart") {
+    ensureDirectChild(card, "div", "question-card-wave-cap", { ariaHidden: true, prepend: true });
+  } else if (family === "prism-glass") {
+    ensureDirectChild(card, "div", "question-card-prism-glow", { ariaHidden: true, prepend: true });
+  } else if (family === "velvet-theater") {
+    ensureDirectChild(card, "div", "question-card-stage-arch", { ariaHidden: true, prepend: true });
+  } else if (family === "neon-circuit") {
+    ensureDirectChild(card, "div", "question-card-circuit-bus", { ariaHidden: true, prepend: true });
+  } else if (family === "solar-folio") {
+    ensureDirectChild(card, "div", "question-card-solar-core", { ariaHidden: true, prepend: true });
+  } else if (family === "astral-orbit") {
+    ensureDirectChild(card, "div", "question-card-orbit-ring", { ariaHidden: true, prepend: true });
+  }
+
+  return card;
+}
+
+function decorateDistinctQuestionAnswerAreas(root, family) {
+  if (!root || !family) {
+    return;
+  }
+
+  Array.from(root.querySelectorAll(".question-answer-item, .question-answer-box")).forEach((element) => {
+    element.dataset.layoutFamily = family;
+    element.classList.add("question-answer-distinct", `question-answer-family-${family}`);
+  });
+
+  Array.from(root.querySelectorAll(".question-answer-item")).forEach((item) => {
+    if (family === "obsidian-vault") {
+      ensureDirectChild(item, "div", "question-answer-corners", { ariaHidden: true, prepend: true });
+    } else if (family === "chrome-matrix") {
+      ensureDirectChild(item, "div", "question-answer-rail", { ariaHidden: true, prepend: true });
+    } else if (family === "museum-catalog") {
+      ensureDirectChild(item, "div", "question-answer-tag", { ariaHidden: true, prepend: true });
+    } else if (family === "atelier-board") {
+      ensureDirectChild(item, "div", "question-answer-grid", { ariaHidden: true, prepend: true });
+    } else if (family === "abyss-chart") {
+      ensureDirectChild(item, "div", "question-answer-wave", { ariaHidden: true, prepend: true });
+    } else if (family === "prism-glass") {
+      ensureDirectChild(item, "div", "question-answer-prism", { ariaHidden: true, prepend: true });
+    } else if (family === "velvet-theater") {
+      ensureDirectChild(item, "div", "question-answer-curtain", { ariaHidden: true, prepend: true });
+    } else if (family === "neon-circuit") {
+      ensureDirectChild(item, "div", "question-answer-circuit", { ariaHidden: true, prepend: true });
+    } else if (family === "solar-folio") {
+      ensureDirectChild(item, "div", "question-answer-sunburst", { ariaHidden: true, prepend: true });
+    } else if (family === "astral-orbit") {
+      ensureDirectChild(item, "div", "question-answer-orbit", { ariaHidden: true, prepend: true });
+    }
+  });
 }
 
 function moveQuestionDetailsToAnswerBank(root) {
@@ -12938,6 +13406,7 @@ function hasQuestionRoleContent(elements) {
 
 function groupQuestionCards(root) {
   const children = Array.from(root.children);
+  const family = getDistinctQuestionFamily(root);
 
   if (!children.length) {
     return;
@@ -12962,7 +13431,7 @@ function groupQuestionCards(root) {
       fragment.appendChild(leadBlock);
     }
 
-    fragment.appendChild(buildQuestionCard(null, questionBlocks));
+    fragment.appendChild(buildQuestionCardWithFamily(null, questionBlocks, family));
     root.replaceChildren(fragment);
     return;
   }
@@ -12987,7 +13456,7 @@ function groupQuestionCards(root) {
     }
 
     if (hasQuestionRoleContent(blocks)) {
-      fragment.appendChild(buildQuestionCard(element, blocks));
+      fragment.appendChild(buildQuestionCardWithFamily(element, blocks, family));
     } else {
       fragment.appendChild(element);
       blocks.forEach((block) => fragment.appendChild(block));
@@ -13043,6 +13512,107 @@ function enhanceArticleMode(root) {
   });
 }
 
+function decorateDistinctHeading(root, family, mode) {
+  const heading = root?.querySelector?.(":scope > h1");
+
+  if (!heading || !family) {
+    return;
+  }
+
+  heading.classList.add("layout-distinct-heading", `layout-distinct-heading-${family}`, `layout-distinct-heading-${mode}`);
+  ensureDirectChild(heading, "span", "layout-heading-shell", { ariaHidden: true, prepend: true });
+}
+
+function decorateDistinctKnowledge(root, family) {
+  if (!root || !family) {
+    return;
+  }
+
+  Array.from(root.querySelectorAll(".knowledge-cluster")).forEach((cluster) => {
+    cluster.dataset.layoutFamily = family;
+    cluster.classList.add("knowledge-cluster-distinct", `knowledge-cluster-family-${family}`);
+    if (family === "museum-catalog") {
+      ensureDirectChild(cluster, "div", "knowledge-cluster-spine-tag", { ariaHidden: true, prepend: true });
+    } else if (family === "atelier-board") {
+      ensureDirectChild(cluster, "div", "knowledge-cluster-axis-grid", { ariaHidden: true, prepend: true });
+    } else if (family === "obsidian-vault") {
+      ensureDirectChild(cluster, "div", "knowledge-cluster-corner-cuts", { ariaHidden: true, prepend: true });
+    } else if (family === "neon-circuit") {
+      ensureDirectChild(cluster, "div", "knowledge-cluster-circuit-bus", { ariaHidden: true, prepend: true });
+    } else if (family === "astral-orbit") {
+      ensureDirectChild(cluster, "div", "knowledge-cluster-starfield", { ariaHidden: true, prepend: true });
+    }
+  });
+}
+
+function decorateDistinctMindmaps(root, family) {
+  if (!root || !family) {
+    return;
+  }
+
+  Array.from(root.querySelectorAll(".mindmap-card")).forEach((card) => {
+    card.dataset.layoutFamily = family;
+    card.classList.add("mindmap-card-distinct", `mindmap-card-family-${family}`);
+    if (family === "abyss-chart") {
+      ensureDirectChild(card, "div", "mindmap-shell-wave", { ariaHidden: true, prepend: true });
+    } else if (family === "prism-glass") {
+      ensureDirectChild(card, "div", "mindmap-shell-prism", { ariaHidden: true, prepend: true });
+    } else if (family === "solar-folio") {
+      ensureDirectChild(card, "div", "mindmap-shell-halo", { ariaHidden: true, prepend: true });
+    } else if (family === "astral-orbit") {
+      ensureDirectChild(card, "div", "mindmap-shell-orbit", { ariaHidden: true, prepend: true });
+    }
+  });
+}
+
+function decorateDistinctTables(root, family) {
+  if (!root || !family) {
+    return;
+  }
+
+  Array.from(root.querySelectorAll("table.article-table")).forEach((table) => {
+    table.dataset.layoutFamily = family;
+    table.classList.add("article-table-distinct", `article-table-family-${family}`);
+  });
+}
+
+function decorateDistinctArticleBlocks(root, family) {
+  if (!root || !family) {
+    return;
+  }
+
+  Array.from(root.querySelectorAll(".lead-paragraph, .article-pullquote, .article-insight")).forEach((block) => {
+    block.dataset.layoutFamily = family;
+    block.classList.add("article-block-distinct", `article-block-family-${family}`);
+    if (family === "prism-glass") {
+      ensureDirectChild(block, "div", "article-block-prism", { ariaHidden: true, prepend: true });
+    } else if (family === "velvet-theater") {
+      ensureDirectChild(block, "div", "article-block-stage", { ariaHidden: true, prepend: true });
+    } else if (family === "solar-folio") {
+      ensureDirectChild(block, "div", "article-block-halo", { ariaHidden: true, prepend: true });
+    } else if (family === "astral-orbit") {
+      ensureDirectChild(block, "div", "article-block-orbit", { ariaHidden: true, prepend: true });
+    }
+  });
+}
+
+function applyDistinctLayoutStructure(root, mode) {
+  const family = getLayoutPresetFamilyKey(root?.dataset?.layoutPreset);
+
+  if (!root || !family) {
+    return;
+  }
+
+  root.dataset.layoutFamily = family;
+  root.classList.add("layout-distinct-root", `layout-distinct-root-${family}`, `layout-distinct-root-${mode}`);
+  decorateDistinctHeading(root, family, mode);
+  decorateDistinctKnowledge(root, family);
+  decorateDistinctQuestionAnswerAreas(root, family);
+  decorateDistinctMindmaps(root, family);
+  decorateDistinctTables(root, family);
+  decorateDistinctArticleBlocks(root, family);
+}
+
 function enhanceRenderedArticle(root, mode) {
   if (!root) {
     return;
@@ -13050,15 +13620,13 @@ function enhanceRenderedArticle(root, mode) {
 
   if (mode === "knowledge") {
     enhanceKnowledgeMode(root);
-    return;
-  }
-
-  if (mode === "question") {
+  } else if (mode === "question") {
     enhanceQuestionMode(root);
-    return;
+  } else {
+    enhanceArticleMode(root);
   }
 
-  enhanceArticleMode(root);
+  applyDistinctLayoutStructure(root, mode);
 }
 
 function downloadFile(fileName, content, mimeType) {
@@ -13486,6 +14054,42 @@ function openFormulaEditor(options = {}) {
   };
 }
 
+function ensureElementStylePresetDialog() {
+  let dialog = document.getElementById("elementStylePresetDialog");
+
+  if (dialog) {
+    return dialog;
+  }
+
+  dialog = document.createElement("div");
+  dialog.id = "elementStylePresetDialog";
+  dialog.className = "formula-editor-backdrop";
+  dialog.hidden = true;
+  dialog.innerHTML = `
+    <section class="formula-editor-panel element-style-preset-panel" role="dialog" aria-modal="true" aria-labelledby="elementStylePresetTitle">
+      <div class="formula-editor-head">
+        <div>
+          <h2 id="elementStylePresetTitle" class="formula-editor-title">元素预设</h2>
+          <p class="formula-editor-note">保存当前元素参数组，之后一键应用。</p>
+        </div>
+        <button type="button" class="formula-editor-close" data-element-style-preset-close>×</button>
+      </div>
+      <div class="element-style-preset-body">
+        <label class="font-field">
+          <span class="font-title">预设名称</span>
+          <input id="elementStylePresetNameInput" type="text" maxlength="40" placeholder="例如：题干紧凑版">
+        </label>
+        <div class="page-inline-tools">
+          <button type="button" class="page-inline-item page-inline-button" data-element-style-preset-save>保存当前组</button>
+        </div>
+        <div id="elementStylePresetList" class="card-layout-fields"></div>
+      </div>
+    </section>
+  `;
+  document.body.appendChild(dialog);
+  return dialog;
+}
+
 function formatLayoutPresetShortLabel(label) {
   const normalized = String(label || "预设").replace(/\s+/g, "");
   return Array.from(normalized).slice(0, 4).join("") || "预设";
@@ -13502,6 +14106,11 @@ function getLayoutPresetPreviewKind(presetId, mode) {
     if (id.includes("journal") || id.includes("study") || id.includes("cream")) return "journal";
     return "article";
   }
+  if (id.includes("chrome") || id.includes("circuit") || id.includes("atelier")) return "blueprint";
+  if (id.includes("museum") || id.includes("solar")) return "research";
+  if (id.includes("prism")) return "journal";
+  if (id.includes("obsidian") || id.includes("velvet")) return "editorial";
+  if (id.includes("abyss") || id.includes("astral")) return "lunar";
   if (id.includes("research") || id.includes("brief") || id.includes("report")) return "research";
   if (id.includes("minimal") || id.includes("editorial")) return "editorial";
   if (id.includes("journal") || id.includes("study") || id.includes("cream") || id.includes("pencil")) return "journal";
@@ -13516,6 +14125,16 @@ function getLayoutPresetPreviewKind(presetId, mode) {
 function getLayoutPresetPreviewTheme(presetId) {
   const id = String(presetId || "");
 
+  if (id.includes("obsidian")) return "obsidian";
+  if (id.includes("chrome")) return "chrome";
+  if (id.includes("museum")) return "museum";
+  if (id.includes("atelier")) return "atelier";
+  if (id.includes("abyss")) return "abyss";
+  if (id.includes("prism")) return "prism";
+  if (id.includes("velvet")) return "velvet";
+  if (id.includes("circuit")) return "neon";
+  if (id.includes("solar")) return "solar";
+  if (id.includes("astral")) return "astral";
   if (id.includes("botanical")) return "botanical";
   if (id.includes("lunar")) return "lunar";
   if (id.includes("blueprint")) return "blueprint";
@@ -13619,6 +14238,45 @@ function createLayoutPresetPreviewSvg(preset, mode) {
   if (theme === "botanical") {
     svg.appendChild(createSvgElement("path", { d: "M93 49C82 49 79 58 79 58C90 59 97 54 93 49Z", class: "layout-preset-svg-motif" }));
     svg.appendChild(createSvgElement("path", { d: "M79 58C84 53 88 51 93 50", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "obsidian") {
+    svg.appendChild(createSvgElement("path", { d: "M80 43H106V59H80ZM84 47H94M84 52H101", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M78 42L82 38M106 42L110 38M78 60L82 64M106 60L110 64", class: "layout-preset-svg-cutline" }));
+    svg.appendChild(createSvgElement("circle", { cx: 95, cy: 51, r: 3.2, class: "layout-preset-svg-motif" }));
+  } else if (theme === "chrome") {
+    svg.appendChild(createSvgElement("path", { d: "M78 45H106V59H78ZM78 50H106M84 45V59M95 45V59", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 84, cy: 50, r: 1.5, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 95, cy: 54, r: 1.5, class: "layout-preset-svg-motif" }));
+  } else if (theme === "museum") {
+    svg.appendChild(createSvgElement("rect", { x: 80, y: 45, width: 26, height: 15, rx: 2, class: "layout-preset-svg-ticket" }));
+    svg.appendChild(createSvgElement("circle", { cx: 86, cy: 49, r: 1.2, class: "layout-preset-svg-dot" }));
+    svg.appendChild(createSvgElement("path", { d: "M86 49V41M90 51H100M90 55H98", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "atelier") {
+    svg.appendChild(createSvgElement("path", { d: "M79 59L79 44L94 59M85 53L91 53M96 44H106V54", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 101, cy: 49, r: 2, class: "layout-preset-svg-motif" }));
+  } else if (theme === "abyss") {
+    svg.appendChild(createSvgElement("path", { d: "M78 57C84 52 88 52 94 57C99 53 102 53 107 57", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 92, cy: 47, r: 5, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M92 42V52M87 47H97", class: "layout-preset-svg-cutline" }));
+  } else if (theme === "prism") {
+    svg.appendChild(createSvgElement("path", { d: "M79 59L86 43L98 45L105 56L92 61Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M86 43L92 61M98 45L92 61M84 51H102", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "velvet") {
+    svg.appendChild(createSvgElement("path", { d: "M78 46C82 41 87 41 91 46C95 41 100 41 104 46V59H78Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M85 46V59M92 46V59M99 46V59", class: "layout-preset-svg-cutline" }));
+  } else if (theme === "neon") {
+    svg.appendChild(createSvgElement("path", { d: "M79 58V47H89M89 47V53H98M98 53V45H106", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 79, cy: 58, r: 1.8, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 89, cy: 47, r: 1.8, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 98, cy: 53, r: 1.8, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 106, cy: 45, r: 1.8, class: "layout-preset-svg-motif" }));
+  } else if (theme === "solar") {
+    svg.appendChild(createSvgElement("circle", { cx: 93, cy: 52, r: 5.2, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M93 42V45M93 59V62M83 52H86M100 52H103M86 45L88 47M98 57L100 59M100 45L98 47M88 57L86 59", class: "layout-preset-svg-motif-line" }));
+  } else if (theme === "astral") {
+    svg.appendChild(createSvgElement("path", { d: "M78 56A13 8 0 0 1 106 56A13 8 0 0 1 78 56Z", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 87, cy: 51, r: 2, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 101, cy: 55, r: 2, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 94, cy: 47, r: 1.3, class: "layout-preset-svg-dot" }));
   } else if (theme === "lunar") {
     svg.appendChild(createSvgElement("circle", { cx: 100, cy: 52, r: 6, class: "layout-preset-svg-motif" }));
     svg.appendChild(createSvgElement("circle", { cx: 103, cy: 50, r: 6, class: "layout-preset-svg-cutout" }));
@@ -13846,6 +14504,7 @@ async function initPagedApp() {
   const elementStyleTitle = elementStylePanel?.querySelector(".element-style-title");
   const elementStyleNote = elementStylePanel?.querySelector(".element-style-note");
   const elementStyleGrid = elementStylePanel?.querySelector(".element-style-grid");
+  const layoutDataPresetBtn = document.getElementById("layoutDataPresetBtn");
   let cardLayoutPanel = null;
   let cardLayoutFields = null;
   let cardLayoutTarget = null;
@@ -14198,6 +14857,7 @@ async function initPagedApp() {
     exportBackgroundName: DEFAULT_EXPORT_BACKGROUND_NAME,
     paginationStrategy: DEFAULT_PAGINATION_STRATEGY,
     elementStyles: getElementStyleDefaults(),
+    elementStylePresets: {},
     cardLayouts: {},
     cardOrder: [],
     activeElementStyleGroup: ELEMENT_STYLE_SCHEMA[0].id,
@@ -14420,6 +15080,7 @@ async function initPagedApp() {
   let previewHasPendingSync = false;
   let previewSelectionRange = null;
   let previewSelectionHost = null;
+  let elementStylePresetDialog = null;
   let preservePreviewSelection = false;
   let activeTableCellSelection = null;
   let tableCellSelectionDrag = null;
@@ -14560,42 +15221,33 @@ async function initPagedApp() {
   }
 
   function getGroupIdForPreviewElement(element) {
-    const target = element?.closest?.([
-      ".knowledge-cluster",
-      ".question-card",
-      ".question-panel",
-      ".mindmap-card",
-      ".callout-box",
-      ".note-quote",
-      ".brush-block",
-      ".article-table-editor",
-      "figure",
-      "table",
-      "blockquote",
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "ul",
-      "ol",
-      "li",
-      "p",
-    ].join(","));
+    const groups = [
+      ["article", ".lead-paragraph, .article-pullquote, .article-insight"],
+      ["question", ".question-role, .question-answer-box, .question-answer-box-row, .question-answer-box-label, .question-answer-bank-title, .question-body-title"],
+      ["knowledge", ".knowledge-group, .knowledge-divider, .fact-row"],
+      ["label", ".section-stamp, .content-kicker"],
+      ["math", ".math-block"],
+      ["mindmap", ".mindmap-root, .mindmap-node, .mindmap-card"],
+      ["image", ".image-card, figure.image-card"],
+      ["code", "pre[data-md-block='code']"],
+      ["heading1", "h1"],
+      ["heading2", "h2"],
+      ["heading3", "h3"],
+      ["heading4", "h4"],
+      ["list", "ul, ol"],
+      ["paragraph", "li, .list-item-body, .list-item-copy, .list-item-text, p"],
+      ["callout", ".callout-box, .note-quote, .brush-block, blockquote"],
+      ["table", "table, .article-table-editor"],
+      ["card", ".knowledge-cluster, .question-card, .question-panel, figure, .mindmap-card"],
+    ];
 
-    if (!target) {
-      return state.activeElementStyleGroup || ELEMENT_STYLE_SCHEMA[0].id;
+    for (const [groupId, selector] of groups) {
+      const match = element?.closest?.(selector);
+      if (match) {
+        return groupId;
+      }
     }
-
-    if (target.matches("h1")) return "heading1";
-    if (target.matches("h2")) return "heading2";
-    if (target.matches("h3")) return "heading3";
-    if (target.matches("h4")) return "heading4";
-    if (target.matches("li, .list-item-body, .list-item-copy, .list-item-text")) return "paragraph";
-    if (target.matches("ul, ol")) return "list";
-    if (target.matches(".callout-box, .note-quote, .brush-block, blockquote")) return "callout";
-    if (target.matches("table, .article-table-editor")) return "table";
-    if (target.matches(".knowledge-cluster, .question-card, .question-panel, .mindmap-card, figure")) return "card";
-    return "paragraph";
+    return state.activeElementStyleGroup || "paragraph";
   }
 
   function syncElementStylePanel() {
@@ -14604,6 +15256,7 @@ async function initPagedApp() {
     }
 
     const activeGroup = getElementStyleGroup(state.activeElementStyleGroup);
+    const presetCount = (normalizeElementStylePresets(state.elementStylePresets)[activeGroup.id] || []).length;
 
     if (elementStylePanel) {
       elementStylePanel.dataset.activeElementStyle = activeGroup.id;
@@ -14667,11 +15320,17 @@ async function initPagedApp() {
 
     const groupPicker = document.createElement("div");
     const fieldsWrap = document.createElement("div");
+    const toolsWrap = document.createElement("div");
+    const presetBtn = document.createElement("button");
     const resetBtn = document.createElement("button");
 
     groupPicker.className = "element-style-picker";
     groupPicker.setAttribute("role", "tablist");
     fieldsWrap.className = "element-style-fields";
+    toolsWrap.className = "element-style-picker";
+    presetBtn.type = "button";
+    presetBtn.className = "element-style-reset";
+    presetBtn.textContent = "预设";
     resetBtn.type = "button";
     resetBtn.className = "element-style-reset";
     resetBtn.textContent = "重置当前";
@@ -14718,13 +15377,16 @@ async function initPagedApp() {
             syncBodyElementStylePeers(normalizedStyles, field.key, normalizedStyles[group.id][field.key]);
           }
           state.elementStyles = normalizedStyles;
-          applyElementStyleProperties(measureCanvas, state.elementStyles);
           syncElementStylePanel();
           applyUiState({ rerender: true });
         });
       });
 
       fieldsWrap.appendChild(groupFields);
+    });
+
+    presetBtn.addEventListener("click", () => {
+      openElementStylePresetDialog();
     });
 
     resetBtn.addEventListener("click", () => {
@@ -14743,13 +15405,107 @@ async function initPagedApp() {
       applyUiState({ rerender: true });
     });
 
-    elementStyleGrid.prepend(groupPicker, fieldsWrap, resetBtn);
+    toolsWrap.append(presetBtn, resetBtn);
+    elementStyleGrid.prepend(groupPicker, fieldsWrap, toolsWrap);
 
     if (elementStyleTitle) {
       elementStyleTitle.textContent = "元素参数";
     }
 
     syncElementStylePanel();
+  }
+
+  function openElementStylePresetDialog() {
+    const dialog = ensureElementStylePresetDialog();
+    const title = dialog.querySelector("#elementStylePresetTitle");
+    const input = dialog.querySelector("#elementStylePresetNameInput");
+    const list = dialog.querySelector("#elementStylePresetList");
+    const activeGroup = getElementStyleGroup(state.activeElementStyleGroup);
+
+    const syncList = () => {
+      const presets = normalizeElementStylePresets(state.elementStylePresets)[activeGroup.id] || [];
+      list.replaceChildren();
+
+      presets.forEach((preset) => {
+        const row = document.createElement("div");
+        const applyBtn = document.createElement("button");
+        const deleteBtn = document.createElement("button");
+
+        row.className = "card-layout-head";
+        applyBtn.type = "button";
+        applyBtn.className = "element-style-chip";
+        applyBtn.textContent = preset.name;
+        deleteBtn.type = "button";
+        deleteBtn.className = "element-style-reset";
+        deleteBtn.textContent = "删除";
+
+        applyBtn.addEventListener("click", () => {
+          const normalizedStyles = normalizeElementStyles(state.elementStyles);
+          normalizedStyles[activeGroup.id] = { ...preset.styles };
+          state.elementStyles = normalizedStyles;
+          dialog.hidden = true;
+          syncElementStylePanel();
+          applyUiState({ rerender: true });
+          flashStatus(`已应用 ${preset.name}`);
+        });
+
+        deleteBtn.addEventListener("click", () => {
+          const nextPresets = normalizeElementStylePresets(state.elementStylePresets);
+          nextPresets[activeGroup.id] = (nextPresets[activeGroup.id] || []).filter((entry) => entry.id !== preset.id);
+          if (!nextPresets[activeGroup.id].length) {
+            delete nextPresets[activeGroup.id];
+          }
+          state.elementStylePresets = nextPresets;
+          saveUiState();
+          syncList();
+          flashStatus(`已删除 ${preset.name}`);
+        });
+
+        row.append(applyBtn, deleteBtn);
+        list.appendChild(row);
+      });
+    };
+
+    title.textContent = `${activeGroup.label}预设`;
+    input.value = "";
+    syncList();
+
+    dialog.querySelectorAll("[data-element-style-preset-close]").forEach((button) => {
+      button.onclick = () => {
+        dialog.hidden = true;
+      };
+    });
+
+    const saveBtn = dialog.querySelector("[data-element-style-preset-save]");
+    saveBtn.onclick = () => {
+      const name = String(input.value || "").trim();
+      if (!name) {
+        flashStatus("请先输入预设名称");
+        input.focus();
+        return;
+      }
+
+      const nextPresets = normalizeElementStylePresets(state.elementStylePresets);
+      const nextEntry = {
+        id: sanitizeBlockToken(`${activeGroup.id}-${name}`, `${activeGroup.id}-${Date.now()}`),
+        name,
+        styles: { ...normalizeElementStyles(state.elementStyles)[activeGroup.id] },
+      };
+      nextPresets[activeGroup.id] = [...(nextPresets[activeGroup.id] || []).filter((entry) => entry.name !== name), nextEntry]
+        .slice(-ELEMENT_STYLE_PRESET_MAX_ENTRIES);
+      state.elementStylePresets = nextPresets;
+      saveUiState();
+      syncList();
+      input.value = "";
+      flashStatus(`已保存 ${name}`);
+    };
+
+    dialog.hidden = false;
+    dialog.onclick = (event) => {
+      if (event.target === dialog) {
+        dialog.hidden = true;
+      }
+    };
   }
 
   function ensureCardLayoutPanel() {
@@ -15928,12 +16684,13 @@ async function initPagedApp() {
 
   function handlePreviewClick(event) {
     const clickedCard = getCardLayoutElementFromTarget(event.target);
+    const targetGroup = getGroupIdForPreviewElement(event.target);
     if (clickedCard && !event.target.closest?.(".card-layout-drag-handle")) {
       selectCardLayout(clickedCard);
-      selectElementStyleGroup("card");
+      selectElementStyleGroup(targetGroup === "card" ? "card" : targetGroup);
     } else if (!event.target.closest?.(".element-style-panel, .card-layout-panel")) {
       clearCardLayoutSelection();
-      selectElementStyleGroup(getGroupIdForPreviewElement(event.target));
+      selectElementStyleGroup(targetGroup);
     }
 
     const mathElement = getPreviewMathElement(canvas, event.target);
@@ -16046,9 +16803,10 @@ async function initPagedApp() {
 
     if (selectedElement) {
       const selectedCard = getCardLayoutElementFromTarget(selectedElement);
+      const targetGroup = getGroupIdForPreviewElement(selectedElement);
       if (selectedCard) {
         selectCardLayout(selectedCard);
-        selectElementStyleGroup("card");
+        selectElementStyleGroup(targetGroup === "card" ? "card" : targetGroup);
         if (range.collapsed) {
           return;
         }
@@ -16056,7 +16814,7 @@ async function initPagedApp() {
         return;
       }
 
-      selectElementStyleGroup(getGroupIdForPreviewElement(selectedElement));
+      selectElementStyleGroup(targetGroup);
     }
 
     if (range.collapsed) {
@@ -16206,6 +16964,7 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.paginationStrategy, state.paginationStrategy);
       window.localStorage.setItem(STORAGE_KEYS.typographyVersion, TYPOGRAPHY_BASELINE_VERSION);
       window.localStorage.setItem(STORAGE_KEYS.elementStyles, JSON.stringify(normalizeElementStyles(state.elementStyles)));
+      window.localStorage.setItem(STORAGE_KEYS.elementStylePresets, JSON.stringify(normalizeElementStylePresets(state.elementStylePresets)));
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
       window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
       window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
@@ -16236,6 +16995,7 @@ async function initPagedApp() {
       DEFAULT_PAGINATION_STRATEGY,
     );
     state.elementStyles = normalizeElementStyles(state.elementStyles);
+    state.elementStylePresets = normalizeElementStylePresets(state.elementStylePresets);
     state.cardLayouts = normalizeCardLayouts(state.cardLayouts);
     state.cardOrder = normalizeCardOrder(state.cardOrder);
     enforceTypeScale(state);
@@ -16965,6 +17725,10 @@ async function initPagedApp() {
     renderNow();
   });
 
+  layoutDataPresetBtn?.addEventListener("click", () => {
+    openElementStylePresetDialog();
+  });
+
   fileInput?.addEventListener("change", (event) => {
     const target = event.target;
     const file = target.files && target.files[0];
@@ -17513,6 +18277,7 @@ async function initPagedApp() {
     const savedRibbonTab = window.localStorage.getItem(STORAGE_KEYS.ribbonTab);
     const savedTypographyVersion = window.localStorage.getItem(STORAGE_KEYS.typographyVersion);
     const savedElementStyles = window.localStorage.getItem(STORAGE_KEYS.elementStyles);
+    const savedElementStylePresets = window.localStorage.getItem(STORAGE_KEYS.elementStylePresets);
     const savedTableLayouts = window.localStorage.getItem(STORAGE_KEYS.tableLayouts);
     const savedCardLayouts = window.localStorage.getItem(STORAGE_KEYS.cardLayouts);
     const savedCardOrder = window.localStorage.getItem(STORAGE_KEYS.cardOrder);
@@ -17614,6 +18379,7 @@ async function initPagedApp() {
     state.elementStyles = hadSavedElementStyles
       ? normalizeElementStyles(savedElementStyles)
       : getElementStyleDefaults(state);
+    state.elementStylePresets = normalizeElementStylePresets(savedElementStylePresets);
     state.exportBackgroundSrc = normalizeBackgroundSource(savedExportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC);
     state.exportBackgroundName = state.exportBackgroundSrc
       ? normalizeBackgroundName(savedExportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME)

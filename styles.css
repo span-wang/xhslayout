@@ -11306,6 +11306,1898 @@ body.has-compact-controls .range-value {
   --footer-logo-width: 184px;
 }
 
+.page-sheet[data-layout-preset$="-obsidian-vault"],
+.article-canvas[data-layout-preset$="-obsidian-vault"],
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] {
+  --preset-ink: #f5ead0;
+  --preset-muted: rgba(245, 234, 208, 0.72);
+  --preset-rule: rgba(197, 162, 88, 0.28);
+  --preset-rule-strong: rgba(197, 162, 88, 0.52);
+  --preset-surface: rgba(26, 24, 22, 0.94);
+  --preset-soft: rgba(53, 43, 28, 0.9);
+  --preset-accent: rgba(197, 162, 88, 0.88);
+  --preset-accent-soft: rgba(197, 162, 88, 0.16);
+  --preset-radius: 2px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4 8V4h4M18 8V4h-4M4 14v4h4M18 14v4h-4' fill='none' stroke='%23c5a258' stroke-opacity='.82' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='11' cy='11' r='2.3' fill='%23c5a258' fill-opacity='.46'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(197, 162, 88, 0.56), rgba(197, 162, 88, 0) 22%, rgba(197, 162, 88, 0) 78%, rgba(197, 162, 88, 0.56));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(197, 162, 88, 0.52), rgba(197, 162, 88, 0));
+}
+
+.page-sheet[data-layout-preset$="-chrome-matrix"],
+.article-canvas[data-layout-preset$="-chrome-matrix"],
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] {
+  --preset-ink: #20303b;
+  --preset-muted: rgba(32, 48, 59, 0.68);
+  --preset-rule: rgba(118, 145, 165, 0.2);
+  --preset-rule-strong: rgba(118, 145, 165, 0.38);
+  --preset-surface: rgba(253, 254, 255, 0.92);
+  --preset-soft: rgba(233, 240, 244, 0.88);
+  --preset-accent: rgba(94, 126, 149, 0.84);
+  --preset-accent-soft: rgba(94, 126, 149, 0.14);
+  --preset-radius: 8px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Crect x='4' y='4' width='14' height='14' rx='3' fill='none' stroke='%235e7e95' stroke-opacity='.68'/%3E%3Cpath d='M4 11h14M11 4v14' stroke='%235e7e95' stroke-opacity='.32'/%3E%3Ccircle cx='11' cy='11' r='2' fill='%235e7e95' fill-opacity='.34'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(94, 126, 149, 0.46), rgba(94, 126, 149, 0) 18%, rgba(94, 126, 149, 0) 82%, rgba(94, 126, 149, 0.46));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(94, 126, 149, 0.42), rgba(94, 126, 149, 0));
+}
+
+.page-sheet[data-layout-preset$="-museum-catalog"],
+.article-canvas[data-layout-preset$="-museum-catalog"],
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] {
+  --preset-ink: #4a3828;
+  --preset-muted: rgba(74, 56, 40, 0.68);
+  --preset-rule: rgba(136, 102, 70, 0.2);
+  --preset-rule-strong: rgba(136, 102, 70, 0.36);
+  --preset-surface: rgba(255, 250, 243, 0.92);
+  --preset-soft: rgba(247, 239, 226, 0.88);
+  --preset-accent: rgba(136, 102, 70, 0.8);
+  --preset-accent-soft: rgba(136, 102, 70, 0.12);
+  --preset-radius: 10px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='7' cy='7' r='1.5' fill='%23886646' fill-opacity='.56'/%3E%3Cpath d='M7 8.5v8M7 12h8M11 12l4-4' fill='none' stroke='%23886646' stroke-opacity='.52' stroke-width='1.1' stroke-linecap='round'/%3E%3Crect x='4' y='4' width='14' height='14' rx='3' fill='none' stroke='%23886646' stroke-opacity='.28' stroke-dasharray='2 2'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(136, 102, 70, 0.44), rgba(136, 102, 70, 0) 20%, rgba(136, 102, 70, 0) 80%, rgba(136, 102, 70, 0.44));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(136, 102, 70, 0.4), rgba(136, 102, 70, 0));
+}
+
+.page-sheet[data-layout-preset$="-atelier-board"],
+.article-canvas[data-layout-preset$="-atelier-board"],
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] {
+  --preset-ink: #24343b;
+  --preset-muted: rgba(36, 52, 59, 0.7);
+  --preset-rule: rgba(91, 121, 131, 0.22);
+  --preset-rule-strong: rgba(91, 121, 131, 0.42);
+  --preset-surface: rgba(250, 252, 251, 0.92);
+  --preset-soft: rgba(235, 240, 238, 0.9);
+  --preset-accent: rgba(91, 121, 131, 0.82);
+  --preset-accent-soft: rgba(91, 121, 131, 0.12);
+  --preset-radius: 1px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4 18L18 4M4 18H9M18 4V9M6 6h4M12 16h4' fill='none' stroke='%235b7983' stroke-opacity='.66' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(91, 121, 131, 0.46), rgba(91, 121, 131, 0) 16%, rgba(91, 121, 131, 0) 84%, rgba(91, 121, 131, 0.46));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(91, 121, 131, 0.42), rgba(91, 121, 131, 0));
+}
+
+.page-sheet[data-layout-preset$="-abyss-chart"],
+.article-canvas[data-layout-preset$="-abyss-chart"],
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"] {
+  --preset-ink: #153847;
+  --preset-muted: rgba(21, 56, 71, 0.72);
+  --preset-rule: rgba(41, 111, 140, 0.22);
+  --preset-rule-strong: rgba(41, 111, 140, 0.42);
+  --preset-surface: rgba(247, 252, 254, 0.92);
+  --preset-soft: rgba(226, 241, 247, 0.9);
+  --preset-accent: rgba(41, 111, 140, 0.84);
+  --preset-accent-soft: rgba(41, 111, 140, 0.14);
+  --preset-radius: 12px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='5' fill='none' stroke='%23296f8c' stroke-opacity='.58'/%3E%3Cpath d='M11 6v10M6 11h10' stroke='%23296f8c' stroke-opacity='.34'/%3E%3Cpath d='M3 16c3-2 5-2 8 0c3-2 5-2 8 0' fill='none' stroke='%23296f8c' stroke-opacity='.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(41, 111, 140, 0.48), rgba(41, 111, 140, 0) 18%, rgba(41, 111, 140, 0) 82%, rgba(41, 111, 140, 0.48));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(41, 111, 140, 0.44), rgba(41, 111, 140, 0));
+}
+
+.page-sheet[data-layout-preset$="-prism-glass"],
+.article-canvas[data-layout-preset$="-prism-glass"],
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] {
+  --preset-ink: #2d4050;
+  --preset-muted: rgba(45, 64, 80, 0.68);
+  --preset-rule: rgba(126, 152, 177, 0.22);
+  --preset-rule-strong: rgba(126, 152, 177, 0.42);
+  --preset-surface: rgba(255, 255, 255, 0.72);
+  --preset-soft: rgba(236, 241, 251, 0.74);
+  --preset-accent: rgba(102, 134, 153, 0.82);
+  --preset-accent-soft: rgba(165, 128, 182, 0.14);
+  --preset-radius: 16px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M6 16l3-10l7 2l-2 8Z' fill='%23ffffff' fill-opacity='.5' stroke='%23668699' stroke-opacity='.62' stroke-width='1.1'/%3E%3Cpath d='M9 6l5 10M7 12h8' fill='none' stroke='%239b7db0' stroke-opacity='.34' stroke-linecap='round'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(102, 134, 153, 0.38), rgba(155, 125, 176, 0.18), rgba(102, 134, 153, 0.38));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(155, 125, 176, 0.28), rgba(102, 134, 153, 0.4));
+}
+
+.page-sheet[data-layout-preset$="-velvet-theater"],
+.article-canvas[data-layout-preset$="-velvet-theater"],
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"] {
+  --preset-ink: #4a2130;
+  --preset-muted: rgba(74, 33, 48, 0.68);
+  --preset-rule: rgba(134, 66, 88, 0.22);
+  --preset-rule-strong: rgba(134, 66, 88, 0.42);
+  --preset-surface: rgba(255, 250, 252, 0.92);
+  --preset-soft: rgba(246, 230, 236, 0.88);
+  --preset-accent: rgba(134, 66, 88, 0.84);
+  --preset-accent-soft: rgba(134, 66, 88, 0.14);
+  --preset-radius: 14px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M5 8c2-3 4-4 6-4s4 1 6 4v8H5Z' fill='none' stroke='%23864258' stroke-opacity='.64' stroke-width='1.1'/%3E%3Cpath d='M8 8v8M11 8v8M14 8v8' stroke='%23864258' stroke-opacity='.28'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(134, 66, 88, 0.52), rgba(134, 66, 88, 0) 22%, rgba(134, 66, 88, 0) 78%, rgba(134, 66, 88, 0.52));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(134, 66, 88, 0.44), rgba(134, 66, 88, 0));
+}
+
+.page-sheet[data-layout-preset$="-neon-circuit"],
+.article-canvas[data-layout-preset$="-neon-circuit"],
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] {
+  --preset-ink: #d7fffb;
+  --preset-muted: rgba(215, 255, 251, 0.72);
+  --preset-rule: rgba(49, 194, 186, 0.28);
+  --preset-rule-strong: rgba(49, 194, 186, 0.54);
+  --preset-surface: rgba(13, 24, 29, 0.94);
+  --preset-soft: rgba(19, 42, 45, 0.92);
+  --preset-accent: rgba(49, 194, 186, 0.92);
+  --preset-accent-soft: rgba(49, 194, 186, 0.18);
+  --preset-radius: 10px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4 16h4v-5h5V6h5' fill='none' stroke='%2331c2ba' stroke-opacity='.86' stroke-width='1.3' stroke-linecap='round'/%3E%3Ccircle cx='4' cy='16' r='1.8' fill='%2331c2ba' fill-opacity='.82'/%3E%3Ccircle cx='8' cy='11' r='1.8' fill='%2331c2ba' fill-opacity='.58'/%3E%3Ccircle cx='13' cy='6' r='1.8' fill='%2331c2ba' fill-opacity='.4'/%3E%3Ccircle cx='18' cy='6' r='1.8' fill='%2331c2ba' fill-opacity='.9'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(49, 194, 186, 0.62), rgba(49, 194, 186, 0) 20%, rgba(49, 194, 186, 0) 80%, rgba(49, 194, 186, 0.62));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(49, 194, 186, 0.56), rgba(49, 194, 186, 0));
+}
+
+.page-sheet[data-layout-preset$="-solar-folio"],
+.article-canvas[data-layout-preset$="-solar-folio"],
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"] {
+  --preset-ink: #5a3b18;
+  --preset-muted: rgba(90, 59, 24, 0.68);
+  --preset-rule: rgba(191, 124, 44, 0.22);
+  --preset-rule-strong: rgba(191, 124, 44, 0.42);
+  --preset-surface: rgba(255, 250, 238, 0.92);
+  --preset-soft: rgba(252, 238, 209, 0.88);
+  --preset-accent: rgba(191, 124, 44, 0.84);
+  --preset-accent-soft: rgba(191, 124, 44, 0.14);
+  --preset-radius: 999px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='4' fill='%23bf7c2c' fill-opacity='.28' stroke='%23bf7c2c' stroke-opacity='.62'/%3E%3Cpath d='M11 2v4M11 16v4M2 11h4M16 11h4M4.6 4.6l2.8 2.8M14.6 14.6l2.8 2.8M17.4 4.6l-2.8 2.8M7.4 14.6l-2.8 2.8' stroke='%23bf7c2c' stroke-opacity='.46' stroke-linecap='round'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(191, 124, 44, 0.54), rgba(191, 124, 44, 0) 22%, rgba(191, 124, 44, 0) 78%, rgba(191, 124, 44, 0.54));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(191, 124, 44, 0.46), rgba(191, 124, 44, 0));
+}
+
+.page-sheet[data-layout-preset$="-astral-orbit"],
+.article-canvas[data-layout-preset$="-astral-orbit"],
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"] {
+  --preset-ink: #29335d;
+  --preset-muted: rgba(41, 51, 93, 0.68);
+  --preset-rule: rgba(102, 120, 181, 0.22);
+  --preset-rule-strong: rgba(102, 120, 181, 0.42);
+  --preset-surface: rgba(251, 252, 255, 0.92);
+  --preset-soft: rgba(233, 237, 252, 0.88);
+  --preset-accent: rgba(102, 120, 181, 0.84);
+  --preset-accent-soft: rgba(102, 120, 181, 0.14);
+  --preset-radius: 12px;
+  --preset-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 22 22'%3E%3Cpath d='M4 13a8 4.8 0 0 1 14 0a8 4.8 0 0 1-14 0Z' fill='none' stroke='%236678b5' stroke-opacity='.58'/%3E%3Ccircle cx='8' cy='11' r='1.7' fill='%236678b5' fill-opacity='.52'/%3E%3Ccircle cx='15' cy='13' r='1.7' fill='%236678b5' fill-opacity='.72'/%3E%3Ccircle cx='11' cy='8' r='1.1' fill='%236678b5' fill-opacity='.36'/%3E%3C/svg%3E");
+  --preset-header-doodle: linear-gradient(90deg, rgba(102, 120, 181, 0.48), rgba(102, 120, 181, 0) 18%, rgba(102, 120, 181, 0) 82%, rgba(102, 120, 181, 0.48));
+  --preset-footer-doodle: linear-gradient(90deg, rgba(102, 120, 181, 0.42), rgba(102, 120, 181, 0));
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) {
+  --page-background-fill: #fffdf9;
+  --page-background-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 246, 248, 0.98));
+}
+
+.page-sheet[data-layout-preset$="-obsidian-vault"],
+.page-sheet[data-layout-preset$="-neon-circuit"] {
+  --page-background-fill: #141416;
+  --page-background-gradient: linear-gradient(180deg, rgba(20, 20, 22, 0.98), rgba(15, 15, 17, 0.98));
+}
+
+.page-sheet[data-layout-preset$="-museum-catalog"] {
+  --page-background-fill: #fff8ef;
+  --page-background-gradient: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(245, 236, 223, 0.98));
+}
+
+.page-sheet[data-layout-preset$="-abyss-chart"] {
+  --page-background-fill: #f7fdff;
+  --page-background-gradient: linear-gradient(180deg, rgba(251, 255, 255, 0.98), rgba(231, 244, 248, 0.98));
+}
+
+.page-sheet[data-layout-preset$="-solar-folio"] {
+  --page-background-fill: #fff8ec;
+  --page-background-gradient: linear-gradient(180deg, rgba(255, 252, 243, 0.98), rgba(249, 236, 206, 0.98));
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-header {
+  padding-bottom: 14px;
+  background-image: var(--preset-header-doodle);
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 24px;
+  color: var(--preset-muted);
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-header-text {
+  position: relative;
+  padding-left: 28px;
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-header-text::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 20px;
+  height: 20px;
+  background-image: var(--preset-doodle);
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-page-number {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--preset-rule-strong);
+  border-radius: var(--preset-radius);
+  background: var(--preset-surface);
+  color: var(--preset-ink);
+  line-height: 1;
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-page-number::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-image: var(--preset-doodle);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  opacity: 0.78;
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+)::after {
+  display: none;
+}
+
+.page-sheet:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .page-sheet-footer {
+  background-image: var(--preset-footer-doodle);
+  background-size: 100% 20px;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) h1,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) h1 {
+  padding-bottom: 20px !important;
+  background-image: var(--preset-header-doodle) !important;
+  background-position: left bottom !important;
+  background-size: 100% 24px !important;
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(h2, .knowledge-cluster-title, .question-card-title),
+.live-preview-canvas .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(h2, .knowledge-cluster-title, .question-card-title) {
+  padding: 8px 40px 9px 12px !important;
+  border: 1px solid var(--preset-rule) !important;
+  border-left: 4px solid var(--preset-accent) !important;
+  border-radius: var(--preset-radius) !important;
+  background-color: var(--preset-surface) !important;
+  background-image: var(--preset-doodle) !important;
+  background-position: right 11px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 18px 18px !important;
+  box-shadow: none !important;
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(.article-table, .mindmap-card),
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(.article-table, .mindmap-card) {
+  border: 1px solid var(--preset-rule) !important;
+  border-radius: var(--preset-radius) !important;
+  background: var(--preset-surface) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .article-table th,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .article-table th {
+  padding-right: 34px !important;
+  border-color: var(--preset-rule) !important;
+  background:
+    var(--preset-doodle) right 8px center / 16px 16px no-repeat,
+    var(--preset-soft) !important;
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .article-table td,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .article-table td {
+  border-color: var(--preset-rule) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-root,
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-node,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-root,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-node {
+  padding-right: 34px !important;
+  border: 1px solid var(--preset-rule) !important;
+  background:
+    var(--preset-doodle) right 8px top 7px / 16px 16px no-repeat,
+    var(--preset-soft) !important;
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-link-path,
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) .mindmap-link-path {
+  stroke: var(--preset-accent) !important;
+  stroke-opacity: 0.48;
+}
+
+.article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(.callout-box, .brush-block, .note-quote, .article-pullquote),
+.page-sheet .article-canvas:is(
+  [data-layout-preset$="-obsidian-vault"],
+  [data-layout-preset$="-chrome-matrix"],
+  [data-layout-preset$="-museum-catalog"],
+  [data-layout-preset$="-atelier-board"],
+  [data-layout-preset$="-abyss-chart"],
+  [data-layout-preset$="-prism-glass"],
+  [data-layout-preset$="-velvet-theater"],
+  [data-layout-preset$="-neon-circuit"],
+  [data-layout-preset$="-solar-folio"],
+  [data-layout-preset$="-astral-orbit"]
+) :is(.callout-box, .brush-block, .note-quote, .article-pullquote) {
+  border-left: 4px solid var(--preset-accent) !important;
+  background: var(--preset-soft) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) .knowledge-cluster,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) .knowledge-cluster {
+  position: relative;
+  padding: 16px 16px 17px 18px !important;
+  border: 1px solid var(--preset-rule) !important;
+  border-radius: var(--preset-radius) !important;
+  background: var(--preset-surface) !important;
+  box-shadow: inset 5px 0 0 var(--preset-accent-soft) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) .knowledge-cluster::before,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) .knowledge-cluster::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  width: 24px;
+  height: 24px;
+  background-image: var(--preset-doodle);
+  background-repeat: no-repeat;
+  background-size: 24px 24px;
+  opacity: 0.7;
+}
+
+.article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) .question-card,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) .question-card {
+  position: relative;
+  padding: 15px 16px !important;
+  border: 1px solid var(--preset-rule) !important;
+  border-radius: var(--preset-radius) !important;
+  background: var(--preset-surface) !important;
+  box-shadow: inset 0 4px 0 var(--preset-accent-soft) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) .question-card::before,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) .question-card::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: -10px;
+  width: 46px;
+  height: 18px;
+  border: 1px solid var(--preset-rule);
+  border-radius: var(--preset-radius);
+  background:
+    var(--preset-doodle) center / 15px 15px no-repeat,
+    var(--preset-soft);
+}
+
+.article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) :is(.question-panel, .question-detail-section),
+.page-sheet .article-canvas:is(
+  [data-layout-preset="question-obsidian-vault"],
+  [data-layout-preset="question-chrome-matrix"],
+  [data-layout-preset="question-museum-catalog"],
+  [data-layout-preset="question-atelier-board"],
+  [data-layout-preset="question-abyss-chart"],
+  [data-layout-preset="question-prism-glass"],
+  [data-layout-preset="question-velvet-theater"],
+  [data-layout-preset="question-neon-circuit"],
+  [data-layout-preset="question-solar-folio"],
+  [data-layout-preset="question-astral-orbit"]
+) :is(.question-panel, .question-detail-section) {
+  border: 1px solid var(--preset-rule) !important;
+  border-left: 4px solid var(--preset-accent) !important;
+  border-radius: var(--preset-radius) !important;
+  background: var(--preset-soft) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="article-obsidian-vault"],
+  [data-layout-preset="article-chrome-matrix"],
+  [data-layout-preset="article-museum-catalog"],
+  [data-layout-preset="article-atelier-board"],
+  [data-layout-preset="article-abyss-chart"],
+  [data-layout-preset="article-prism-glass"],
+  [data-layout-preset="article-velvet-theater"],
+  [data-layout-preset="article-neon-circuit"],
+  [data-layout-preset="article-solar-folio"],
+  [data-layout-preset="article-astral-orbit"]
+) h2,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="article-obsidian-vault"],
+  [data-layout-preset="article-chrome-matrix"],
+  [data-layout-preset="article-museum-catalog"],
+  [data-layout-preset="article-atelier-board"],
+  [data-layout-preset="article-abyss-chart"],
+  [data-layout-preset="article-prism-glass"],
+  [data-layout-preset="article-velvet-theater"],
+  [data-layout-preset="article-neon-circuit"],
+  [data-layout-preset="article-solar-folio"],
+  [data-layout-preset="article-astral-orbit"]
+) h2,
+.live-preview-canvas .article-canvas:is(
+  [data-layout-preset="article-obsidian-vault"],
+  [data-layout-preset="article-chrome-matrix"],
+  [data-layout-preset="article-museum-catalog"],
+  [data-layout-preset="article-atelier-board"],
+  [data-layout-preset="article-abyss-chart"],
+  [data-layout-preset="article-prism-glass"],
+  [data-layout-preset="article-velvet-theater"],
+  [data-layout-preset="article-neon-circuit"],
+  [data-layout-preset="article-solar-folio"],
+  [data-layout-preset="article-astral-orbit"]
+) h2 {
+  width: fit-content !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="article-obsidian-vault"],
+  [data-layout-preset="article-chrome-matrix"],
+  [data-layout-preset="article-museum-catalog"],
+  [data-layout-preset="article-atelier-board"],
+  [data-layout-preset="article-abyss-chart"],
+  [data-layout-preset="article-prism-glass"],
+  [data-layout-preset="article-velvet-theater"],
+  [data-layout-preset="article-neon-circuit"],
+  [data-layout-preset="article-solar-folio"],
+  [data-layout-preset="article-astral-orbit"]
+) .lead-paragraph,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="article-obsidian-vault"],
+  [data-layout-preset="article-chrome-matrix"],
+  [data-layout-preset="article-museum-catalog"],
+  [data-layout-preset="article-atelier-board"],
+  [data-layout-preset="article-abyss-chart"],
+  [data-layout-preset="article-prism-glass"],
+  [data-layout-preset="article-velvet-theater"],
+  [data-layout-preset="article-neon-circuit"],
+  [data-layout-preset="article-solar-folio"],
+  [data-layout-preset="article-astral-orbit"]
+) .lead-paragraph {
+  padding: 12px 44px 12px 16px !important;
+  border: 1px solid var(--preset-rule) !important;
+  border-left: 4px solid var(--preset-accent) !important;
+  border-radius: var(--preset-radius) !important;
+  background:
+    var(--preset-doodle) right 12px top 11px / 18px 18px no-repeat,
+    var(--preset-soft) !important;
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"],
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"],
+.article-canvas[data-layout-preset$="-neon-circuit"],
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] {
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .article-table th,
+.article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-root,
+.article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .article-table th,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-root,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-node,
+.article-canvas[data-layout-preset$="-neon-circuit"] .article-table th,
+.article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-root,
+.article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] .article-table th,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-root,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-node {
+  color: var(--preset-ink) !important;
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] :is(.article-table, .mindmap-card, .callout-box, .brush-block),
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] :is(.article-table, .mindmap-card, .callout-box, .brush-block) {
+  backdrop-filter: blur(8px);
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] .article-table,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] .article-table {
+  background-image:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px) !important;
+  background-size: 18px 18px !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .knowledge-cluster {
+  box-shadow: 0 10px 24px rgba(122, 88, 56, 0.05) !important;
+}
+
+.article-canvas[data-layout-preset$="-solar-folio"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"] .mindmap-node {
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset$="-astral-orbit"] .mindmap-card,
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"] .mindmap-card {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(102, 120, 181, 0.12) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 28%, rgba(102, 120, 181, 0.1) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 62% 72%, rgba(102, 120, 181, 0.12) 0 2px, transparent 3px) !important;
+}
+
+/* Strong individualized families for newly added presets */
+.article-canvas[data-layout-preset$="-obsidian-vault"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .question-card,
+.article-canvas[data-layout-preset$="-obsidian-vault"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .knowledge-cluster {
+  border-width: 1.5px !important;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 234, 208, 0.06),
+    0 18px 28px rgba(0, 0, 0, 0.22) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  padding-left: 18px !important;
+  background-image:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.28), rgba(197, 162, 88, 0) 38%),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .question-detail-answer,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .question-detail-answer {
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.14), transparent 46%),
+    rgba(53, 43, 28, 0.94) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-root,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-root {
+  border-radius: 999px !important;
+  box-shadow: inset 0 0 0 1px rgba(197, 162, 88, 0.18) !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"] :is(.article-table, .mindmap-card, .question-panel, .question-detail-section),
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] :is(.article-table, .mindmap-card, .question-panel, .question-detail-section) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(118, 145, 165, 0.16),
+    0 10px 18px rgba(69, 92, 108, 0.06) !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"] .article-table th,
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] .article-table th {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(226, 235, 241, 0.88)),
+    var(--preset-doodle) right 8px center / 16px 16px no-repeat !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] .mindmap-node {
+  border-radius: 18px !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .knowledge-cluster,
+.article-canvas[data-layout-preset$="-museum-catalog"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .question-card {
+  box-shadow:
+    0 2px 0 rgba(136, 102, 70, 0.12),
+    0 14px 24px rgba(136, 102, 70, 0.06) !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  width: fit-content !important;
+  padding-right: 42px !important;
+  border-style: dashed !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .question-card::before {
+  width: 72px !important;
+  height: 20px !important;
+  border-style: dashed !important;
+  background:
+    linear-gradient(90deg, rgba(136, 102, 70, 0.08), rgba(136, 102, 70, 0.18)),
+    var(--preset-soft) !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] :is(.article-table, .mindmap-card, .question-card, .knowledge-cluster),
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] :is(.article-table, .mindmap-card, .question-card, .knowledge-cluster) {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  border-top: 1px solid var(--preset-rule) !important;
+  border-bottom: 1px solid var(--preset-rule) !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] .question-detail-section {
+  border-left-width: 1px !important;
+  box-shadow: inset 8px 0 0 rgba(91, 121, 131, 0.06) !important;
+}
+
+.article-canvas[data-layout-preset$="-abyss-chart"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"] .question-card,
+.article-canvas[data-layout-preset$="-abyss-chart"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"] .knowledge-cluster {
+  border-radius: 22px !important;
+}
+
+.article-canvas[data-layout-preset$="-abyss-chart"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  border-radius: 999px !important;
+  background-image:
+    radial-gradient(circle at 18px 50%, rgba(41, 111, 140, 0.22) 0 4px, transparent 5px),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-abyss-chart"] .mindmap-link-path,
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"] .mindmap-link-path {
+  stroke-dasharray: 4 3;
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] :is(.question-card, .knowledge-cluster, .article-table, .mindmap-card),
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] :is(.question-card, .knowledge-cluster, .article-table, .mindmap-card) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 12px 26px rgba(126, 152, 177, 0.12) !important;
+  border-color: rgba(126, 152, 177, 0.28) !important;
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  background-image:
+    linear-gradient(90deg, rgba(126, 152, 177, 0.18), rgba(155, 125, 176, 0.14)),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] .mindmap-node {
+  border-radius: 20px 8px 20px 8px !important;
+}
+
+.article-canvas[data-layout-preset$="-velvet-theater"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  border-radius: 999px 999px 8px 8px !important;
+  background-image:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.26), rgba(134, 66, 88, 0.06)),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-velvet-theater"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"] .question-card {
+  box-shadow:
+    inset 0 12px 0 rgba(134, 66, 88, 0.06),
+    0 14px 24px rgba(134, 66, 88, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset$="-velvet-theater"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"] .question-card::before {
+  width: 60px !important;
+  height: 22px !important;
+  border-radius: 999px 999px 4px 4px !important;
+}
+
+.article-canvas[data-layout-preset$="-neon-circuit"] :is(.question-card, .knowledge-cluster, .article-table, .mindmap-card),
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] :is(.question-card, .knowledge-cluster, .article-table, .mindmap-card) {
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 0 1px rgba(49, 194, 186, 0.14),
+    0 0 18px rgba(49, 194, 186, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset$="-neon-circuit"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  background-image:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.18), rgba(49, 194, 186, 0.02) 54%),
+    var(--preset-doodle) !important;
+  box-shadow: 0 0 12px rgba(49, 194, 186, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-link-path,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-link-path {
+  stroke-width: 2.2;
+  filter: drop-shadow(0 0 4px rgba(49, 194, 186, 0.28));
+}
+
+.article-canvas[data-layout-preset$="-solar-folio"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  border-radius: 999px !important;
+  background-image:
+    radial-gradient(circle at 18px 50%, rgba(191, 124, 44, 0.22) 0 5px, transparent 6px),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-solar-folio"] .question-detail-answer,
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"] .question-detail-answer {
+  background:
+    linear-gradient(90deg, rgba(191, 124, 44, 0.14), transparent 48%),
+    var(--preset-soft) !important;
+}
+
+.article-canvas[data-layout-preset$="-astral-orbit"] :is(.question-card, .knowledge-cluster, .mindmap-card),
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"] :is(.question-card, .knowledge-cluster, .mindmap-card) {
+  border-radius: 18px !important;
+  box-shadow: 0 12px 24px rgba(102, 120, 181, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset$="-astral-orbit"] :is(h2, .knowledge-cluster-title, .question-card-title),
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"] :is(h2, .knowledge-cluster-title, .question-card-title) {
+  border-left-width: 0 !important;
+  background-image:
+    radial-gradient(circle at 16px 50%, rgba(102, 120, 181, 0.24) 0 3px, transparent 4px),
+    linear-gradient(90deg, rgba(102, 120, 181, 0.12), transparent 56%),
+    var(--preset-doodle) !important;
+}
+
+.article-canvas[data-layout-preset$="-astral-orbit"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"] .mindmap-node {
+  border-radius: 999px !important;
+}
+
+/* Break the new presets away from a shared page skeleton */
+.page-sheet[data-layout-preset$="-obsidian-vault"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 14px !important;
+  align-items: center !important;
+  padding: 0 0 14px !important;
+  background-image:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.22), rgba(197, 162, 88, 0) 36%),
+    linear-gradient(90deg, rgba(197, 162, 88, 0), rgba(197, 162, 88, 0.22)) !important;
+  background-size: 46% 2px, 22% 2px !important;
+  background-position: left bottom, right bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-obsidian-vault"] .page-sheet-header-text {
+  padding: 8px 14px 8px 28px !important;
+  border: 1px solid rgba(197, 162, 88, 0.28) !important;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)) !important;
+  background: rgba(33, 29, 24, 0.92) !important;
+}
+
+.page-sheet[data-layout-preset$="-obsidian-vault"] .page-sheet-page-number {
+  min-width: 34px !important;
+  height: 34px !important;
+  border-width: 1.5px !important;
+  border-radius: 999px !important;
+  background: radial-gradient(circle at 50% 50%, rgba(197, 162, 88, 0.16), rgba(26, 24, 22, 0.94)) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 28px !important;
+  padding: 14px 42px !important;
+  border: 1.5px solid rgba(197, 162, 88, 0.28) !important;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)) !important;
+  background: rgba(26, 24, 22, 0.94) !important;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.18) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .question-detail-answer,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .question-detail-answer {
+  border-top: 1px solid rgba(197, 162, 88, 0.18) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .mindmap-node {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)) !important;
+}
+
+.article-canvas[data-layout-preset$="-obsidian-vault"] .article-table th,
+.page-sheet .article-canvas[data-layout-preset$="-obsidian-vault"] .article-table th {
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.16), rgba(53, 43, 28, 0.94) 44%),
+    var(--preset-soft) !important;
+}
+
+.page-sheet[data-layout-preset$="-chrome-matrix"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding-bottom: 12px !important;
+  background-image:
+    linear-gradient(90deg, rgba(94, 126, 149, 0.26) 0 18%, transparent 18% 22%, rgba(94, 126, 149, 0.18) 22% 44%, transparent 44% 48%, rgba(94, 126, 149, 0.12) 48% 100%) !important;
+  background-size: 100% 6px !important;
+  background-position: left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-chrome-matrix"] .page-sheet-header-text,
+.page-sheet[data-layout-preset$="-chrome-matrix"] .page-sheet-page-number {
+  border-radius: 12px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 6px 12px rgba(69, 92, 108, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 24px !important;
+  padding: 12px 34px !important;
+  border: 1px solid rgba(118, 145, 165, 0.24) !important;
+  border-radius: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(227, 236, 242, 0.84)) !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] .question-card::before {
+  width: 66px !important;
+  border-radius: 12px !important;
+}
+
+.article-canvas[data-layout-preset$="-chrome-matrix"] .mindmap-root,
+.page-sheet .article-canvas[data-layout-preset$="-chrome-matrix"] .mindmap-root {
+  border-radius: 18px !important;
+}
+
+.page-sheet[data-layout-preset$="-museum-catalog"] .page-sheet-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  padding-bottom: 16px !important;
+  background: none !important;
+}
+
+.page-sheet[data-layout-preset$="-museum-catalog"] .page-sheet-header-text {
+  display: inline-flex !important;
+  align-items: center !important;
+  min-height: 34px !important;
+  padding: 0 16px 0 30px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.42) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 243, 0.96) !important;
+}
+
+.page-sheet[data-layout-preset$="-museum-catalog"] .page-sheet-page-number {
+  min-width: 38px !important;
+  height: 38px !important;
+  border-radius: 999px !important;
+  border-style: dashed !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 22px !important;
+  padding: 10px 26px 10px 36px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.36) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 250, 243, 0.94) !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .question-detail-section {
+  border-style: dashed !important;
+}
+
+.article-canvas[data-layout-preset$="-museum-catalog"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-museum-catalog"] .mindmap-node {
+  border-style: dashed !important;
+}
+
+.page-sheet[data-layout-preset$="-atelier-board"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: end !important;
+  padding-bottom: 10px !important;
+  background-image:
+    linear-gradient(90deg, rgba(91, 121, 131, 0.3) 0 14%, transparent 14% 16%, rgba(91, 121, 131, 0.18) 16% 30%, transparent 30% 32%, rgba(91, 121, 131, 0.1) 32% 100%) !important;
+  background-size: 100% 2px !important;
+  background-position: left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-atelier-board"] .page-sheet-header-text,
+.page-sheet[data-layout-preset$="-atelier-board"] .page-sheet-page-number {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-sheet[data-layout-preset$="-atelier-board"] .page-sheet-page-number {
+  padding: 0 0 2px !important;
+  min-width: 22px !important;
+  height: auto !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"][data-mode="question"] h1 {
+  margin: 0 0 26px !important;
+  padding: 0 0 12px 18px !important;
+  border-left: 2px solid rgba(91, 121, 131, 0.42) !important;
+  border-bottom: 1px solid rgba(91, 121, 131, 0.18) !important;
+  text-align: left !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] .question-card {
+  padding-top: 18px !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] .question-card::before {
+  left: auto !important;
+  right: 14px !important;
+  top: -7px !important;
+  width: 38px !important;
+  height: 14px !important;
+}
+
+.article-canvas[data-layout-preset$="-atelier-board"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-atelier-board"] .mindmap-node {
+  padding-left: 18px !important;
+}
+
+.page-sheet[data-layout-preset$="-abyss-chart"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding-bottom: 12px !important;
+  background-image:
+    radial-gradient(circle at 8% 100%, rgba(41, 111, 140, 0.24) 0 10px, transparent 11px),
+    linear-gradient(90deg, rgba(41, 111, 140, 0.22), rgba(41, 111, 140, 0)) !important;
+  background-size: 24px 12px, 100% 3px !important;
+  background-position: left bottom, left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-abyss-chart"] .page-sheet-header-text {
+  border-radius: 999px !important;
+  background: rgba(247, 252, 254, 0.98) !important;
+}
+
+.page-sheet[data-layout-preset$="-abyss-chart"] .page-sheet-page-number {
+  min-width: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset$="-abyss-chart"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-abyss-chart"][data-mode="question"] h1 {
+  width: 112px !important;
+  height: 112px !important;
+  margin: 0 auto 24px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1.5px solid rgba(41, 111, 140, 0.24) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(41, 111, 140, 0.1), transparent 62%),
+    rgba(247, 252, 254, 0.92) !important;
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 24px !important;
+  padding: 12px 34px !important;
+  border: 1px solid rgba(126, 152, 177, 0.26) !important;
+  border-radius: 22px 8px 22px 8px !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(236, 241, 251, 0.64)) !important;
+  backdrop-filter: blur(12px);
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] .question-card,
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] .question-card {
+  transform: translateY(0);
+}
+
+.article-canvas[data-layout-preset$="-prism-glass"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-prism-glass"] .question-card::before {
+  width: 54px !important;
+  border-radius: 14px 6px 14px 6px !important;
+}
+
+.page-sheet[data-layout-preset$="-velvet-theater"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+  padding-bottom: 14px !important;
+  background-image:
+    radial-gradient(circle at 0 100%, rgba(134, 66, 88, 0.22) 0 12px, transparent 13px),
+    radial-gradient(circle at 100% 100%, rgba(134, 66, 88, 0.22) 0 12px, transparent 13px),
+    linear-gradient(180deg, rgba(134, 66, 88, 0.22), rgba(134, 66, 88, 0.06)) !important;
+  background-size: 24px 14px, 24px 14px, 100% 4px !important;
+  background-position: left bottom, right bottom, left bottom !important;
+}
+
+.article-canvas[data-layout-preset$="-velvet-theater"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 26px !important;
+  padding: 14px 42px 12px !important;
+  border: 1px solid rgba(134, 66, 88, 0.22) !important;
+  border-radius: 999px 999px 8px 8px !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.92)) !important;
+}
+
+.article-canvas[data-layout-preset$="-velvet-theater"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset$="-velvet-theater"] .question-detail-section {
+  box-shadow: inset 0 10px 0 rgba(134, 66, 88, 0.05) !important;
+}
+
+.page-sheet[data-layout-preset$="-neon-circuit"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding-bottom: 12px !important;
+  background-image:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.52) 0 12%, transparent 12% 16%, rgba(49, 194, 186, 0.34) 16% 28%, transparent 28% 32%, rgba(49, 194, 186, 0.2) 32% 100%) !important;
+  background-size: 100% 2px !important;
+  background-position: left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-neon-circuit"] .page-sheet-header-text,
+.page-sheet[data-layout-preset$="-neon-circuit"] .page-sheet-page-number {
+  box-shadow: 0 0 10px rgba(49, 194, 186, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset$="-neon-circuit"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 24px !important;
+  padding: 12px 34px !important;
+  border: 1px solid rgba(49, 194, 186, 0.3) !important;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%) !important;
+  background: rgba(13, 24, 29, 0.96) !important;
+  box-shadow:
+    0 0 0 1px rgba(49, 194, 186, 0.1),
+    0 0 16px rgba(49, 194, 186, 0.16) !important;
+}
+
+.article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-node,
+.page-sheet .article-canvas[data-layout-preset$="-neon-circuit"] .mindmap-node {
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%) !important;
+}
+
+.page-sheet[data-layout-preset$="-solar-folio"] .page-sheet-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: 14px !important;
+  background-image:
+    radial-gradient(circle at 50% 100%, rgba(191, 124, 44, 0.22) 0 14px, transparent 15px),
+    linear-gradient(90deg, rgba(191, 124, 44, 0.28), rgba(191, 124, 44, 0)) !important;
+  background-size: 28px 14px, 100% 3px !important;
+  background-position: center bottom, left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-solar-folio"] .page-sheet-header-text,
+.page-sheet[data-layout-preset$="-solar-folio"] .page-sheet-page-number {
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset$="-solar-folio"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"][data-mode="question"] h1 {
+  width: fit-content !important;
+  margin: 0 auto 24px !important;
+  padding: 16px 40px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(191, 124, 44, 0.2), rgba(255, 250, 238, 0.92) 64%) !important;
+  box-shadow: inset 0 0 0 1px rgba(191, 124, 44, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset$="-solar-folio"] .question-card::before,
+.page-sheet .article-canvas[data-layout-preset$="-solar-folio"] .question-card::before {
+  width: 52px !important;
+  border-radius: 999px !important;
+}
+
+.page-sheet[data-layout-preset$="-astral-orbit"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding-bottom: 14px !important;
+  background-image:
+    radial-gradient(circle at 12% 100%, rgba(102, 120, 181, 0.2) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 100%, rgba(102, 120, 181, 0.2) 0 4px, transparent 5px),
+    radial-gradient(circle at 88% 100%, rgba(102, 120, 181, 0.2) 0 4px, transparent 5px),
+    linear-gradient(90deg, rgba(102, 120, 181, 0.24), rgba(102, 120, 181, 0)) !important;
+  background-size: 8px 8px, 8px 8px, 8px 8px, 100% 2px !important;
+  background-position: 12% bottom, 50% bottom, 88% bottom, left bottom !important;
+}
+
+.page-sheet[data-layout-preset$="-astral-orbit"] .page-sheet-page-number {
+  min-width: 36px !important;
+  height: 36px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset$="-astral-orbit"][data-mode="question"] h1,
+.page-sheet .article-canvas[data-layout-preset$="-astral-orbit"][data-mode="question"] h1 {
+  width: 132px !important;
+  height: 132px !important;
+  margin: 0 auto 24px !important;
+  padding: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  border: 1px solid rgba(102, 120, 181, 0.2) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(102, 120, 181, 0.1), transparent 58%),
+    rgba(251, 252, 255, 0.94) !important;
+  box-shadow:
+    inset 0 0 0 12px rgba(102, 120, 181, 0.04),
+    0 14px 24px rgba(102, 120, 181, 0.08) !important;
+}
+
+/* Distinct structural ornaments: larger SVG-like decorative bones */
+.page-sheet-header-distinct,
+.question-card-distinct,
+.knowledge-cluster-distinct,
+.question-answer-distinct,
+.mindmap-card-distinct,
+.article-block-distinct,
+.layout-distinct-heading {
+  position: relative;
+  overflow: visible;
+}
+
+.page-header-glyph,
+.page-header-rail,
+.page-header-tag-hole,
+.page-header-axis,
+.page-header-wave,
+.page-header-prism,
+.page-header-curtain,
+.page-header-node,
+.page-header-halo,
+.page-header-orbit,
+.question-card-corners,
+.question-card-side-tag,
+.question-card-axis-strip,
+.question-card-wave-cap,
+.question-card-prism-glow,
+.question-card-stage-arch,
+.question-card-circuit-bus,
+.question-card-solar-core,
+.question-card-orbit-ring,
+.question-answer-corners,
+.question-answer-rail,
+.question-answer-tag,
+.question-answer-grid,
+.question-answer-wave,
+.question-answer-prism,
+.question-answer-curtain,
+.question-answer-circuit,
+.question-answer-sunburst,
+.question-answer-orbit,
+.knowledge-cluster-spine-tag,
+.knowledge-cluster-axis-grid,
+.knowledge-cluster-corner-cuts,
+.knowledge-cluster-circuit-bus,
+.knowledge-cluster-starfield,
+.mindmap-shell-wave,
+.mindmap-shell-prism,
+.mindmap-shell-halo,
+.mindmap-shell-orbit,
+.article-block-prism,
+.article-block-stage,
+.article-block-halo,
+.article-block-orbit,
+.layout-heading-shell {
+  position: absolute;
+  pointer-events: none;
+}
+
+.page-header-glyph {
+  top: -10px;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid rgba(197, 162, 88, 0.42);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.page-header-glyph-left { left: -8px; }
+.page-header-glyph-right { right: -8px; }
+
+.page-header-rail {
+  top: 50%;
+  width: 54px;
+  height: 18px;
+  transform: translateY(-50%);
+  background:
+    linear-gradient(90deg, rgba(94, 126, 149, 0.34), transparent 40%),
+    linear-gradient(90deg, transparent 0 58%, rgba(94, 126, 149, 0.22) 58% 100%);
+  border-radius: 999px;
+}
+
+.page-header-rail-left { left: -6px; }
+.page-header-rail-right { right: -6px; }
+
+.page-header-tag-hole {
+  left: 12px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 1.5px dashed rgba(136, 102, 70, 0.42);
+  border-radius: 999px;
+  transform: translateY(-50%);
+}
+
+.page-header-axis {
+  bottom: -4px;
+  width: 64px;
+  height: 18px;
+  border-bottom: 1px solid rgba(91, 121, 131, 0.36);
+}
+
+.page-header-axis::before,
+.page-header-axis::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 18px;
+  background: rgba(91, 121, 131, 0.28);
+}
+
+.page-header-axis::before { left: 12px; }
+.page-header-axis::after { left: 24px; }
+.page-header-axis-left { left: 0; }
+.page-header-axis-right { right: 0; transform: scaleX(-1); }
+
+.page-header-wave {
+  bottom: -5px;
+  width: 70px;
+  height: 16px;
+  background:
+    radial-gradient(circle at 10px 12px, rgba(41, 111, 140, 0.28) 0 7px, transparent 8px),
+    radial-gradient(circle at 34px 12px, rgba(41, 111, 140, 0.22) 0 7px, transparent 8px),
+    radial-gradient(circle at 58px 12px, rgba(41, 111, 140, 0.16) 0 7px, transparent 8px);
+}
+
+.page-header-wave-left { left: -4px; }
+.page-header-wave-right { right: -4px; transform: scaleX(-1); }
+
+.page-header-prism {
+  top: -12px;
+  width: 36px;
+  height: 36px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(126, 152, 177, 0.22)),
+    linear-gradient(225deg, rgba(155, 125, 176, 0.18), transparent);
+  clip-path: polygon(18% 6%, 92% 20%, 76% 96%, 8% 80%);
+  border: 1px solid rgba(126, 152, 177, 0.24);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.page-header-prism-left { left: -4px; }
+.page-header-prism-right { right: -4px; transform: scaleX(-1); }
+
+.page-header-curtain {
+  bottom: -2px;
+  width: 58px;
+  height: 24px;
+  border-radius: 999px 999px 6px 6px;
+  background:
+    linear-gradient(90deg, rgba(134, 66, 88, 0.28), rgba(134, 66, 88, 0.08)),
+    repeating-linear-gradient(90deg, transparent 0 8px, rgba(134, 66, 88, 0.12) 8px 10px);
+}
+
+.page-header-curtain-left { left: -2px; }
+.page-header-curtain-right { right: -2px; }
+
+.page-header-node {
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(49, 194, 186, 0.22);
+  box-shadow:
+    0 0 0 1px rgba(49, 194, 186, 0.22),
+    0 0 10px rgba(49, 194, 186, 0.28);
+}
+
+.page-header-node-left { left: -4px; }
+.page-header-node-right { right: -4px; }
+
+.page-header-halo {
+  left: 6px;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background:
+    radial-gradient(circle, rgba(191, 124, 44, 0.28) 0 36%, transparent 38%),
+    radial-gradient(circle, transparent 0 58%, rgba(191, 124, 44, 0.22) 60% 70%, transparent 72%);
+}
+
+.page-header-orbit {
+  top: 50%;
+  width: 34px;
+  height: 18px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(102, 120, 181, 0.26);
+  border-radius: 999px;
+}
+
+.page-header-orbit::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(102, 120, 181, 0.34);
+  transform: translateY(-50%);
+}
+
+.page-header-orbit-left { left: -6px; }
+.page-header-orbit-right { right: -6px; }
+.page-header-orbit-left::before { right: 4px; }
+.page-header-orbit-right::before { left: 4px; }
+
+.question-card-corners,
+.question-answer-corners,
+.knowledge-cluster-corner-cuts {
+  inset: -8px;
+  background:
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) left top / 28px 1.5px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) left top / 1.5px 28px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) right top / 28px 1.5px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) right top / 1.5px 28px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) left bottom / 28px 1.5px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) left bottom / 1.5px 28px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) right bottom / 28px 1.5px no-repeat,
+    linear-gradient(rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.18)) right bottom / 1.5px 28px no-repeat;
+}
+
+.question-card-side-tag,
+.question-answer-tag,
+.knowledge-cluster-spine-tag {
+  left: -16px;
+  top: 22px;
+  width: 18px;
+  height: 74px;
+  border: 1px dashed rgba(136, 102, 70, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 250, 243, 0.92);
+}
+
+.question-card-axis-strip,
+.question-answer-grid,
+.knowledge-cluster-axis-grid {
+  inset: 0;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.5;
+}
+
+.question-card-wave-cap,
+.question-answer-wave,
+.mindmap-shell-wave {
+  left: 20px;
+  right: 20px;
+  top: -14px;
+  height: 28px;
+  background:
+    radial-gradient(circle at 14px 22px, rgba(41, 111, 140, 0.2) 0 13px, transparent 14px),
+    radial-gradient(circle at 42px 22px, rgba(41, 111, 140, 0.16) 0 13px, transparent 14px),
+    radial-gradient(circle at 70px 22px, rgba(41, 111, 140, 0.12) 0 13px, transparent 14px);
+}
+
+.question-card-prism-glow,
+.question-answer-prism,
+.mindmap-shell-prism,
+.article-block-prism {
+  inset: -8px;
+  border-radius: 22px 10px 22px 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(126, 152, 177, 0.08)),
+    linear-gradient(225deg, rgba(155, 125, 176, 0.08), transparent);
+  opacity: 0.9;
+}
+
+.question-card-stage-arch,
+.question-answer-curtain,
+.article-block-stage {
+  left: 18px;
+  right: 18px;
+  top: -16px;
+  height: 34px;
+  border-radius: 999px 999px 10px 10px;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.2), rgba(134, 66, 88, 0.06)),
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(134, 66, 88, 0.08) 10px 12px);
+}
+
+.question-card-circuit-bus,
+.question-answer-circuit,
+.knowledge-cluster-circuit-bus {
+  left: 14px;
+  right: 14px;
+  top: -12px;
+  height: 24px;
+  background:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.26) 0 12%, transparent 12% 16%, rgba(49, 194, 186, 0.18) 16% 32%, transparent 32% 36%, rgba(49, 194, 186, 0.12) 36% 100%);
+  box-shadow: 0 0 10px rgba(49, 194, 186, 0.18);
+}
+
+.question-card-solar-core,
+.question-answer-sunburst,
+.mindmap-shell-halo,
+.article-block-halo {
+  left: 50%;
+  top: -18px;
+  width: 68px;
+  height: 68px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(191, 124, 44, 0.2) 0 34%, transparent 36%),
+    radial-gradient(circle, transparent 0 56%, rgba(191, 124, 44, 0.16) 58% 70%, transparent 72%);
+}
+
+.question-card-orbit-ring,
+.question-answer-orbit,
+.mindmap-shell-orbit,
+.article-block-orbit {
+  left: 50%;
+  top: -16px;
+  width: 92px;
+  height: 38px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(102, 120, 181, 0.22);
+  border-radius: 999px;
+}
+
+.question-card-orbit-ring::before,
+.question-answer-orbit::before,
+.mindmap-shell-orbit::before,
+.article-block-orbit::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(102, 120, 181, 0.26);
+  transform: translateY(-50%);
+}
+
+.knowledge-cluster-starfield {
+  inset: 10px;
+  background:
+    radial-gradient(circle at 18% 26%, rgba(102, 120, 181, 0.16) 0 3px, transparent 4px),
+    radial-gradient(circle at 74% 18%, rgba(102, 120, 181, 0.14) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 72%, rgba(102, 120, 181, 0.16) 0 3px, transparent 4px);
+}
+
+.layout-heading-shell {
+  inset: -10px;
+}
+
 /* Fixed app ribbon: keep controls readable without stealing preview height. */
 :root {
   --app-ribbon-height: 188px;
@@ -13049,6 +14941,16 @@ body {
 .layout-preset-svg-pencil { fill: rgba(17, 19, 21, 0.1); stroke: rgba(17, 19, 21, 0.38); stroke-width: 1.1; stroke-linejoin: round; }
 
 .layout-preset-theme-classic { --preset-accent: rgba(17, 19, 21, 0.7); --preset-soft: rgba(17, 19, 21, 0.1); --preset-bg: #f2f3f2; --preset-wash: rgba(17, 19, 21, 0.08); --preset-page: #fffefd; }
+.layout-preset-theme-obsidian { --preset-accent: rgba(197, 162, 88, 0.92); --preset-soft: rgba(197, 162, 88, 0.18); --preset-bg: #1c1c20; --preset-wash: rgba(197, 162, 88, 0.1); --preset-page: #2a2a30; }
+.layout-preset-theme-chrome { --preset-accent: rgba(116, 146, 166, 0.9); --preset-soft: rgba(116, 146, 166, 0.18); --preset-bg: #e9eef2; --preset-wash: rgba(116, 146, 166, 0.16); --preset-page: #fcfdff; }
+.layout-preset-theme-museum { --preset-accent: rgba(122, 88, 56, 0.9); --preset-soft: rgba(122, 88, 56, 0.16); --preset-bg: #f6efe4; --preset-wash: rgba(122, 88, 56, 0.13); --preset-page: #fffaf1; }
+.layout-preset-theme-atelier { --preset-accent: rgba(74, 104, 116, 0.9); --preset-soft: rgba(74, 104, 116, 0.16); --preset-bg: #edf2f1; --preset-wash: rgba(74, 104, 116, 0.14); --preset-page: #fbfdfd; }
+.layout-preset-theme-abyss { --preset-accent: rgba(42, 103, 128, 0.9); --preset-soft: rgba(42, 103, 128, 0.18); --preset-bg: #e5f1f4; --preset-wash: rgba(42, 103, 128, 0.16); --preset-page: #f8fdff; }
+.layout-preset-theme-prism { --preset-accent: rgba(102, 134, 153, 0.92); --preset-soft: rgba(165, 128, 182, 0.16); --preset-bg: #edf0f7; --preset-wash: rgba(102, 134, 153, 0.12); --preset-page: #ffffff; }
+.layout-preset-theme-velvet { --preset-accent: rgba(127, 54, 74, 0.9); --preset-soft: rgba(127, 54, 74, 0.18); --preset-bg: #f4e9ee; --preset-wash: rgba(127, 54, 74, 0.14); --preset-page: #fffafc; }
+.layout-preset-theme-neon { --preset-accent: rgba(49, 194, 186, 0.94); --preset-soft: rgba(49, 194, 186, 0.18); --preset-bg: #101b20; --preset-wash: rgba(49, 194, 186, 0.14); --preset-page: #17252b; }
+.layout-preset-theme-solar { --preset-accent: rgba(191, 124, 44, 0.92); --preset-soft: rgba(191, 124, 44, 0.18); --preset-bg: #fbefd8; --preset-wash: rgba(191, 124, 44, 0.14); --preset-page: #fffaf0; }
+.layout-preset-theme-astral { --preset-accent: rgba(102, 120, 181, 0.92); --preset-soft: rgba(102, 120, 181, 0.18); --preset-bg: #eceffd; --preset-wash: rgba(102, 120, 181, 0.14); --preset-page: #fbfcff; }
 .layout-preset-theme-blueprint { --preset-accent: rgba(33, 78, 116, 0.84); --preset-soft: rgba(33, 78, 116, 0.16); --preset-bg: #e8f3fa; --preset-wash: rgba(33, 78, 116, 0.16); --preset-page: #f7fcff; }
 .layout-preset-theme-lunar { --preset-accent: rgba(58, 76, 116, 0.82); --preset-soft: rgba(58, 76, 116, 0.14); --preset-bg: #eef1f8; --preset-wash: rgba(58, 76, 116, 0.14); --preset-page: #fbfcff; }
 .layout-preset-theme-snowpeak { --preset-accent: rgba(66, 98, 115, 0.84); --preset-soft: rgba(66, 98, 115, 0.14); --preset-bg: #edf7fa; --preset-wash: rgba(66, 98, 115, 0.13); --preset-page: #fbfeff; }
@@ -13234,10 +15136,15 @@ body {
 
 .preview-workbench {
   display: grid !important;
-  grid-template-columns: minmax(152px, 168px) minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   align-items: start !important;
   gap: 12px !important;
+  width: 100% !important;
   min-height: 100% !important;
+}
+
+.preview-workbench:has(.preview-workbench-sidebar:not([hidden])) {
+  grid-template-columns: minmax(152px, 168px) minmax(0, 1fr) !important;
 }
 
 .preview-workbench-head-row {
@@ -13447,8 +15354,19 @@ body {
 }
 
 .preview-canvas-shell {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  width: 100% !important;
   min-width: 0 !important;
   min-height: 100% !important;
+}
+
+.preview-canvas-shell > .live-preview-canvas.page-preview {
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: none !important;
 }
 
 .ribbon-tab[data-ribbon-tab="review"] .ribbon-tab-label {
@@ -13933,7 +15851,15 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .element-style-panel[data-active-element-style="list"] [data-element-style-fields-group="list"],
 .element-style-panel[data-active-element-style="callout"] [data-element-style-fields-group="callout"],
 .element-style-panel[data-active-element-style="table"] [data-element-style-fields-group="table"],
-.element-style-panel[data-active-element-style="card"] [data-element-style-fields-group="card"] {
+.element-style-panel[data-active-element-style="card"] [data-element-style-fields-group="card"],
+.element-style-panel[data-active-element-style="image"] [data-element-style-fields-group="image"],
+.element-style-panel[data-active-element-style="code"] [data-element-style-fields-group="code"],
+.element-style-panel[data-active-element-style="math"] [data-element-style-fields-group="math"],
+.element-style-panel[data-active-element-style="mindmap"] [data-element-style-fields-group="mindmap"],
+.element-style-panel[data-active-element-style="label"] [data-element-style-fields-group="label"],
+.element-style-panel[data-active-element-style="knowledge"] [data-element-style-fields-group="knowledge"],
+.element-style-panel[data-active-element-style="question"] [data-element-style-fields-group="question"],
+.element-style-panel[data-active-element-style="article"] [data-element-style-fields-group="article"] {
   display: grid !important;
 }
 
@@ -14107,6 +16033,45 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   --element-card-radius: 16px;
   --element-card-gap: var(--user-block-inner-spacing, 12px);
   --element-card-space-after: 14px;
+  --element-image-radius: 18px;
+  --element-image-caption-font-size: calc(var(--user-font-size) - 1px);
+  --element-image-caption-gap: 8px;
+  --element-image-space-after: 14px;
+  --element-code-font-size: calc(var(--user-font-size) - 1px);
+  --element-code-padding-x: 16px;
+  --element-code-padding-y: 14px;
+  --element-code-radius: 16px;
+  --element-code-space-after: 14px;
+  --element-math-font-size: calc(var(--user-font-size) + 1px);
+  --element-math-padding-x: 12px;
+  --element-math-padding-y: 10px;
+  --element-math-radius: 12px;
+  --element-math-space-after: 12px;
+  --element-mindmap-root-width: 56px;
+  --element-mindmap-node-font-size: calc(var(--user-font-size) - 1px);
+  --element-mindmap-node-padding-x: 10px;
+  --element-mindmap-node-padding-y: 6px;
+  --element-mindmap-space-after: 14px;
+  --element-label-font-size: calc(var(--user-accent-font-size) - 1px);
+  --element-label-padding-x: 8px;
+  --element-label-padding-y: 3px;
+  --element-label-radius: 8px;
+  --element-label-gap: 4px;
+  --element-knowledge-header-gap: 10px;
+  --element-knowledge-group-gap: 12px;
+  --element-knowledge-fact-padding-x: 12px;
+  --element-knowledge-fact-padding-y: 8px;
+  --element-knowledge-divider-space: 12px;
+  --element-question-block-padding-x: 16px;
+  --element-question-block-padding-y: 14px;
+  --element-question-block-radius: 18px;
+  --element-question-label-font-size: calc(var(--user-accent-font-size) - 1px);
+  --element-question-section-gap: 8px;
+  --element-article-lead-padding-left: 14px;
+  --element-article-lead-space-after: 12px;
+  --element-article-pullquote-padding-x: 14px;
+  --element-article-pullquote-padding-y: 10px;
+  --element-article-pullquote-space-after: 12px;
 }
 
 .article-canvas h1,
@@ -14219,6 +16184,126 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   margin-bottom: var(--element-card-space-after) !important;
   padding: var(--card-padding-y, var(--element-card-padding-y)) var(--card-padding-x, var(--element-card-padding-x)) !important;
   border-radius: var(--element-card-radius) !important;
+}
+
+.article-canvas figure.image-card,
+.page-sheet .article-canvas figure.image-card {
+  margin-bottom: var(--element-image-space-after) !important;
+  border-radius: var(--element-image-radius) !important;
+  overflow: hidden !important;
+}
+
+.article-canvas figure.image-card img,
+.page-sheet .article-canvas figure.image-card img {
+  border-radius: var(--element-image-radius) !important;
+}
+
+.article-canvas figure.image-card figcaption,
+.page-sheet .article-canvas figure.image-card figcaption {
+  margin-top: var(--element-image-caption-gap) !important;
+  font-size: var(--element-image-caption-font-size) !important;
+}
+
+.article-canvas pre[data-md-block="code"],
+.page-sheet .article-canvas pre[data-md-block="code"] {
+  margin-bottom: var(--element-code-space-after) !important;
+  padding: var(--element-code-padding-y) var(--element-code-padding-x) !important;
+  border-radius: var(--element-code-radius) !important;
+  font-size: var(--element-code-font-size) !important;
+}
+
+.article-canvas .math-block,
+.page-sheet .article-canvas .math-block {
+  margin-bottom: var(--element-math-space-after) !important;
+  padding: var(--element-math-padding-y) var(--element-math-padding-x) !important;
+  border-radius: var(--element-math-radius) !important;
+  font-size: var(--element-math-font-size) !important;
+}
+
+.article-canvas .mindmap-card,
+.page-sheet .article-canvas .mindmap-card {
+  margin-bottom: var(--element-mindmap-space-after) !important;
+}
+
+.article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
+  width: var(--element-mindmap-root-width) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node {
+  font-size: var(--element-mindmap-node-font-size) !important;
+  padding: var(--element-mindmap-node-padding-y) var(--element-mindmap-node-padding-x) !important;
+}
+
+.article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label),
+.page-sheet .article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label) {
+  font-size: var(--element-label-font-size) !important;
+  border-radius: var(--element-label-radius) !important;
+}
+
+.article-canvas :is(.section-stamp, .question-answer-box-label),
+.page-sheet .article-canvas :is(.section-stamp, .question-answer-box-label) {
+  padding: var(--element-label-padding-y) var(--element-label-padding-x) !important;
+}
+
+.article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag),
+.page-sheet .article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag) {
+  margin-right: var(--element-label-gap) !important;
+}
+
+.article-canvas .knowledge-cluster-header,
+.page-sheet .article-canvas .knowledge-cluster-header {
+  margin-bottom: var(--element-knowledge-header-gap) !important;
+}
+
+.article-canvas .knowledge-cluster-body,
+.page-sheet .article-canvas .knowledge-cluster-body,
+.article-canvas .knowledge-group,
+.page-sheet .article-canvas .knowledge-group {
+  gap: var(--element-knowledge-group-gap) !important;
+}
+
+.article-canvas .knowledge-divider,
+.page-sheet .article-canvas .knowledge-divider {
+  margin: var(--element-knowledge-divider-space) 0 !important;
+}
+
+.article-canvas .fact-row,
+.page-sheet .article-canvas .fact-row {
+  padding: var(--element-knowledge-fact-padding-y) var(--element-knowledge-fact-padding-x) !important;
+}
+
+.article-canvas :is(.question-role, .question-answer-box),
+.page-sheet .article-canvas :is(.question-role, .question-answer-box) {
+  padding: var(--element-question-block-padding-y) var(--element-question-block-padding-x) !important;
+  border-radius: var(--element-question-block-radius) !important;
+}
+
+.article-canvas :is(.question-detail-section + .question-detail-section, .question-answer-box-row + .question-answer-box-row),
+.page-sheet .article-canvas :is(.question-detail-section + .question-detail-section, .question-answer-box-row + .question-answer-box-row) {
+  padding-top: var(--element-question-section-gap) !important;
+}
+
+.article-canvas :is(.question-answer-box-label, .question-answer-bank-title, .question-body-title),
+.page-sheet .article-canvas :is(.question-answer-box-label, .question-answer-bank-title, .question-body-title) {
+  font-size: var(--element-question-label-font-size) !important;
+}
+
+.article-canvas[data-mode="article"] .lead-paragraph,
+.page-sheet .article-canvas[data-mode="article"] .lead-paragraph,
+.article-canvas[data-mode="article"][data-layout-preset] .lead-paragraph,
+.page-sheet .article-canvas[data-mode="article"][data-layout-preset] .lead-paragraph {
+  padding: 0 0 0 var(--element-article-lead-padding-left) !important;
+  margin-bottom: var(--element-article-lead-space-after) !important;
+  text-indent: 0 !important;
+}
+
+.article-canvas .article-pullquote,
+.page-sheet .article-canvas .article-pullquote {
+  padding: var(--element-article-pullquote-padding-y) var(--element-article-pullquote-padding-x) !important;
+  margin-bottom: var(--element-article-pullquote-space-after) !important;
 }
 
 .article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item)[data-card-layout-key],
@@ -16086,4 +18171,280 @@ body.has-compact-controls .range-field input[type="range"].precision-range::-moz
   box-shadow:
     0 4px 10px rgba(23, 33, 43, 0.16),
     0 0 0 1px rgba(20, 28, 36, 0.06) !important;
+}
+
+/* Knowledge preset: Central Editorial */
+.article-canvas[data-layout-preset="knowledge-central-editorial"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] {
+  --central-editorial-rule: rgba(52, 72, 90, 0.18);
+  --central-editorial-ink: #22313f;
+  --central-editorial-accent: #7b5c43;
+  --central-editorial-surface: rgba(255, 252, 247, 0.96);
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] h1 {
+  width: min(100%, 560px) !important;
+  margin: 0 auto 28px !important;
+  padding: 0 0 18px !important;
+  text-align: center !important;
+  letter-spacing: 0.08em !important;
+  border-bottom: 1px solid var(--central-editorial-rule) !important;
+  position: relative !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] h1::after,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] h1::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -7px !important;
+  width: 68px !important;
+  height: 12px !important;
+  transform: translateX(-50%) !important;
+  border-top: 1px solid rgba(123, 92, 67, 0.28) !important;
+  border-bottom: 1px solid rgba(123, 92, 67, 0.12) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, transparent, rgba(123, 92, 67, 0.12), transparent) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster {
+  width: min(100%, 700px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 22px 24px 20px !important;
+  border: 1px solid rgba(52, 72, 90, 0.12) !important;
+  border-radius: 26px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(251, 247, 241, 0.94)),
+    var(--central-editorial-surface) !important;
+  box-shadow:
+    0 18px 40px rgba(35, 49, 63, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 auto 0 0 !important;
+  width: 4px !important;
+  background: linear-gradient(180deg, rgba(123, 92, 67, 0.72), rgba(123, 92, 67, 0.12)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster + .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster + .knowledge-cluster {
+  margin-top: 22px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-header,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-header {
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding-bottom: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-title {
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 20px 10px !important;
+  border-left: 0 !important;
+  border-bottom: 1px solid rgba(52, 72, 90, 0.12) !important;
+  color: var(--central-editorial-ink) !important;
+  letter-spacing: 0.04em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-body,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-cluster-body {
+  gap: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-group {
+  padding: 16px 18px !important;
+  border: 1px solid rgba(52, 72, 90, 0.08) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.68) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] .knowledge-subtitle {
+  width: fit-content !important;
+  margin: 0 auto 12px !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  background: rgba(123, 92, 67, 0.08) !important;
+  color: var(--central-editorial-accent) !important;
+  letter-spacing: 0.06em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] :is(p, .lead-paragraph, .list-item-copy),
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] :is(p, .lead-paragraph, .list-item-copy) {
+  color: var(--central-editorial-ink) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-central-editorial"] :is(.callout-box, .brush-block, blockquote, .article-table, .mindmap-card),
+.page-sheet .article-canvas[data-layout-preset="knowledge-central-editorial"] :is(.callout-box, .brush-block, blockquote, .article-table, .mindmap-card) {
+  width: min(100%, 700px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-radius: 22px !important;
+  box-shadow: 0 14px 32px rgba(35, 49, 63, 0.07) !important;
+}
+
+.page-sheet[data-layout-preset="knowledge-central-editorial"] .page-sheet-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding-bottom: 14px !important;
+  background-image:
+    linear-gradient(90deg, transparent, rgba(52, 72, 90, 0.18), transparent) !important;
+  background-size: 100% 1px !important;
+  background-position: left bottom !important;
+}
+
+.page-sheet[data-layout-preset="knowledge-central-editorial"] .page-sheet-header-text {
+  justify-self: center !important;
+  padding: 0 18px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  letter-spacing: 0.08em !important;
+}
+
+.page-sheet[data-layout-preset="knowledge-central-editorial"] .page-sheet-page-number {
+  min-width: 34px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(52, 72, 90, 0.14) !important;
+  background: rgba(255, 252, 247, 0.92) !important;
+  box-shadow: 0 8px 20px rgba(35, 49, 63, 0.08) !important;
+}
+
+/* Final authority layer for element controls.
+   Keep this at EOF so explicit element sliders win over mode/preset polish rules. */
+.article-canvas .knowledge-cluster-header,
+.page-sheet .article-canvas .knowledge-cluster-header {
+  margin-bottom: var(--element-knowledge-header-gap) !important;
+}
+
+.article-canvas .knowledge-cluster-body,
+.page-sheet .article-canvas .knowledge-cluster-body,
+.article-canvas .knowledge-group,
+.page-sheet .article-canvas .knowledge-group,
+.article-canvas .knowledge-group-content,
+.page-sheet .article-canvas .knowledge-group-content {
+  gap: var(--element-knowledge-group-gap) !important;
+}
+
+.article-canvas .knowledge-divider,
+.page-sheet .article-canvas .knowledge-divider {
+  display: block !important;
+  margin: var(--element-knowledge-divider-space) 0 !important;
+}
+
+.article-canvas .fact-row,
+.page-sheet .article-canvas .fact-row {
+  padding: var(--element-knowledge-fact-padding-y) var(--element-knowledge-fact-padding-x) !important;
+}
+
+.article-canvas figure.image-card,
+.page-sheet .article-canvas figure.image-card {
+  margin-bottom: var(--element-image-space-after) !important;
+  border-radius: var(--element-image-radius) !important;
+}
+
+.article-canvas figure.image-card img,
+.page-sheet .article-canvas figure.image-card img {
+  border-radius: var(--element-image-radius) !important;
+}
+
+.article-canvas figure.image-card figcaption,
+.page-sheet .article-canvas figure.image-card figcaption {
+  margin-top: var(--element-image-caption-gap) !important;
+  font-size: var(--element-image-caption-font-size) !important;
+}
+
+.article-canvas pre[data-md-block="code"],
+.page-sheet .article-canvas pre[data-md-block="code"] {
+  margin-bottom: var(--element-code-space-after) !important;
+  padding: var(--element-code-padding-y) var(--element-code-padding-x) !important;
+  border-radius: var(--element-code-radius) !important;
+  font-size: var(--element-code-font-size) !important;
+}
+
+.article-canvas .math-block,
+.page-sheet .article-canvas .math-block {
+  margin-bottom: var(--element-math-space-after) !important;
+  padding: var(--element-math-padding-y) var(--element-math-padding-x) !important;
+  border-radius: var(--element-math-radius) !important;
+  font-size: var(--element-math-font-size) !important;
+}
+
+.article-canvas .mindmap-card,
+.page-sheet .article-canvas .mindmap-card {
+  margin-bottom: var(--element-mindmap-space-after) !important;
+}
+
+.article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
+  width: var(--element-mindmap-root-width) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node {
+  font-size: var(--element-mindmap-node-font-size) !important;
+  padding: var(--element-mindmap-node-padding-y) var(--element-mindmap-node-padding-x) !important;
+}
+
+.article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label),
+.page-sheet .article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label) {
+  font-size: var(--element-label-font-size) !important;
+  border-radius: var(--element-label-radius) !important;
+}
+
+.article-canvas :is(.section-stamp, .question-answer-box-label),
+.page-sheet .article-canvas :is(.section-stamp, .question-answer-box-label) {
+  padding: var(--element-label-padding-y) var(--element-label-padding-x) !important;
+}
+
+.article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag),
+.page-sheet .article-canvas :is(.content-kicker, .question-answer-box-label, .brush-inline-tag) {
+  margin-right: var(--element-label-gap) !important;
+}
+
+.article-canvas :is(.question-role, .question-answer-box),
+.page-sheet .article-canvas :is(.question-role, .question-answer-box) {
+  padding: var(--element-question-block-padding-y) var(--element-question-block-padding-x) !important;
+  border-radius: var(--element-question-block-radius) !important;
+}
+
+.article-canvas :is(.question-detail-section + .question-detail-section, .question-answer-box-row + .question-answer-box-row),
+.page-sheet .article-canvas :is(.question-detail-section + .question-detail-section, .question-answer-box-row + .question-answer-box-row) {
+  padding-top: var(--element-question-section-gap) !important;
+}
+
+.article-canvas :is(.question-answer-box-label, .question-answer-bank-title, .question-body-title),
+.page-sheet .article-canvas :is(.question-answer-box-label, .question-answer-bank-title, .question-body-title) {
+  font-size: var(--element-question-label-font-size) !important;
+}
+
+.article-canvas .lead-paragraph,
+.page-sheet .article-canvas .lead-paragraph {
+  padding-left: var(--element-article-lead-padding-left) !important;
+  margin-bottom: var(--element-article-lead-space-after) !important;
+}
+
+.article-canvas .article-pullquote,
+.page-sheet .article-canvas .article-pullquote {
+  padding: var(--element-article-pullquote-padding-y) var(--element-article-pullquote-padding-x) !important;
+  margin-bottom: var(--element-article-pullquote-space-after) !important;
 }
