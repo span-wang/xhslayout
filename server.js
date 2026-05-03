@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const http = require("http");
+const mysql = require("mysql2/promise");
 const path = require("path");
 const { chromium } = require("playwright-core");
 
@@ -30,6 +31,15 @@ const LLM_TIMEOUT_MS = Number(process.env.LLM_TIMEOUT_MS || 90000);
 const LLM_PROMPT_CACHE_KEY = String(process.env.LLM_PROMPT_CACHE_KEY || process.env.OPENAI_PROMPT_CACHE_KEY || "").trim();
 const LLM_PROMPT_CACHE_RETENTION = String(process.env.LLM_PROMPT_CACHE_RETENTION || process.env.OPENAI_PROMPT_CACHE_RETENTION || "").trim();
 const LLM_ENABLE_PROMPT_CACHE = parseEnvBoolean(process.env.LLM_ENABLE_PROMPT_CACHE || process.env.OPENAI_ENABLE_PROMPT_CACHE);
+const MYSQL_HOST = String(process.env.MYSQL_HOST || "127.0.0.1").trim() || "127.0.0.1";
+const MYSQL_PORT = Math.max(1, Number(process.env.MYSQL_PORT || 3306) || 3306);
+const MYSQL_USER = String(process.env.MYSQL_USER || "").trim();
+const MYSQL_PASSWORD = String(process.env.MYSQL_PASSWORD || "");
+const MYSQL_DATABASE = String(process.env.MYSQL_DATABASE || "layout_for_xhs").trim() || "layout_for_xhs";
+const MYSQL_CHARSET = String(process.env.MYSQL_CHARSET || "utf8mb4").trim() || "utf8mb4";
+const MYSQL_CONNECT_TIMEOUT_MS = Math.max(1000, Number(process.env.MYSQL_CONNECT_TIMEOUT_MS || 10000) || 10000);
+const LAYOUT_HISTORY_TABLE = "layout_history_entries";
+const LAYOUT_HISTORY_MAX_ENTRIES = 24;
 const EDGE_CANDIDATES = [
   "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -74,6 +84,7 @@ const AUTH_SESSION_SECRET = crypto
   .update(`${ACCESS_CONFIG.salt}:${ACCESS_CONFIG.hash}`)
   .digest();
 let pdfBrowserPromise = null;
+let mysqlReadyPromise = null;
 
 function buildZipCrc32Table() {
   const table = new Uint32Array(256);
@@ -221,6 +232,313 @@ function buildPromptCacheOptions() {
   }
 
   return options;
+}
+
+function quoteMysqlIdentifier(value) {
+  return `\`${String(value || "").replace(/`/g, "``")}\``;
+}
+
+function normalizeLayoutHistorySnapshot(snapshot = {}) {
+  return snapshot && typeof snapshot === "object" && !Array.isArray(snapshot) ? snapshot : {};
+}
+
+function normalizeLayoutHistoryEntryPayload(entry = {}) {
+  const markdown = String(entry.markdown || "").replace(/\r\n?/g, "\n").trim();
+
+  if (!markdown) {
+    return null;
+  }
+
+  const source = entry.source === "manual" ? "manual" : "auto";
+  const snapshot = normalizeLayoutHistorySnapshot(entry.snapshot);
+  const savedAtValue = Number(entry.savedAt);
+  const savedAtDate = Number.isFinite(savedAtValue) ? new Date(savedAtValue) : new Date();
+  const savedAt = Number.isNaN(savedAtDate.getTime()) ? new Date() : savedAtDate;
+  const idCandidate = String(entry.id || "").trim();
+
+  return {
+    id: idCandidate || `layout-history-${savedAt.getTime()}-${crypto.randomBytes(4).toString("hex")}`,
+    name: String(entry.name || "").trim().slice(0, 120),
+    title: String(entry.title || "").trim().slice(0, 120),
+    summary: String(entry.summary || "").trim().slice(0, 500),
+    markdown,
+    savedAt,
+    source,
+    snapshot,
+  };
+}
+
+function mapLayoutHistoryRow(row = {}) {
+  return {
+    id: String(row.id || ""),
+    name: String(row.name || ""),
+    title: String(row.title || ""),
+    summary: String(row.summary || ""),
+    markdown: String(row.markdown || ""),
+    savedAt: row.saved_at instanceof Date
+      ? row.saved_at.getTime()
+      : Number.isFinite(Number(row.saved_at))
+        ? Number(row.saved_at)
+        : Date.now(),
+    source: row.source === "manual" ? "manual" : "auto",
+    snapshot: normalizeLayoutHistorySnapshot(row.snapshot_json),
+  };
+}
+
+async function withMysqlConnection(config, callback) {
+  const connection = await mysql.createConnection({
+    host: config.host,
+    port: config.port,
+    user: config.user,
+    password: config.password,
+    database: config.database,
+    charset: config.charset,
+    connectTimeout: config.connectTimeoutMs,
+    timezone: "local",
+  });
+
+  try {
+    return await callback(connection);
+  } finally {
+    await connection.end();
+  }
+}
+
+function getMysqlRuntimeConfig(includeDatabase = true) {
+  if (!MYSQL_USER) {
+    throw new Error("Missing MYSQL_USER. Please configure MySQL credentials in .env.local.");
+  }
+
+  return {
+    host: MYSQL_HOST,
+    port: MYSQL_PORT,
+    user: MYSQL_USER,
+    password: MYSQL_PASSWORD,
+    database: includeDatabase ? MYSQL_DATABASE : undefined,
+    charset: MYSQL_CHARSET,
+    connectTimeoutMs: MYSQL_CONNECT_TIMEOUT_MS,
+  };
+}
+
+function ensureMysqlReady() {
+  if (!mysqlReadyPromise) {
+    mysqlReadyPromise = (async () => {
+      await withMysqlConnection(getMysqlRuntimeConfig(false), async (connection) => {
+        await connection.query(`
+          CREATE DATABASE IF NOT EXISTS ${quoteMysqlIdentifier(MYSQL_DATABASE)}
+          CHARACTER SET ${MYSQL_CHARSET}
+          COLLATE ${MYSQL_CHARSET}_unicode_ci
+        `);
+      });
+
+      await withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+        await connection.query(`
+          CREATE TABLE IF NOT EXISTS ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)} (
+            id VARCHAR(64) NOT NULL,
+            name VARCHAR(120) NOT NULL DEFAULT '',
+            title VARCHAR(120) NOT NULL DEFAULT '',
+            summary VARCHAR(500) NOT NULL DEFAULT '',
+            markdown LONGTEXT NOT NULL,
+            saved_at DATETIME(3) NOT NULL,
+            source ENUM('auto','manual') NOT NULL DEFAULT 'auto',
+            snapshot_json JSON NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY idx_layout_history_saved_at (saved_at DESC)
+          ) ENGINE=InnoDB DEFAULT CHARSET=${MYSQL_CHARSET} COLLATE=${MYSQL_CHARSET}_unicode_ci
+        `);
+      });
+    })().catch((error) => {
+      mysqlReadyPromise = null;
+      throw error;
+    });
+  }
+
+  return mysqlReadyPromise;
+}
+
+async function listLayoutHistoryEntries() {
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    const [rows] = await connection.query(`
+      SELECT id, name, title, summary, markdown, saved_at, source, snapshot_json
+      FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+      ORDER BY saved_at DESC, updated_at DESC
+      LIMIT ${LAYOUT_HISTORY_MAX_ENTRIES}
+    `);
+    return rows.map(mapLayoutHistoryRow);
+  });
+}
+
+async function upsertLayoutHistoryEntry(entry) {
+  const normalized = normalizeLayoutHistoryEntryPayload(entry);
+
+  if (!normalized) {
+    throw new Error("Missing layout history markdown.");
+  }
+
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    const [existingRows] = await connection.query(`
+      SELECT id
+      FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+      WHERE markdown = ?
+        AND source = ?
+        AND JSON_UNQUOTE(JSON_EXTRACT(snapshot_json, '$.mode')) = ?
+        AND JSON_UNQUOTE(JSON_EXTRACT(snapshot_json, '$.layoutPreset')) = ?
+        AND JSON_UNQUOTE(JSON_EXTRACT(snapshot_json, '$.theme')) = ?
+        AND JSON_UNQUOTE(JSON_EXTRACT(snapshot_json, '$.questionAnswerLayout')) = ?
+      ORDER BY saved_at DESC, updated_at DESC
+      LIMIT 1
+    `, [
+      normalized.markdown,
+      normalized.source,
+      String(normalized.snapshot.mode || ""),
+      String(normalized.snapshot.layoutPreset || ""),
+      String(normalized.snapshot.theme || ""),
+      String(normalized.snapshot.questionAnswerLayout || ""),
+    ]);
+
+    if (existingRows.length) {
+      normalized.id = String(existingRows[0].id || normalized.id);
+    }
+
+    await connection.query(`
+      INSERT INTO ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+        (id, name, title, summary, markdown, saved_at, source, snapshot_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?, CAST(? AS JSON))
+      ON DUPLICATE KEY UPDATE
+        name = VALUES(name),
+        title = VALUES(title),
+        summary = VALUES(summary),
+        markdown = VALUES(markdown),
+        saved_at = VALUES(saved_at),
+        source = VALUES(source),
+        snapshot_json = VALUES(snapshot_json)
+    `, [
+      normalized.id,
+      normalized.name,
+      normalized.title,
+      normalized.summary,
+      normalized.markdown,
+      normalized.savedAt,
+      normalized.source,
+      JSON.stringify(normalized.snapshot),
+    ]);
+
+    await connection.query(`
+      DELETE FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+      WHERE id NOT IN (
+        SELECT id FROM (
+          SELECT id
+          FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+          ORDER BY saved_at DESC, updated_at DESC
+          LIMIT ${LAYOUT_HISTORY_MAX_ENTRIES}
+        ) AS latest_entries
+      )
+    `);
+
+    const [rows] = await connection.query(`
+      SELECT id, name, title, summary, markdown, saved_at, source, snapshot_json
+      FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+      WHERE id = ?
+      LIMIT 1
+    `, [normalized.id]);
+
+    return rows.length ? mapLayoutHistoryRow(rows[0]) : mapLayoutHistoryRow(normalized);
+  });
+}
+
+async function deleteLayoutHistoryEntry(entryId) {
+  const normalizedId = String(entryId || "").trim();
+
+  if (!normalizedId) {
+    throw new Error("Missing layout history id.");
+  }
+
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    await connection.query(`
+      DELETE FROM ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}
+      WHERE id = ?
+    `, [normalizedId]);
+  });
+}
+
+async function clearLayoutHistoryEntries() {
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    await connection.query(`TRUNCATE TABLE ${quoteMysqlIdentifier(LAYOUT_HISTORY_TABLE)}`);
+  });
+}
+
+async function handleLayoutHistoryRequest(request, response, requestUrl) {
+  if (request.method === "GET") {
+    sendJson(response, 200, {
+      entries: await listLayoutHistoryEntries(),
+    });
+    return;
+  }
+
+  if (request.method === "POST") {
+    const rawBody = await collectRequestBody(request);
+    const payload = JSON.parse(rawBody || "{}");
+    const entry = await upsertLayoutHistoryEntry(payload.entry || payload);
+
+    sendJson(response, 200, {
+      entry,
+    });
+    return;
+  }
+
+  if (request.method === "DELETE") {
+    const entryId = String(requestUrl.searchParams.get("id") || "").trim();
+
+    if (entryId) {
+      await deleteLayoutHistoryEntry(entryId);
+      sendJson(response, 200, {
+        ok: true,
+      });
+      return;
+    }
+
+    await clearLayoutHistoryEntries();
+    sendJson(response, 200, {
+      ok: true,
+    });
+    return;
+  }
+
+  sendJson(response, 405, {
+    error: "Method not allowed.",
+  });
+}
+
+function getPublicErrorMessage(error) {
+  if (!error) {
+    return "Unexpected server error.";
+  }
+
+  if (typeof error.message === "string" && error.message.trim()) {
+    if (
+      error.message.includes("MYSQL_")
+      || error.message.includes("MySQL")
+      || error.message.includes("layout history")
+    ) {
+      return error.message;
+    }
+  }
+
+  if (error && (error.code === "ER_ACCESS_DENIED_ERROR" || error.code === "ER_BAD_DB_ERROR")) {
+    return "MySQL connection failed. Please check MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, and MYSQL_DATABASE in .env.local.";
+  }
+
+  return error.message || "Unexpected server error.";
 }
 
 function loadAccessConfig() {
@@ -1450,6 +1768,11 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    if (requestUrl.pathname === "/api/layout-history") {
+      await handleLayoutHistoryRequest(request, response, requestUrl);
+      return;
+    }
+
     if (request.method === "GET") {
       handleStaticFile(requestUrl, response);
       return;
@@ -1460,7 +1783,7 @@ const server = http.createServer(async (request, response) => {
     });
   } catch (error) {
     sendJson(response, 500, {
-      error: error && error.message ? error.message : "Unexpected server error.",
+      error: getPublicErrorMessage(error),
     });
   }
 });

@@ -1606,6 +1606,7 @@ const PDF_EXPORT_STALL_HINT_MS = 15000;
 const PDF_INLINE_IMAGE_MAX_DIMENSION = 2200;
 const PDF_INLINE_IMAGE_JPEG_QUALITY = 0.86;
 const PDF_INLINE_IMAGE_OPTIMIZE_MIN_CHARS = 900000;
+const LAYOUT_HISTORY_API_URL = "/api/layout-history";
 const STUDY_NOTES_API_URL = "/api/generate-study-notes";
 const PDF_IMPORT_MODULE_SRC = "vendor/pdfjs/pdf.min.mjs";
 const PDF_IMPORT_WORKER_SRC = "vendor/pdfjs/pdf.worker.min.mjs";
@@ -3734,6 +3735,29 @@ function extractLeadingBlockDirectives(text) {
     style,
     text: rest,
   };
+}
+
+function shouldBreakListContinuation(lines, index, baseIndent) {
+  const raw = String(lines[index] || "");
+
+  if (!raw.trim() || getIndent(raw) !== baseIndent) {
+    return false;
+  }
+
+  const directives = extractLeadingBlockDirectives(raw.trim());
+  const text = String(directives.text || "").trim();
+
+  if (!text || /<br\s*\/?>/i.test(text) || getListMatch(raw)) {
+    return false;
+  }
+
+  const nextRaw = String(lines[index + 1] || "");
+
+  if (!nextRaw.trim() || getIndent(nextRaw) !== baseIndent || !getListMatch(nextRaw)) {
+    return false;
+  }
+
+  return true;
 }
 
 function createMarkdownRenderContext(options = {}) {
@@ -8870,7 +8894,12 @@ function renderList(lines, startIndex, baseIndent, context, options = {}) {
       const indent = getIndent(raw);
       const nextMatch = getListMatch(raw);
 
-      if (indent < baseIndent || (nextMatch && indent === baseIndent) || (indent === baseIndent && startsBlock(lines, index, baseIndent))) {
+      if (
+        indent < baseIndent
+        || (nextMatch && indent === baseIndent)
+        || (indent === baseIndent && startsBlock(lines, index, baseIndent))
+        || shouldBreakListContinuation(lines, index, baseIndent)
+      ) {
         break;
       }
 
@@ -11126,6 +11155,34 @@ function sanitizeFileName(value) {
     .slice(0, 50);
 }
 
+const PDF_EXPORT_CANCELLED = Symbol("pdf-export-cancelled");
+
+function buildPdfFileName(baseName) {
+  const normalized = String(baseName || "").trim().replace(/\.pdf$/i, "");
+  return `${sanitizeFileName(normalized)}.pdf`;
+}
+
+function promptForPdfFileName(title) {
+  if (typeof window === "undefined" || typeof window.prompt !== "function") {
+    return buildPdfFileName(title);
+  }
+
+  const defaultFileName = buildPdfFileName(title);
+  const input = window.prompt("请输入导出的 PDF 文件名", defaultFileName);
+
+  if (input === null) {
+    return PDF_EXPORT_CANCELLED;
+  }
+
+  const trimmed = String(input).trim();
+
+  if (!trimmed) {
+    return defaultFileName;
+  }
+
+  return buildPdfFileName(trimmed);
+}
+
 function readStylesFromDocument() {
   if (typeof document === "undefined") {
     return "";
@@ -12516,6 +12573,105 @@ async function requestStudyNotesGeneration({ subject, topic, sourceText }) {
   return markdown;
 }
 
+async function requestLayoutHistoryEntries() {
+  const response = await fetch(LAYOUT_HISTORY_API_URL, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `加载排版历史失败，状态码 ${response.status}`);
+  }
+
+  return normalizeLayoutHistoryEntries(payload && payload.entries);
+}
+
+async function saveLayoutHistoryEntryRemote(entry) {
+  const response = await fetch(LAYOUT_HISTORY_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      entry,
+    }),
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `保存排版历史失败，状态码 ${response.status}`);
+  }
+
+  return sanitizeLayoutHistoryEntry(payload && payload.entry);
+}
+
+async function deleteLayoutHistoryEntryRemote(entryId) {
+  const response = await fetch(`${LAYOUT_HISTORY_API_URL}?id=${encodeURIComponent(String(entryId || ""))}`, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `删除排版历史失败，状态码 ${response.status}`);
+  }
+}
+
+async function clearLayoutHistoryEntriesRemote() {
+  const response = await fetch(LAYOUT_HISTORY_API_URL, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `清空排版历史失败，状态码 ${response.status}`);
+  }
+}
+
+function clearLegacyLayoutHistoryEntries() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEYS.layoutHistoryEntries);
+  } catch (_error) {
+    // Ignore storage failures in restricted browsers.
+  }
+}
+
 function waitForNextPaint() {
   return new Promise((resolve) => {
     window.requestAnimationFrame(() => {
@@ -12609,13 +12765,17 @@ function bindPdfExportButton(button, textarea, canvas, state, exportState, flash
       return;
     }
 
-    exportState.busy = true;
-    button.disabled = true;
-    setExportProgress(4, "正在启动 PDF 导出...");
-
     try {
       const title = extractTitle(textarea.value);
-      const fileName = `${sanitizeFileName(title)}.pdf`;
+      const fileName = promptForPdfFileName(title);
+
+      if (fileName === PDF_EXPORT_CANCELLED) {
+        return;
+      }
+
+      exportState.busy = true;
+      button.disabled = true;
+      setExportProgress(4, "正在启动 PDF 导出...");
       await runPdfExportFlow({
         sourceCanvas: canvas,
         title,
@@ -12626,6 +12786,9 @@ function bindPdfExportButton(button, textarea, canvas, state, exportState, flash
         },
       });
     } catch (error) {
+      if (error === PDF_EXPORT_CANCELLED) {
+        return;
+      }
       console.error(error);
       clearExportProgress();
       flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
@@ -15388,18 +15551,20 @@ async function initPagedApp() {
     return sanitizeLayoutHistorySnapshot(snapshot);
   }
 
-  function persistLayoutHistoryEntries() {
+  function persistLegacyLayoutHistoryEntries(_entries) {
     try {
-      window.localStorage.setItem(
-        STORAGE_KEYS.layoutHistoryEntries,
-        JSON.stringify(normalizeLayoutHistoryEntries(state.layoutHistoryEntries)),
-      );
+      window.localStorage.removeItem(STORAGE_KEYS.layoutHistoryEntries);
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
   }
 
-  function addLayoutHistoryEntry(options = {}) {
+  async function refreshLayoutHistoryEntries() {
+    state.layoutHistoryEntries = await requestLayoutHistoryEntries();
+    return state.layoutHistoryEntries;
+  }
+
+  async function addLayoutHistoryEntry(options = {}) {
     const markdown = normalizeMarkdown(options.markdown != null ? options.markdown : textarea.value);
 
     if (!markdown) {
@@ -15421,39 +15586,44 @@ async function initPagedApp() {
       return null;
     }
 
-    const nextFingerprint = JSON.stringify({
-      markdown: nextEntry.markdown,
-      source: nextEntry.source,
-      mode: nextEntry.snapshot.mode,
-      layoutPreset: nextEntry.snapshot.layoutPreset,
-      theme: nextEntry.snapshot.theme,
-      questionAnswerLayout: nextEntry.snapshot.questionAnswerLayout,
-    });
-    const deduped = state.layoutHistoryEntries.filter((entry) => {
-      const fingerprint = JSON.stringify({
-        markdown: entry.markdown,
-        source: entry.source,
-        mode: entry.snapshot?.mode,
-        layoutPreset: entry.snapshot?.layoutPreset,
-        theme: entry.snapshot?.theme,
-        questionAnswerLayout: entry.snapshot?.questionAnswerLayout,
-      });
-      return fingerprint !== nextFingerprint;
+    const savedEntry = await saveLayoutHistoryEntryRemote(nextEntry);
+    await refreshLayoutHistoryEntries();
+    persistLegacyLayoutHistoryEntries(state.layoutHistoryEntries);
+    return savedEntry || nextEntry;
+  }
+
+  async function saveManualLayoutHistoryEntry(options = {}) {
+    const entry = await addLayoutHistoryEntry({
+      name: options.name,
+      source: "manual",
     });
 
-    state.layoutHistoryEntries = normalizeLayoutHistoryEntries([nextEntry, ...deduped]);
-    persistLayoutHistoryEntries();
-    return nextEntry;
+    if (!entry) {
+      flashStatus("请先输入或导入要排版的内容");
+      return null;
+    }
+
+    if (options.input instanceof HTMLInputElement) {
+      options.input.value = "";
+    }
+
+    renderLayoutHistoryList();
+    flashStatus(`已保存排版：${entry.name}`);
+    return entry;
   }
 
   function scheduleAutoLayoutHistory(markdown) {
     window.clearTimeout(autoLayoutHistoryTimer);
-    autoLayoutHistoryTimer = window.setTimeout(() => {
-      addLayoutHistoryEntry({
+    autoLayoutHistoryTimer = window.setTimeout(async () => {
+      try {
+        await addLayoutHistoryEntry({
         markdown,
         source: "auto",
         name: getLayoutHistoryTitle(markdown),
-      });
+        });
+      } catch (_error) {
+        // Ignore auto-save failures to avoid interrupting editing.
+      }
     }, 900);
   }
 
@@ -15549,6 +15719,59 @@ async function initPagedApp() {
     return dialog;
   }
 
+  function ensureSaveLayoutDialog() {
+    let dialog = document.getElementById("saveLayoutDialog");
+
+    if (dialog) {
+      return dialog;
+    }
+
+    dialog = document.createElement("div");
+    dialog.id = "saveLayoutDialog";
+    dialog.className = "formula-editor-backdrop";
+    dialog.hidden = true;
+    dialog.innerHTML = `
+      <section class="formula-editor-panel save-layout-dialog" role="dialog" aria-modal="true" aria-labelledby="saveLayoutDialogTitle">
+        <div class="formula-editor-head">
+          <div>
+            <h2 id="saveLayoutDialogTitle" class="formula-editor-title">保存排版</h2>
+            <p class="formula-editor-note">填写排版名称，方便之后在排版历史里快速恢复。</p>
+          </div>
+          <button type="button" class="formula-editor-close" data-save-layout-close aria-label="关闭">×</button>
+        </div>
+        <div class="save-layout-dialog-body">
+          <label class="font-field save-layout-dialog-field" for="saveLayoutDialogInput">
+            <span class="font-title">排版名称</span>
+            <input id="saveLayoutDialogInput" type="text" maxlength="40" placeholder="留空则自动取标题">
+          </label>
+        </div>
+        <div class="formula-editor-actions">
+          <button type="button" class="formula-editor-secondary" data-save-layout-close>取消</button>
+          <button type="button" class="formula-editor-primary" data-save-layout-confirm>保存</button>
+        </div>
+      </section>
+    `;
+
+    const input = dialog.querySelector("#saveLayoutDialogInput");
+    input?.addEventListener("keydown", async (event) => {
+      if (event.key !== "Enter" || event.isComposing) {
+        return;
+      }
+
+      event.preventDefault();
+      await submitSaveLayoutDialog();
+    });
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        closeSaveLayoutDialog();
+      }
+    });
+
+    document.body.appendChild(dialog);
+    return dialog;
+  }
+
   function renderLayoutHistoryList() {
     const dialog = ensureLayoutHistoryDialog();
     const list = dialog.querySelector("#layoutHistoryList");
@@ -15609,6 +15832,57 @@ async function initPagedApp() {
     }
 
     dialog.hidden = true;
+  }
+
+  function openSaveLayoutDialog() {
+    const dialog = ensureSaveLayoutDialog();
+    const input = dialog.querySelector("#saveLayoutDialogInput");
+    const suggestedName = getLayoutHistoryTitle(textarea.value, "");
+
+    if (input instanceof HTMLInputElement) {
+      input.value = suggestedName;
+    }
+
+    dialog.hidden = false;
+    window.requestAnimationFrame(() => {
+      input?.focus();
+      input?.select();
+    });
+  }
+
+  function closeSaveLayoutDialog() {
+    const dialog = document.getElementById("saveLayoutDialog");
+
+    if (!dialog) {
+      return;
+    }
+
+    dialog.hidden = true;
+  }
+
+  async function submitSaveLayoutDialog() {
+    const dialog = ensureSaveLayoutDialog();
+    const input = dialog.querySelector("#saveLayoutDialogInput");
+
+    try {
+      const entry = await saveManualLayoutHistoryEntry({
+        name: String(input?.value || "").trim(),
+        input,
+      });
+
+      if (!entry) {
+        input?.focus();
+        return false;
+      }
+
+      closeSaveLayoutDialog();
+      return true;
+    } catch (error) {
+      console.error(error);
+      flashStatus(error && error.message ? error.message : "保存排版历史失败，请检查服务端");
+      input?.focus();
+      return false;
+    }
   }
 
   let renderTimer = null;
@@ -16748,9 +17022,7 @@ async function initPagedApp() {
     return true;
   }
 
-  async function runBrowserPrintFlow(previewWindow, title) {
-    const fileName = `${sanitizeFileName(title)}.pdf`;
-
+  async function runBrowserPrintFlow(previewWindow, title, fileName) {
     setExportProgress(8, "正在准备浏览器打印...");
     setExportProgress(24, "正在整理当前预览页面...");
     const html = await buildCurrentExportHtml(title);
@@ -17508,10 +17780,6 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
       window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
       window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
-      window.localStorage.setItem(
-        STORAGE_KEYS.layoutHistoryEntries,
-        JSON.stringify(normalizeLayoutHistoryEntries(state.layoutHistoryEntries)),
-      );
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
@@ -18272,24 +18540,12 @@ async function initPagedApp() {
   });
 
   saveLayoutBtn?.addEventListener("click", () => {
-    const dialog = ensureLayoutHistoryDialog();
-    const nameInput = dialog.querySelector("#layoutHistoryNameInput");
-    const entry = addLayoutHistoryEntry({
-      name: String(nameInput?.value || "").trim(),
-      source: "manual",
-    });
-
-    if (!entry) {
+    if (!normalizeMarkdown(textarea.value)) {
       flashStatus("请先输入或导入要排版的内容");
       return;
     }
 
-    if (nameInput) {
-      nameInput.value = "";
-    }
-
-    renderLayoutHistoryList();
-    flashStatus(`已保存排版：${entry.name}`);
+    openSaveLayoutDialog();
   });
 
   layoutHistoryBtn?.addEventListener("click", () => {
@@ -18431,10 +18687,70 @@ async function initPagedApp() {
     closeToolbarExportMenu();
   });
 
+  document.addEventListener("click", async (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+
+    if (!target) {
+      return;
+    }
+
+    const clearTrigger = target.closest("[data-layout-history-clear]");
+    if (clearTrigger) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      try {
+        await clearLayoutHistoryEntriesRemote();
+        state.layoutHistoryEntries = [];
+        persistLegacyLayoutHistoryEntries(state.layoutHistoryEntries);
+        renderLayoutHistoryList();
+        flashStatus("已清空排版历史");
+      } catch (error) {
+        console.error(error);
+        flashStatus(error && error.message ? error.message : "清空排版历史失败，请检查服务端");
+      }
+      return;
+    }
+
+    const deleteTrigger = target.closest("[data-layout-history-delete]");
+    if (!deleteTrigger) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    const entryId = String(deleteTrigger.getAttribute("data-layout-history-delete") || "");
+    const targetEntry = state.layoutHistoryEntries.find((item) => item.id === entryId);
+
+    try {
+      await deleteLayoutHistoryEntryRemote(entryId);
+      state.layoutHistoryEntries = state.layoutHistoryEntries.filter((item) => item.id !== entryId);
+      persistLegacyLayoutHistoryEntries(state.layoutHistoryEntries);
+      renderLayoutHistoryList();
+      flashStatus(targetEntry ? `已删除：${targetEntry.name}` : "已删除历史记录");
+    } catch (error) {
+      console.error(error);
+      flashStatus(error && error.message ? error.message : "删除排版历史失败，请检查服务端");
+    }
+  }, { capture: true });
+
   document.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
 
     if (!target) {
+      return;
+    }
+
+    const saveLayoutCloseTrigger = target.closest("[data-save-layout-close]");
+    if (saveLayoutCloseTrigger) {
+      closeSaveLayoutDialog();
+      return;
+    }
+
+    const saveLayoutConfirmTrigger = target.closest("[data-save-layout-confirm]");
+    if (saveLayoutConfirmTrigger) {
+      void submitSaveLayoutDialog();
       return;
     }
 
@@ -18446,16 +18762,20 @@ async function initPagedApp() {
 
     const saveTrigger = target.closest("[data-layout-history-save]");
     if (saveTrigger) {
-      saveLayoutBtn?.click();
-      return;
-    }
+      const dialog = ensureLayoutHistoryDialog();
+      const nameInput = dialog.querySelector("#layoutHistoryNameInput");
 
-    const clearTrigger = target.closest("[data-layout-history-clear]");
-    if (clearTrigger) {
-      state.layoutHistoryEntries = [];
-      persistLayoutHistoryEntries();
-      renderLayoutHistoryList();
-      flashStatus("已清空排版历史");
+      (async () => {
+        try {
+          await saveManualLayoutHistoryEntry({
+            name: String(nameInput?.value || "").trim(),
+            input: nameInput,
+          });
+        } catch (error) {
+          console.error(error);
+          flashStatus(error && error.message ? error.message : "保存排版历史失败，请检查服务端");
+        }
+      })();
       return;
     }
 
@@ -18473,21 +18793,16 @@ async function initPagedApp() {
       flashStatus(`已恢复：${entry.name}`);
       return;
     }
-
-    const deleteTrigger = target.closest("[data-layout-history-delete]");
-    if (deleteTrigger) {
-      const entryId = String(deleteTrigger.getAttribute("data-layout-history-delete") || "");
-      const targetEntry = state.layoutHistoryEntries.find((item) => item.id === entryId);
-      state.layoutHistoryEntries = state.layoutHistoryEntries.filter((item) => item.id !== entryId);
-      persistLayoutHistoryEntries();
-      renderLayoutHistoryList();
-      flashStatus(targetEntry ? `已删除：${targetEntry.name}` : "已删除历史记录");
-      return;
-    }
   });
 
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") {
+      return;
+    }
+
+    const saveLayoutDialog = document.getElementById("saveLayoutDialog");
+    if (saveLayoutDialog && !saveLayoutDialog.hidden) {
+      closeSaveLayoutDialog();
       return;
     }
 
@@ -18714,13 +19029,17 @@ async function initPagedApp() {
       return;
     }
 
-    exportBusy = true;
-    exportButton.disabled = true;
-    setExportProgress(4, "正在启动 PDF 导出...");
-
     try {
       const title = extractTitle(textarea.value);
-      const fileName = `${sanitizeFileName(title)}.pdf`;
+      const fileName = promptForPdfFileName(title);
+
+      if (fileName === PDF_EXPORT_CANCELLED) {
+        return;
+      }
+
+      exportBusy = true;
+      exportButton.disabled = true;
+      setExportProgress(4, "正在启动 PDF 导出...");
       await runPdfExportFlow({
         sourceCanvas: measureCanvas,
         previewCanvas: canvas,
@@ -18729,6 +19048,9 @@ async function initPagedApp() {
         buildOptions: getDocumentOptions(title),
       });
     } catch (error) {
+      if (error === PDF_EXPORT_CANCELLED) {
+        return;
+      }
       console.error(error);
       clearExportProgress();
       flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
@@ -18827,13 +19149,17 @@ async function initPagedApp() {
       return;
     }
 
-    exportBusy = true;
-    button.disabled = true;
-    setExportProgress(4, "正在启动 PDF 导出...");
-
     try {
       const title = extractTitle(textarea.value);
-      const fileName = `${sanitizeFileName(title)}.pdf`;
+      const fileName = promptForPdfFileName(title);
+
+      if (fileName === PDF_EXPORT_CANCELLED) {
+        return;
+      }
+
+      exportBusy = true;
+      button.disabled = true;
+      setExportProgress(4, "正在启动 PDF 导出...");
       await runPdfExportFlow({
         sourceCanvas: measureCanvas,
         previewCanvas: canvas,
@@ -18842,6 +19168,9 @@ async function initPagedApp() {
         buildOptions: getDocumentOptions(title),
       });
     } catch (error) {
+      if (error === PDF_EXPORT_CANCELLED) {
+        return;
+      }
       console.error(error);
       clearExportProgress();
       flashStatus(error && error.message ? error.message : "PDF 导出失败，请检查服务端");
@@ -18865,15 +19194,26 @@ async function initPagedApp() {
         return;
       }
 
-      const previewWindow = window.open("", "_blank");
-
-      exportBusy = true;
-      browserPrintBtn.disabled = true;
+      let previewWindow = null;
 
       try {
         const title = extractTitle(textarea.value);
-        await runBrowserPrintFlow(previewWindow, title);
+        const fileName = promptForPdfFileName(title);
+
+        if (fileName === PDF_EXPORT_CANCELLED) {
+          return;
+        }
+
+        previewWindow = window.open("", "_blank");
+
+        exportBusy = true;
+        browserPrintBtn.disabled = true;
+
+        await runBrowserPrintFlow(previewWindow, title, fileName);
       } catch (error) {
+        if (error === PDF_EXPORT_CANCELLED) {
+          return;
+        }
         console.error(error);
         clearExportProgress();
         if (previewWindow && !previewWindow.closed) {
@@ -19029,6 +19369,29 @@ async function initPagedApp() {
     state.layoutHistoryEntries = normalizeLayoutHistoryEntries(savedLayoutHistoryEntries);
   } catch (_error) {
     // Ignore storage failures in restricted browsers.
+  }
+
+  try {
+    const remoteEntries = await requestLayoutHistoryEntries();
+
+    if (remoteEntries.length) {
+      state.layoutHistoryEntries = remoteEntries;
+      persistLegacyLayoutHistoryEntries(remoteEntries);
+    } else if (state.layoutHistoryEntries.length) {
+      for (const entry of state.layoutHistoryEntries) {
+        try {
+          await saveLayoutHistoryEntryRemote(entry);
+        } catch (_error) {
+          // Continue migrating remaining entries.
+        }
+      }
+
+      state.layoutHistoryEntries = await requestLayoutHistoryEntries();
+      persistLegacyLayoutHistoryEntries(state.layoutHistoryEntries);
+      clearLegacyLayoutHistoryEntries();
+    }
+  } catch (error) {
+    console.error(error);
   }
 
   textarea.value = initialText;

@@ -16,6 +16,7 @@ deploy/cloudflare/config.yml
 # Local IDE and Codex working files
 .idea/
 .codex/layout-audit/
+.playwright-cli/
 
 # Generated visual check screenshots
 *-check*.png
