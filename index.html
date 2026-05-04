@@ -89,6 +89,7 @@
             <div id="modePicker" class="segmented-control" role="group" aria-label="选择排版模式">
               <button type="button" class="segmented-chip is-active" data-mode-option="knowledge">知识卡片</button>
               <button type="button" class="segmented-chip" data-mode-option="question">题目模式</button>
+              <button type="button" class="segmented-chip" data-mode-option="exam">试卷模式</button>
               <button type="button" class="segmented-chip" data-mode-option="article">文章模式</button>
             </div>
             <div class="mode-benefit-card" aria-live="polite">
@@ -357,14 +358,14 @@
                     <span class="range-title">页面宽度</span>
                     <span id="pageWidthValue" class="range-value">210 mm</span>
                   </span>
-                  <input id="pageWidthRange" type="range" min="148" max="240" step="1" value="210">
+                  <input id="pageWidthRange" type="range" min="148" max="420" step="1" value="210">
                 </label>
                 <label class="range-field" for="pageHeightRange">
                   <span class="range-title-row">
                     <span class="range-title">页面高度</span>
                     <span id="pageHeightValue" class="range-value">297 mm</span>
                   </span>
-                  <input id="pageHeightRange" type="range" min="210" max="340" step="1" value="297">
+                  <input id="pageHeightRange" type="range" min="210" max="420" step="1" value="297">
                 </label>
                 <label class="range-field" for="pageMarginTopRange">
                   <span class="range-title-row">
@@ -438,6 +439,10 @@
                 <p class="cluster-note">上传后预览直接可见，按页面铺满裁切，空白处保留底色。</p>
               </div>
               <div class="page-inline-tools page-inline-tools-background">
+                <label class="page-inline-item page-inline-toggle" for="pdfIgnoreBackgroundToggle">
+                  <span class="page-inline-title">PDF 白底</span>
+                  <input id="pdfIgnoreBackgroundToggle" type="checkbox">
+                </label>
                 <label class="page-inline-item page-inline-upload" for="exportBackgroundInput">
                   <span class="page-inline-title">背景图</span>
                   <span class="page-inline-action">上传图片</span>

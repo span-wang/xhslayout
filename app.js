@@ -2,6 +2,8 @@ const STORAGE_KEYS = {
   markdown: "layout-for-xhs-markdown",
   theme: "layout-for-xhs-theme",
   mode: "layout-for-xhs-mode",
+  examPageLayout: "layout-for-xhs-exam-page-layout",
+  standardPageLayout: "layout-for-xhs-standard-page-layout",
   questionAnswerLayout: "layout-for-xhs-question-answer-layout",
   bodyFontFamily: "layout-for-xhs-body-font-family",
   headingFontFamily: "layout-for-xhs-heading-font-family",
@@ -41,6 +43,7 @@ const STORAGE_KEYS = {
   watermarkOpacity: "layout-for-xhs-watermark-opacity",
   exportBackgroundSrc: "layout-for-xhs-export-background-src",
   exportBackgroundName: "layout-for-xhs-export-background-name",
+  pdfIgnoreBackground: "layout-for-xhs-pdf-ignore-background",
   elementStyles: "layout-for-xhs-element-styles",
   elementStylePresets: "layout-for-xhs-element-style-presets",
   paginationStrategy: "layout-for-xhs-pagination-strategy",
@@ -80,6 +83,15 @@ const MODE_METADATA = {
       "复盘更快",
     ],
   },
+  exam: {
+    title: "试卷模式",
+    summary: "切换后自动进入 A3 预览布局，适合整版打印试卷和长大题页面。",
+    highlights: [
+      "A3 预览",
+      "试卷节奏",
+      "打印友好",
+    ],
+  },
   article: {
     title: "文章模式",
     summary: "保留长文节奏，适合教程和正文阅读。",
@@ -93,7 +105,6 @@ const MODE_METADATA = {
 
 const LAYOUT_HISTORY_MAX_ENTRIES = 24;
 const LAYOUT_HISTORY_MAX_TITLE_LENGTH = 40;
-const LAYOUT_HISTORY_AUTO_LABEL = "自动保存";
 const LAYOUT_HISTORY_MANUAL_LABEL = "手动保存";
 
 const MODE_LAYOUT_PRESETS = Object.freeze({
@@ -574,6 +585,8 @@ const TABLE_SKIP_TOKEN = "{{table-skip}}";
 
 const DEFAULT_THEME = "oat";
 const DEFAULT_MODE = "knowledge";
+const EXAM_MODE = "exam";
+const QUESTION_STYLE_MODE = "question";
 const QUESTION_ANSWER_LAYOUTS = Object.freeze({
   inline: Object.freeze({
     label: "逐题答案",
@@ -617,6 +630,14 @@ const DEFAULT_PAGE_MARGIN_TOP = 14;
 const DEFAULT_PAGE_MARGIN_RIGHT = 12;
 const DEFAULT_PAGE_MARGIN_BOTTOM = 14;
 const DEFAULT_PAGE_MARGIN_LEFT = 12;
+const EXAM_PAGE_LAYOUT_DEFAULTS = Object.freeze({
+  pageWidth: 420,
+  pageHeight: 297,
+  pageMarginTop: 16,
+  pageMarginRight: 16,
+  pageMarginBottom: 18,
+  pageMarginLeft: 16,
+});
 const DEFAULT_PAGE_HEADER_ENABLED = true;
 const DEFAULT_PAGE_HEADER_TEXT = "";
 const DEFAULT_WATERMARK_ENABLED = false;
@@ -624,6 +645,7 @@ const DEFAULT_WATERMARK_TEXT = "CONFIDENTIAL";
 const DEFAULT_WATERMARK_OPACITY = 0.12;
 const DEFAULT_EXPORT_BACKGROUND_SRC = "";
 const DEFAULT_EXPORT_BACKGROUND_NAME = "";
+const DEFAULT_PDF_IGNORE_BACKGROUND = false;
 const DEFAULT_PAGINATION_STRATEGY = "split-first";
 const TYPOGRAPHY_BASELINE_VERSION = "2026-04-controlled-readable-scale";
 const MAX_PERSISTED_BACKGROUND_LENGTH = 1500000;
@@ -1282,6 +1304,14 @@ const ELEMENT_STYLE_SCHEMA = Object.freeze([
     label: "Math",
     selector: ".math-block",
     fields: Object.freeze([
+      Object.freeze({
+        type: "toggle",
+        key: "showBorder",
+        label: "外框",
+        cssVar: "--element-math-show-border",
+        defaultValue: false,
+        formatValue: (value) => (value ? "开启" : "关闭"),
+      }),
       Object.freeze({ key: "paddingX", label: "Padding X", cssVar: "--element-math-padding-x", min: 0, max: 36, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "paddingY", label: "Padding Y", cssVar: "--element-math-padding-y", min: 0, max: 30, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "radius", label: "Radius", cssVar: "--element-math-radius", min: 0, max: 24, step: 1, defaultValue: 12, unit: "px", formatValue: formatPixelValue }),
@@ -1431,7 +1461,7 @@ const PAGE_STYLE_CONTROLS = [
     inputId: "pageWidthRange",
     valueId: "pageWidthValue",
     min: 148,
-    max: 240,
+    max: 420,
     defaultValue: DEFAULT_PAGE_WIDTH,
     formatValue: formatMillimeterValue,
   },
@@ -1441,7 +1471,7 @@ const PAGE_STYLE_CONTROLS = [
     inputId: "pageHeightRange",
     valueId: "pageHeightValue",
     min: 210,
-    max: 340,
+    max: 420,
     defaultValue: DEFAULT_PAGE_HEIGHT,
     formatValue: formatMillimeterValue,
   },
@@ -1620,6 +1650,13 @@ const PREVIEW_CHECK_RESULT_LIMIT = 8;
 const PREVIEW_GARBLED_CHAR_PATTERN = /[\uFFFD\uFFFC\uFFFE\uFFFF]|[ÃÂÐÑØÞðþ]{2,}|[�]{1,}/;
 const PREVIEW_SYMBOL_RUN_PATTERN = /[^\p{L}\p{N}\p{Script=Han}\s，。；：？！、“”‘’（）()《》【】\[\]—…,.!?;:'"%+\-*/=&]/u;
 const PREVIEW_REPEATED_SYMBOL_RUN_PATTERN = /([~!@#$%^&_=|<>\\\/`])\1{2,}|[·•◆■□★☆]{3,}|[(){}\[\]<>]{3,}/;
+const EXAM_PREVIEW_MIN_MARGIN_MM = 8;
+const EXAM_PREVIEW_LOW_FILL_RATIO = 0.46;
+const EXAM_PREVIEW_LAST_PAGE_LOW_FILL_RATIO = 0.28;
+const EXAM_PREVIEW_HIGH_FILL_RATIO = 0.94;
+const EXAM_PREVIEW_SECTION_RECOMMENDATION_MIN_QUESTIONS = 6;
+const EXAM_PREVIEW_CONTINUATION_WARN_COUNT = 3;
+const EXAM_PREVIEW_PAGE_ISSUE_LIMIT = 2;
 
 let cachedExportStyles = "";
 
@@ -1816,6 +1853,7 @@ function sanitizeLayoutHistorySnapshot(snapshot = {}) {
     exportBackgroundName: safeBackgroundSrc
       ? normalizeBackgroundName(snapshot.exportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME)
       : DEFAULT_EXPORT_BACKGROUND_NAME,
+    pdfIgnoreBackground: normalizeBoolean(snapshot.pdfIgnoreBackground, DEFAULT_PDF_IGNORE_BACKGROUND),
     paginationStrategy: sanitizeChoice(
       snapshot.paginationStrategy,
       PAGINATION_STRATEGIES,
@@ -3120,13 +3158,29 @@ function sanitizeChoice(value, collection, fallback) {
   return Object.prototype.hasOwnProperty.call(collection, value) ? value : fallback;
 }
 
+function getSourceModeValue(valueOrOptions) {
+  if (valueOrOptions && typeof valueOrOptions === "object") {
+    return sanitizeChoice(valueOrOptions.sourceMode ?? valueOrOptions.mode, MODE_METADATA, DEFAULT_MODE);
+  }
+
+  return sanitizeChoice(valueOrOptions, MODE_METADATA, DEFAULT_MODE);
+}
+
 function getLayoutPresetsForMode(mode) {
   const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  if (resolvedMode === EXAM_MODE) {
+    return MODE_LAYOUT_PRESETS[QUESTION_STYLE_MODE] || [];
+  }
   return MODE_LAYOUT_PRESETS[resolvedMode] || MODE_LAYOUT_PRESETS[DEFAULT_MODE] || [];
 }
 
 function getDefaultLayoutPresetForMode(mode) {
   const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  if (resolvedMode === EXAM_MODE) {
+    return DEFAULT_LAYOUT_PRESET_BY_MODE[QUESTION_STYLE_MODE]
+      || getLayoutPresetsForMode(QUESTION_STYLE_MODE)[0]?.id
+      || "";
+  }
   return DEFAULT_LAYOUT_PRESET_BY_MODE[resolvedMode] || getLayoutPresetsForMode(resolvedMode)[0]?.id || "";
 }
 
@@ -4241,11 +4295,9 @@ function getElementStyleSourceValue(source, groupId, field) {
 function getElementStyleDefaults(source = {}) {
   return ELEMENT_STYLE_SCHEMA.reduce((result, group) => {
     result[group.id] = group.fields.reduce((groupResult, field) => {
-      groupResult[field.key] = clampNumber(
+      groupResult[field.key] = normalizeElementStyleFieldValue(
+        field,
         getElementStyleSourceValue(source, group.id, field),
-        field.min,
-        field.max,
-        field.defaultValue,
       );
       return groupResult;
     }, {});
@@ -4331,8 +4383,49 @@ function getElementStyleField(groupId, fieldKey) {
   return group.fields.find((field) => field.key === fieldKey) || null;
 }
 
+function isElementStyleToggleField(field) {
+  return field?.type === "toggle";
+}
+
+function normalizeElementStyleToggleValue(value, defaultValue = false) {
+  if (value == null) {
+    return Boolean(defaultValue);
+  }
+
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "number") {
+    return value !== 0;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["1", "true", "yes", "on", "enabled"].includes(normalized)) {
+      return true;
+    }
+    if (["0", "false", "no", "off", "disabled", ""].includes(normalized)) {
+      return false;
+    }
+  }
+
+  return Boolean(value);
+}
+
+function normalizeElementStyleFieldValue(field, value) {
+  if (isElementStyleToggleField(field)) {
+    return normalizeElementStyleToggleValue(value, field.defaultValue);
+  }
+
+  return clampNumber(value, field.min, field.max, field.defaultValue);
+}
+
 function formatElementStyleCssValue(field, value) {
-  const normalizedValue = clampNumber(value, field.min, field.max, field.defaultValue);
+  const normalizedValue = normalizeElementStyleFieldValue(field, value);
+  if (isElementStyleToggleField(field)) {
+    return normalizedValue ? "1" : "0";
+  }
   return field.unit === "px" ? `${normalizedValue}px` : String(normalizedValue);
 }
 
@@ -5244,16 +5337,18 @@ function hashString(value) {
 }
 
 function resolveArticleOptions(options = {}) {
-  const mode = sanitizeChoice(options.mode, MODE_METADATA, DEFAULT_MODE);
+  const sourceMode = getSourceModeValue(options);
+  const renderMode = getRenderMode(sourceMode);
   const resolved = {
     theme: sanitizeChoice(options.theme, THEME_LABELS, DEFAULT_THEME),
-    mode,
+    sourceMode,
+    mode: renderMode,
     questionAnswerLayout: sanitizeChoice(
       options.questionAnswerLayout,
       QUESTION_ANSWER_LAYOUTS,
       DEFAULT_QUESTION_ANSWER_LAYOUT,
     ),
-    layoutPreset: sanitizeLayoutPresetForMode(options.layoutPreset, mode),
+    layoutPreset: sanitizeLayoutPresetForMode(options.layoutPreset, sourceMode),
     bodyFontFamily: sanitizeChoice(options.bodyFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_BODY_FONT_FAMILY),
     headingFontFamily: sanitizeChoice(options.headingFontFamily, FONT_FAMILY_OPTIONS, DEFAULT_HEADING_FONT_FAMILY),
     paragraphAlign: sanitizeChoice(options.paragraphAlign, PARAGRAPH_ALIGN_OPTIONS, DEFAULT_PARAGRAPH_ALIGN),
@@ -5295,7 +5390,7 @@ function buildArticleStyleAttribute(options, articleWidth) {
     `--user-line-height:${resolved.lineHeight}`,
     `--user-letter-spacing:${resolved.letterSpacing}px`,
   ].join(";");
-  const questionLayoutAttr = resolved.mode === "question"
+  const questionLayoutAttr = isQuestionLikeMode(resolved.mode)
     ? `;--question-answer-layout:${resolved.questionAnswerLayout}`
     : "";
   const widthDeclarations = articleWidth == null
@@ -5309,6 +5404,7 @@ function applyArticleStyleProperties(target, options, articleWidth) {
   const resolved = resolveArticleOptions(options);
 
   target.dataset.mode = resolved.mode;
+  target.dataset.sourceMode = resolved.sourceMode;
   target.dataset.layoutPreset = resolved.layoutPreset;
   target.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
 
@@ -5374,10 +5470,79 @@ function getArticleExportOptions(state) {
   return options;
 }
 
+function isQuestionLikeMode(mode) {
+  const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  return resolvedMode === QUESTION_STYLE_MODE || resolvedMode === EXAM_MODE;
+}
+
+function getRenderMode(mode) {
+  return isQuestionLikeMode(mode) ? QUESTION_STYLE_MODE : sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+}
+
+function buildExamPageLayout(source = {}) {
+  const rawWidth = Number(source.pageWidth);
+  const rawHeight = Number(source.pageHeight);
+  const shouldMigrateLegacyPortraitDefault = rawWidth === 297
+    && rawHeight === 420
+    && Number(source.pageMarginTop) === 16
+    && Number(source.pageMarginRight) === 16
+    && Number(source.pageMarginBottom) === 18
+    && Number(source.pageMarginLeft) === 16;
+
+  const normalizedSource = shouldMigrateLegacyPortraitDefault
+    ? {
+      ...source,
+      pageWidth: EXAM_PAGE_LAYOUT_DEFAULTS.pageWidth,
+      pageHeight: EXAM_PAGE_LAYOUT_DEFAULTS.pageHeight,
+    }
+    : source;
+
+  return {
+    pageWidth: clampNumber(normalizedSource.pageWidth, 148, 420, EXAM_PAGE_LAYOUT_DEFAULTS.pageWidth),
+    pageHeight: clampNumber(normalizedSource.pageHeight, 210, 420, EXAM_PAGE_LAYOUT_DEFAULTS.pageHeight),
+    pageMarginTop: clampNumber(normalizedSource.pageMarginTop, 0, 36, EXAM_PAGE_LAYOUT_DEFAULTS.pageMarginTop),
+    pageMarginRight: clampNumber(normalizedSource.pageMarginRight, 0, 32, EXAM_PAGE_LAYOUT_DEFAULTS.pageMarginRight),
+    pageMarginBottom: clampNumber(normalizedSource.pageMarginBottom, 0, 36, EXAM_PAGE_LAYOUT_DEFAULTS.pageMarginBottom),
+    pageMarginLeft: clampNumber(normalizedSource.pageMarginLeft, 0, 32, EXAM_PAGE_LAYOUT_DEFAULTS.pageMarginLeft),
+  };
+}
+
+function readCurrentPageLayout(state) {
+  return buildExamPageLayout({
+    pageWidth: state.pageWidth,
+    pageHeight: state.pageHeight,
+    pageMarginTop: state.pageMarginTop,
+    pageMarginRight: state.pageMarginRight,
+    pageMarginBottom: state.pageMarginBottom,
+    pageMarginLeft: state.pageMarginLeft,
+  });
+}
+
+function applyPageLayoutToState(state, layout = {}) {
+  const resolved = buildExamPageLayout(layout);
+  state.pageWidth = resolved.pageWidth;
+  state.pageHeight = resolved.pageHeight;
+  state.pageMarginTop = resolved.pageMarginTop;
+  state.pageMarginRight = resolved.pageMarginRight;
+  state.pageMarginBottom = resolved.pageMarginBottom;
+  state.pageMarginLeft = resolved.pageMarginLeft;
+}
+
+function buildStandardPageLayout(source = {}) {
+  return {
+    pageWidth: clampNumber(source.pageWidth, 148, 420, DEFAULT_PAGE_WIDTH),
+    pageHeight: clampNumber(source.pageHeight, 210, 420, DEFAULT_PAGE_HEIGHT),
+    pageMarginTop: clampNumber(source.pageMarginTop, 0, 36, DEFAULT_PAGE_MARGIN_TOP),
+    pageMarginRight: clampNumber(source.pageMarginRight, 0, 32, DEFAULT_PAGE_MARGIN_RIGHT),
+    pageMarginBottom: clampNumber(source.pageMarginBottom, 0, 36, DEFAULT_PAGE_MARGIN_BOTTOM),
+    pageMarginLeft: clampNumber(source.pageMarginLeft, 0, 32, DEFAULT_PAGE_MARGIN_LEFT),
+  };
+}
+
 function resolvePageOptions(options = {}) {
   return {
-    pageWidth: clampNumber(options.pageWidth, 148, 240, DEFAULT_PAGE_WIDTH),
-    pageHeight: clampNumber(options.pageHeight, 210, 340, DEFAULT_PAGE_HEIGHT),
+    pageWidth: clampNumber(options.pageWidth, 148, 420, DEFAULT_PAGE_WIDTH),
+    pageHeight: clampNumber(options.pageHeight, 210, 420, DEFAULT_PAGE_HEIGHT),
     pageMarginTop: clampNumber(options.pageMarginTop, 0, 36, DEFAULT_PAGE_MARGIN_TOP),
     pageMarginRight: clampNumber(options.pageMarginRight, 0, 32, DEFAULT_PAGE_MARGIN_RIGHT),
     pageMarginBottom: clampNumber(options.pageMarginBottom, 0, 36, DEFAULT_PAGE_MARGIN_BOTTOM),
@@ -5389,6 +5554,7 @@ function resolvePageOptions(options = {}) {
     watermarkOpacity: clampNumber(options.watermarkOpacity, 0, 0.24, DEFAULT_WATERMARK_OPACITY),
     exportBackgroundSrc: normalizeBackgroundSource(options.exportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC),
     exportBackgroundName: normalizeBackgroundName(options.exportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME),
+    pdfIgnoreBackground: normalizeBoolean(options.pdfIgnoreBackground, DEFAULT_PDF_IGNORE_BACKGROUND),
     paginationStrategy: sanitizeChoice(
       options.paginationStrategy,
       PAGINATION_STRATEGIES,
@@ -5412,6 +5578,7 @@ function getPageLayoutOptions(state) {
     watermarkOpacity: state.watermarkOpacity,
     exportBackgroundSrc: state.exportBackgroundSrc,
     exportBackgroundName: state.exportBackgroundName,
+    pdfIgnoreBackground: state.pdfIgnoreBackground,
     paginationStrategy: state.paginationStrategy,
   };
 }
@@ -6640,6 +6807,7 @@ function decoratePageHeaderShell(header, family, headerText, pageLabel) {
 
 function createPaginatedPage(options, pageNumber, documentTitle) {
   const resolved = getResolvedDocumentOptions(options);
+  const sourceMode = getSourceModeValue(options);
   const page = document.createElement("section");
   const frame = document.createElement("div");
   const article = document.createElement("article");
@@ -6648,6 +6816,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
 
   page.className = "page-sheet";
   page.dataset.pageNumber = String(pageNumber);
+  page.dataset.sourceMode = sourceMode;
   page.dataset.layoutPreset = resolved.layoutPreset;
   page.dataset.layoutFamily = getLayoutPresetFamilyKey(resolved.layoutPreset);
   applyPageShellStyleProperties(page, resolved);
@@ -6684,6 +6853,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
   body.className = "page-sheet-body";
   article.className = "article-canvas page-sheet-article";
   article.dataset.mode = resolved.mode;
+  article.dataset.sourceMode = sourceMode;
   article.dataset.layoutPreset = resolved.layoutPreset;
   article.dataset.layoutFamily = page.dataset.layoutFamily;
   article.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
@@ -7287,11 +7457,19 @@ function expandKnowledgeGroupForPagination(group) {
   }
 
   const fragments = [];
-  const subtitle = group.querySelector(":scope > .knowledge-subtitle");
-  const content = group.querySelector(":scope > .knowledge-group-content");
+  const family = group.dataset?.layoutFamily || "";
+  const useDistinctSelectors = isDistinctKnowledgeFamily(family);
+  const subtitle = useDistinctSelectors
+    ? group.querySelector(".knowledge-subtitle")
+    : group.querySelector(":scope > .knowledge-subtitle");
+  const content = useDistinctSelectors
+    ? group.querySelector(".knowledge-group-content")
+    : group.querySelector(":scope > .knowledge-group-content");
 
   if (subtitle) {
-    fragments.push(cloneBlockWithClasses(subtitle, ["knowledge-cluster-fragment", "knowledge-group-fragment-title"]));
+    const subtitleFragment = cloneBlockWithClasses(subtitle, ["knowledge-cluster-fragment", "knowledge-group-fragment-title"]);
+    copyKnowledgeFragmentMetadata(subtitleFragment, group, subtitle);
+    fragments.push(subtitleFragment);
   }
 
   if (content) {
@@ -7300,6 +7478,7 @@ function expandKnowledgeGroupForPagination(group) {
     contentBlocks.forEach((child, index) => {
       const fragment = document.createElement("div");
       fragment.className = "knowledge-group-content knowledge-group-content-fragment knowledge-cluster-fragment";
+      copyKnowledgeFragmentMetadata(fragment, group, content);
       if (index === contentBlocks.length - 1) {
         fragment.classList.add("knowledge-group-fragment-end");
       }
@@ -7317,11 +7496,18 @@ function expandKnowledgeClusterForPagination(cluster) {
   }
 
   const fragments = [];
-  const header = cluster.querySelector(":scope > .knowledge-cluster-header");
-  const body = cluster.querySelector(":scope > .knowledge-cluster-body");
+  const family = cluster.dataset?.layoutFamily || "";
+  const useDistinctSelectors = isDistinctKnowledgeFamily(family);
+  const header = useDistinctSelectors
+    ? cluster.querySelector(".knowledge-cluster-header")
+    : cluster.querySelector(":scope > .knowledge-cluster-header");
+  const body = useDistinctSelectors
+    ? cluster.querySelector(".knowledge-cluster-body")
+    : cluster.querySelector(":scope > .knowledge-cluster-body");
 
   if (header) {
     const headerFragment = cloneBlockWithClasses(header, ["knowledge-cluster-fragment", "knowledge-cluster-fragment-header"]);
+    copyKnowledgeFragmentMetadata(headerFragment, cluster, header);
     if (cluster.dataset?.cardLayoutKey) {
       headerFragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
     }
@@ -7342,6 +7528,7 @@ function expandKnowledgeClusterForPagination(cluster) {
 
       const fragment = cloneBlockWithClasses(child, ["knowledge-cluster-fragment"]);
       if (fragment) {
+        copyKnowledgeFragmentMetadata(fragment, cluster, child);
         if (cluster.dataset?.cardLayoutKey) {
           fragment.dataset.cardLayoutKey = cluster.dataset.cardLayoutKey;
         }
@@ -7690,7 +7877,20 @@ function expandQuestionBodyListForPagination(list) {
   });
 
   flushRange(items.length);
-  return fragments.length ? fragments : [list.cloneNode(true)];
+  if (fragments.length) {
+    return fragments;
+  }
+
+  if (items.length > 1) {
+    return items.map((_, itemIndex) => createPaginatedListSlice(
+      list,
+      itemIndex,
+      1,
+      itemIndex === items.length - 1,
+    ));
+  }
+
+  return [list.cloneNode(true)];
 }
 
 function getQuestionPaginationContentSlices(block) {
@@ -7945,6 +8145,7 @@ function collectPaginatedBlocks(sourceRoot) {
 
 function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   const resolved = getResolvedDocumentOptions(options);
+  const sourceMode = getSourceModeValue(options);
   const pageMetrics = getPageMetrics(resolved);
   const workbench = getPageLayoutWorkbench();
   const measurementRoot = document.createElement("div");
@@ -7963,11 +8164,13 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   workbench.innerHTML = "";
   measurementRoot.className = "live-preview-canvas";
   measurementRoot.dataset.mode = resolved.mode;
+  measurementRoot.dataset.sourceMode = sourceMode;
   measurementRoot.dataset.layoutPreset = resolved.layoutPreset;
   measurementRoot.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
   workbench.appendChild(measurementRoot);
   preview.className = "live-preview-canvas page-preview";
   preview.dataset.mode = resolved.mode;
+  preview.dataset.sourceMode = sourceMode;
   preview.dataset.layoutPreset = resolved.layoutPreset;
   preview.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
   applyPageBackgroundStyleProperties(preview, resolved);
@@ -10635,7 +10838,398 @@ function collectPreviewLocatorEntries(root) {
   return fallbackEntries.slice(0, PREVIEW_LOCATOR_FALLBACK_LIMIT);
 }
 
-function collectPreviewLayoutDiagnostics(root) {
+function getPreviewBlockId(element) {
+  return String(
+    element?.dataset?.mdBlockId
+    || element?.closest?.("[data-md-block-id]")?.dataset?.mdBlockId
+    || "",
+  );
+}
+
+function isMeaningfulPreviewElement(element) {
+  if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+    return false;
+  }
+
+  if (element.classList?.contains("manual-page-break")) {
+    return false;
+  }
+
+  const text = String(element.textContent || "").replace(/\s+/g, "").trim();
+  return Boolean(
+    text
+    || element.querySelector?.("img, table, pre, figure, .math-block, .mindmap-card"),
+  );
+}
+
+function getExamPreviewPages(root) {
+  if (!root || typeof root.querySelectorAll !== "function") {
+    return [];
+  }
+
+  return Array.from(root.querySelectorAll(".page-sheet"));
+}
+
+function getExamPreviewPageArticle(page) {
+  return page?.querySelector?.(":scope > .page-sheet-frame > .page-sheet-body > .page-sheet-article") || null;
+}
+
+function getExamPreviewPageAnchorBlockId(page) {
+  const article = getExamPreviewPageArticle(page);
+  return getPreviewBlockId(article?.querySelector?.("[data-md-block-id]"));
+}
+
+function getExamPreviewMeaningfulChildren(article) {
+  return Array.from(article?.children || []).filter(isMeaningfulPreviewElement);
+}
+
+function hasExamContinuationMarker(element) {
+  if (!element?.classList) {
+    return false;
+  }
+
+  return element.classList.contains("question-pagination-fragment-continuation")
+    || element.classList.contains("article-list-continuation")
+    || element.classList.contains("article-paragraph-continuation")
+    || element.classList.contains("question-answer-box-continuation")
+    || element.classList.contains("question-answer-box-row-continuation");
+}
+
+function getExamPreviewPageUtilization(article) {
+  if (!article?.getBoundingClientRect) {
+    return 0;
+  }
+
+  const blocks = getExamPreviewMeaningfulChildren(article);
+  if (!blocks.length) {
+    return 0;
+  }
+
+  const articleRect = article.getBoundingClientRect();
+  if (!articleRect.height) {
+    return 0;
+  }
+
+  let top = Number.POSITIVE_INFINITY;
+  let bottom = Number.NEGATIVE_INFINITY;
+
+  blocks.forEach((block) => {
+    const rect = block.getBoundingClientRect();
+
+    if (rect.height < 2) {
+      return;
+    }
+
+    top = Math.min(top, rect.top);
+    bottom = Math.max(bottom, rect.bottom);
+  });
+
+  if (!Number.isFinite(top) || !Number.isFinite(bottom) || bottom <= top) {
+    return 0;
+  }
+
+  return clampNumber((bottom - top) / articleRect.height, 0, 1.2, 0);
+}
+
+function normalizeExamQuestionNumber(text) {
+  const rawNumber = getQuestionNumberFromText(text);
+
+  if (!rawNumber) {
+    return "";
+  }
+
+  return normalizeQuestionBodyNumberText(rawNumber);
+}
+
+function collectExamStemQuestionEntries(root) {
+  if (!root?.children) {
+    return [];
+  }
+
+  const entries = [];
+
+  Array.from(root.children).forEach((child) => {
+    let title = null;
+
+    if (child.classList?.contains("question-card")) {
+      title = child.querySelector(":scope > .question-panel-stem > .question-card-title, :scope .question-card-title");
+    } else if (child.classList?.contains("question-body-title")) {
+      title = child;
+    }
+
+    if (!title) {
+      return;
+    }
+
+    const normalizedNumber = normalizeExamQuestionNumber(title.textContent || "");
+
+    if (!normalizedNumber) {
+      return;
+    }
+
+    entries.push({
+      blockId: getPreviewBlockId(title),
+      title: trimPreviewWorkbenchText(title.textContent || "", 24),
+      normalizedNumber,
+      numericValue: /^\d+$/.test(normalizedNumber) ? Number(normalizedNumber) : Number.NaN,
+    });
+  });
+
+  return entries;
+}
+
+function filterManualLayoutHistoryEntries(entries) {
+  return Array.isArray(entries)
+    ? entries.filter((entry) => entry && entry.source === "manual")
+    : [];
+}
+
+function countExamListStemQuestions(root) {
+  if (!root?.children || !root.classList?.contains("question-body-layout")) {
+    return 0;
+  }
+
+  let count = 0;
+
+  Array.from(root.children).forEach((child) => {
+    if (!["OL", "UL"].includes(child.tagName || "")) {
+      return;
+    }
+
+    count += Array.from(child.children || []).filter((item) => item.tagName === "LI").length;
+  });
+
+  return count;
+}
+
+function countExamStemQuestions(root) {
+  if (!root?.children) {
+    return 0;
+  }
+
+  const questionCardCount = Array.from(root.children).filter((child) => child.classList?.contains("question-card")).length;
+
+  if (questionCardCount) {
+    return questionCardCount;
+  }
+
+  return collectExamStemQuestionEntries(root).length + countExamListStemQuestions(root);
+}
+
+function collectExamPageSettingDiagnostics(root, options = {}) {
+  const diagnostics = [];
+  const previewRoot = options.previewRoot;
+  const pages = getExamPreviewPages(previewRoot);
+  const pageCount = pages.length;
+  const pageOptions = options.pageOptions || {};
+  const firstBlockId = getPreviewBlockId(root?.querySelector?.("[data-md-block-id]"))
+    || getExamPreviewPageAnchorBlockId(pages[0]);
+
+  if (pageCount > 1 && pageOptions.pageHeaderEnabled === false) {
+    diagnostics.push({
+      severity: "warn",
+      blockId: firstBlockId,
+      title: "多页试卷未显示页眉或页码",
+      detail: `当前预览共 ${pageCount} 页，建议保留页眉或页码，便于监考分发、装订和核页。`,
+    });
+  } else if (pageCount > 1 && !String(pageOptions.pageHeaderText || "").trim()) {
+    diagnostics.push({
+      severity: "info",
+      blockId: firstBlockId,
+      title: "多页试卷页眉信息偏弱",
+      detail: "可以在页眉补充科目、卷别或班级信息，翻页后更容易辨认。 ",
+    });
+  }
+
+  const marginEntries = [
+    { label: "上", value: Number(pageOptions.pageMarginTop) },
+    { label: "右", value: Number(pageOptions.pageMarginRight) },
+    { label: "下", value: Number(pageOptions.pageMarginBottom) },
+    { label: "左", value: Number(pageOptions.pageMarginLeft) },
+  ].filter((entry) => Number.isFinite(entry.value));
+
+  if (marginEntries.length) {
+    const narrowest = marginEntries.reduce((minEntry, entry) => (
+      entry.value < minEntry.value ? entry : minEntry
+    ));
+
+    if (narrowest.value < EXAM_PREVIEW_MIN_MARGIN_MM) {
+      diagnostics.push({
+        severity: "warn",
+        blockId: firstBlockId,
+        title: "试卷页边距偏窄",
+        detail: `当前${narrowest.label}边距约 ${roundNumber(narrowest.value, 1)}mm，打印和装订时容易贴边，建议至少保留 ${EXAM_PREVIEW_MIN_MARGIN_MM} 到 10mm。`,
+      });
+    }
+  }
+
+  return diagnostics;
+}
+
+function collectExamQuestionStructureDiagnostics(root, options = {}) {
+  const diagnostics = [];
+  const questionCount = countExamStemQuestions(root);
+  const questionEntries = collectExamStemQuestionEntries(root);
+  const questionTypeHeadingCount = hasQuestionTypeHeadings(root)
+    ? Array.from(root.querySelectorAll(":scope > h2, :scope > h3, :scope > h4")).filter(isQuestionTypeHeading).length
+    : 0;
+  const firstBlockId = getPreviewBlockId(root?.querySelector?.("[data-md-block-id]"));
+
+  if (questionCount >= EXAM_PREVIEW_SECTION_RECOMMENDATION_MIN_QUESTIONS && questionTypeHeadingCount === 0) {
+    diagnostics.push({
+      severity: "info",
+      blockId: firstBlockId,
+      title: "试卷缺少题型分段标题",
+      detail: "题量较多时，建议按单选、多选、简答等题型分段，预览和打印都会更清楚。",
+    });
+  }
+
+  let previousNumber = null;
+  let numberIssueCount = 0;
+
+  for (const entry of questionEntries) {
+    if (!Number.isFinite(entry.numericValue)) {
+      continue;
+    }
+
+    if (previousNumber != null) {
+      if (entry.numericValue === previousNumber) {
+        diagnostics.push({
+          severity: "warn",
+          blockId: entry.blockId,
+          title: "题号出现重复",
+          detail: `当前题号仍是 ${entry.normalizedNumber}，建议核对是否重复排题。`,
+        });
+        numberIssueCount += 1;
+      } else if (entry.numericValue > previousNumber + 1) {
+        diagnostics.push({
+          severity: "warn",
+          blockId: entry.blockId,
+          title: "题号存在跳号",
+          detail: `题号从 ${previousNumber} 跳到了 ${entry.normalizedNumber}，建议核对是否漏题或顺序未排齐。`,
+        });
+        numberIssueCount += 1;
+      } else if (entry.numericValue < previousNumber) {
+        diagnostics.push({
+          severity: "info",
+          blockId: entry.blockId,
+          title: "题号顺序出现回跳",
+          detail: `这一题显示为 ${entry.normalizedNumber}，比前一题的 ${previousNumber} 更小，建议确认是否为新卷段或排版错位。`,
+        });
+        numberIssueCount += 1;
+      }
+    }
+
+    previousNumber = entry.numericValue;
+
+    if (numberIssueCount >= 2) {
+      break;
+    }
+  }
+
+  if (options.questionAnswerLayout === QUESTION_ANSWER_LAYOUT_SEPARATED) {
+    const answerItems = Array.from(root.querySelectorAll(":scope > .question-answer-item")).length;
+    const answerBankBlockId = getPreviewBlockId(root.querySelector(":scope > .question-answer-bank-title")) || firstBlockId;
+
+    if (questionCount >= 2 && answerItems > 0 && answerItems !== questionCount) {
+      diagnostics.push({
+        severity: answerItems < questionCount ? "warn" : "info",
+        blockId: answerBankBlockId,
+        title: answerItems < questionCount ? "答案汇总题数少于题目数" : "答案汇总题数多于题目数",
+        detail: `题目区识别到 ${questionCount} 题，答案区识别到 ${answerItems} 题，建议核对是否漏题、重题或分节拆分不完整。`,
+      });
+    }
+  }
+
+  return diagnostics;
+}
+
+function collectExamPaginationDiagnostics(root, options = {}) {
+  const previewRoot = options.previewRoot;
+  const pages = getExamPreviewPages(previewRoot);
+
+  if (!pages.length) {
+    return [];
+  }
+
+  const diagnostics = [];
+  const fallbackBlockId = getPreviewBlockId(root?.querySelector?.("[data-md-block-id]"));
+  let continuationIssueCount = 0;
+  let pageDensityIssueCount = 0;
+
+  for (let index = 0; index < pages.length; index += 1) {
+    const page = pages[index];
+    const article = getExamPreviewPageArticle(page);
+    const pageNumber = index + 1;
+    const meaningfulChildren = getExamPreviewMeaningfulChildren(article);
+    const pageBlockId = getExamPreviewPageAnchorBlockId(page) || fallbackBlockId;
+
+    if (!article || !meaningfulChildren.length) {
+      continue;
+    }
+
+    const firstChild = meaningfulChildren[0];
+    if (
+      pageNumber > 1
+      && hasExamContinuationMarker(firstChild)
+      && continuationIssueCount < EXAM_PREVIEW_PAGE_ISSUE_LIMIT
+    ) {
+      diagnostics.push({
+        severity: "info",
+        blockId: pageBlockId,
+        title: `第${pageNumber}页以续题内容开头`,
+        detail: "试卷模式更适合让新页从新题或新题型开始，可考虑提前分页或略微压缩上一页间距。",
+      });
+      continuationIssueCount += 1;
+    }
+
+    const continuationCount = meaningfulChildren.filter(hasExamContinuationMarker).length;
+    if (continuationCount >= EXAM_PREVIEW_CONTINUATION_WARN_COUNT && continuationIssueCount < EXAM_PREVIEW_PAGE_ISSUE_LIMIT + 1) {
+      diagnostics.push({
+        severity: "warn",
+        blockId: pageBlockId,
+        title: `第${pageNumber}页碎片续排偏多`,
+        detail: `这一页有 ${continuationCount} 处续题或续段，阅读时容易断节，建议调大整块分页优先级或手动分页。`,
+      });
+      continuationIssueCount += 1;
+    }
+
+    const utilization = getExamPreviewPageUtilization(article);
+    const fillPercent = Math.round(utilization * 100);
+    const isLastPage = pageNumber === pages.length;
+    const lowThreshold = isLastPage ? EXAM_PREVIEW_LAST_PAGE_LOW_FILL_RATIO : EXAM_PREVIEW_LOW_FILL_RATIO;
+
+    if (utilization > EXAM_PREVIEW_HIGH_FILL_RATIO && pageDensityIssueCount < EXAM_PREVIEW_PAGE_ISSUE_LIMIT) {
+      diagnostics.push({
+        severity: "warn",
+        blockId: pageBlockId,
+        title: `第${pageNumber}页内容过满`,
+        detail: `当前页内容占比约 ${fillPercent}% ，打印容错会比较低，建议略缩内容或提前分题。`,
+      });
+      pageDensityIssueCount += 1;
+    } else if (pages.length > 1 && utilization < lowThreshold && pageDensityIssueCount < EXAM_PREVIEW_PAGE_ISSUE_LIMIT) {
+      diagnostics.push({
+        severity: "info",
+        blockId: pageBlockId,
+        title: `第${pageNumber}页留白偏多`,
+        detail: `当前页内容占比约 ${fillPercent}% ，可考虑合并到前页，或把下一题提前到这一页开头。`,
+      });
+      pageDensityIssueCount += 1;
+    }
+  }
+
+  return diagnostics;
+}
+
+function collectExamPreviewDiagnostics(root, options = {}) {
+  return [
+    ...collectExamPageSettingDiagnostics(root, options),
+    ...collectExamQuestionStructureDiagnostics(root, options),
+    ...collectExamPaginationDiagnostics(root, options),
+  ];
+}
+
+function collectPreviewLayoutDiagnostics(root, options = {}) {
   const diagnostics = [];
   const primaryBlocks = collectPrimaryPreviewBlocks(root);
   const headings = primaryBlocks.filter((block) => /^H[1-4]$/i.test(String(block.tagName || "")));
@@ -10748,6 +11342,10 @@ function collectPreviewLayoutDiagnostics(root) {
       detail: "当前块可能需要缩短内容、减小字号，或拆开排版。",
     });
   });
+
+  if (sanitizeChoice(options.mode, MODE_METADATA, DEFAULT_MODE) === EXAM_MODE) {
+    diagnostics.push(...collectExamPreviewDiagnostics(root, options));
+  }
 
   return diagnostics
     .sort((left, right) => {
@@ -11259,7 +11857,7 @@ function buildExportHtml(articleHtml, title, options = {}) {
   <style>${customFontCss ? `${customFontCss}\n` : ""}${getExportStyles()}</style>
 </head>
 <body data-theme="${escapeAttribute(resolved.theme)}">
-  <main class="article-export article-canvas" data-mode="${escapeAttribute(resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildArticleStyleAttribute(resolved))}">
+  <main class="article-export article-canvas" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildArticleStyleAttribute(resolved))}">
     ${articleHtml}
   </main>
 </body>
@@ -11336,7 +11934,7 @@ function buildPagedExportHtml(pagesHtml, title, options = {}) {
   <style>${pageCss}</style>
 </head>
 <body data-theme="${escapeAttribute(resolved.theme)}">
-  <main class="live-preview-canvas page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
+  <main class="live-preview-canvas page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
     ${pagesHtml}
   </main>
 </body>
@@ -12130,7 +12728,7 @@ function compactWordExportArticle(article, options = {}) {
 
   compactWordListLayout(article);
 
-  if (resolved.mode === "question") {
+  if (isQuestionLikeMode(resolved.mode)) {
     compactWordQuestionLayout(article);
   }
 
@@ -12434,6 +13032,9 @@ async function requestNativePdfExport(html, fileName, options = {}) {
   const timeoutId = controller
     ? window.setTimeout(() => controller.abort(), timeoutMs)
     : 0;
+  const currentOrigin = typeof window !== "undefined" && window.location
+    ? `${window.location.protocol}//${window.location.host}`
+    : "";
 
   try {
     const response = await fetch(PDF_EXPORT_API_URL, {
@@ -12470,9 +13071,16 @@ async function requestNativePdfExport(html, fileName, options = {}) {
     };
   } catch (error) {
     const aborted = error && (error.name === "AbortError" || /timeout/i.test(String(error.message || "")));
+    const failedToFetch = error && /failed to fetch|load failed|networkerror/i.test(String(error.message || ""));
 
     if (aborted) {
       throw new Error("PDF 导出超时，请重试；如果连续超时，通常是当前内容过大或服务端卡住了。");
+    }
+
+    if (failedToFetch) {
+      throw new Error(
+        `无法连接到导出服务。请确认当前页面是通过 http://127.0.0.1:3210 打开的，并且已经登录；如果你现在是从 ${currentOrigin || "其他地址"} 打开的，就会出现这个错误。`,
+      );
     }
 
     throw error;
@@ -12489,6 +13097,9 @@ async function requestNativePngZipExport(html, fileName, options = {}) {
   const timeoutId = controller
     ? window.setTimeout(() => controller.abort(), timeoutMs)
     : 0;
+  const currentOrigin = typeof window !== "undefined" && window.location
+    ? `${window.location.protocol}//${window.location.host}`
+    : "";
 
   try {
     const response = await fetch(PNG_ZIP_EXPORT_API_URL, {
@@ -12526,9 +13137,16 @@ async function requestNativePngZipExport(html, fileName, options = {}) {
     };
   } catch (error) {
     const aborted = error && (error.name === "AbortError" || /timeout/i.test(String(error.message || "")));
+    const failedToFetch = error && /failed to fetch|load failed|networkerror/i.test(String(error.message || ""));
 
     if (aborted) {
       throw new Error("PNG ZIP 导出超时，请重试；如果持续超时，通常是当前内容较大或导出服务卡住了。");
+    }
+
+    if (failedToFetch) {
+      throw new Error(
+        `无法连接到导出服务。请确认当前页面是通过 http://127.0.0.1:3210 打开的，并且已经登录；如果你现在是从 ${currentOrigin || "其他地址"} 打开的，就会出现这个错误。`,
+      );
     }
 
     throw error;
@@ -12868,6 +13486,355 @@ function createKnowledgeGroup(subtitle = null) {
   return { group, content };
 }
 
+const DISTINCT_KNOWLEDGE_GROUP_VARIANTS = Object.freeze({
+  "obsidian-vault": Object.freeze(["keystone", "ledger", "facet"]),
+  "chrome-matrix": Object.freeze(["command", "cell", "cell", "wide"]),
+  "museum-catalog": Object.freeze(["placard", "ticket", "archive"]),
+  "atelier-board": Object.freeze(["drawing", "detail", "measure"]),
+  "abyss-chart": Object.freeze(["beacon", "route", "current"]),
+  "prism-glass": Object.freeze(["pane", "shard", "bloom"]),
+  "velvet-theater": Object.freeze(["prologue", "act", "encore"]),
+  "neon-circuit": Object.freeze(["bus", "chip", "signal", "relay"]),
+  "solar-folio": Object.freeze(["crown", "folio", "orbit"]),
+  "astral-orbit": Object.freeze(["nexus", "star", "arc"]),
+});
+
+function wrapElementWithClass(element, tagName, className) {
+  if (!element || !element.parentElement) {
+    return null;
+  }
+
+  const selectorClass = String(className || "").trim().split(/\s+/)[0];
+  if (selectorClass && element.parentElement.classList.contains(selectorClass)) {
+    return element.parentElement;
+  }
+
+  const wrapper = document.createElement(tagName);
+  wrapper.className = className;
+  element.parentElement.insertBefore(wrapper, element);
+  wrapper.appendChild(element);
+  return wrapper;
+}
+
+function ensureElementTextSpan(element, className) {
+  if (!element) {
+    return null;
+  }
+
+  const selectorClass = String(className || "").trim().split(/\s+/)[0];
+  const existing = selectorClass
+    ? element.querySelector(`:scope > .${selectorClass}`)
+    : null;
+
+  if (existing) {
+    return existing;
+  }
+
+  const span = document.createElement("span");
+  span.className = className;
+
+  while (element.firstChild) {
+    span.appendChild(element.firstChild);
+  }
+
+  element.appendChild(span);
+  return span;
+}
+
+function getKnowledgeGroupVariant(family, index) {
+  const variants = DISTINCT_KNOWLEDGE_GROUP_VARIANTS[family];
+  if (!variants || !variants.length) {
+    return "default";
+  }
+  return variants[index % variants.length];
+}
+
+function formatKnowledgeOrderLabel(index, prefix = "") {
+  return `${prefix}${String(index + 1).padStart(2, "0")}`;
+}
+
+function getKnowledgeClusterBadgeLabel(family, clusterIndex) {
+  if (family === "obsidian-vault") return formatKnowledgeOrderLabel(clusterIndex, "VX-");
+  if (family === "chrome-matrix") return formatKnowledgeOrderLabel(clusterIndex, "MX-");
+  if (family === "museum-catalog") return formatKnowledgeOrderLabel(clusterIndex, "CAT ");
+  if (family === "atelier-board") return formatKnowledgeOrderLabel(clusterIndex, "AX-");
+  if (family === "abyss-chart") return formatKnowledgeOrderLabel(clusterIndex, "DEP ");
+  if (family === "prism-glass") return formatKnowledgeOrderLabel(clusterIndex, "PR-");
+  if (family === "velvet-theater") return formatKnowledgeOrderLabel(clusterIndex, "ACT ");
+  if (family === "neon-circuit") return formatKnowledgeOrderLabel(clusterIndex, "NT-");
+  if (family === "solar-folio") return formatKnowledgeOrderLabel(clusterIndex, "SOL ");
+  if (family === "astral-orbit") return formatKnowledgeOrderLabel(clusterIndex, "OR-");
+  return formatKnowledgeOrderLabel(clusterIndex);
+}
+
+function getKnowledgeGroupChipLabel(family, groupIndex) {
+  if (family === "obsidian-vault") return formatKnowledgeOrderLabel(groupIndex, "V-");
+  if (family === "chrome-matrix") return formatKnowledgeOrderLabel(groupIndex, "SYS-");
+  if (family === "museum-catalog") return formatKnowledgeOrderLabel(groupIndex, "#");
+  if (family === "atelier-board") return formatKnowledgeOrderLabel(groupIndex, "D-");
+  if (family === "abyss-chart") return formatKnowledgeOrderLabel(groupIndex, "DEP-");
+  if (family === "prism-glass") return formatKnowledgeOrderLabel(groupIndex, "P-");
+  if (family === "velvet-theater") return formatKnowledgeOrderLabel(groupIndex, "ACT-");
+  if (family === "neon-circuit") return formatKnowledgeOrderLabel(groupIndex, "N-");
+  if (family === "solar-folio") return formatKnowledgeOrderLabel(groupIndex, "SOL-");
+  if (family === "astral-orbit") return formatKnowledgeOrderLabel(groupIndex, "OR-");
+  return formatKnowledgeOrderLabel(groupIndex);
+}
+
+function getDistinctFamilyOrderLabel(family, index) {
+  if (family === "obsidian-vault") return formatKnowledgeOrderLabel(index, "VX-");
+  if (family === "chrome-matrix") return formatKnowledgeOrderLabel(index, "MX-");
+  if (family === "museum-catalog") return formatKnowledgeOrderLabel(index, "CAT-");
+  if (family === "atelier-board") return formatKnowledgeOrderLabel(index, "AX-");
+  if (family === "abyss-chart") return formatKnowledgeOrderLabel(index, "SEA-");
+  if (family === "prism-glass") return formatKnowledgeOrderLabel(index, "PR-");
+  if (family === "velvet-theater") return formatKnowledgeOrderLabel(index, "ACT-");
+  if (family === "neon-circuit") return formatKnowledgeOrderLabel(index, "NT-");
+  if (family === "solar-folio") return formatKnowledgeOrderLabel(index, "SOL-");
+  if (family === "astral-orbit") return formatKnowledgeOrderLabel(index, "OR-");
+  return formatKnowledgeOrderLabel(index);
+}
+
+function decorateKnowledgeTitleShell(title, family, clusterIndex) {
+  if (!title || !family) {
+    return null;
+  }
+
+  title.classList.add(`knowledge-cluster-title-family-${family}`);
+  ensureElementTextSpan(title, "knowledge-cluster-title-text");
+  const shell = wrapElementWithClass(title, "div", `knowledge-cluster-title-shell knowledge-cluster-title-shell-${family}`);
+
+  if (!shell) {
+    return null;
+  }
+
+  shell.dataset.layoutFamily = family;
+  shell.dataset.knowledgeClusterOrder = String(clusterIndex + 1);
+  shell.classList.add("knowledge-cluster-title-shell-distinct");
+
+  const badge = ensureDirectChild(shell, "span", `knowledge-title-mark knowledge-title-mark-${family}`, {
+    ariaHidden: true,
+    prepend: true,
+  });
+  const meta = ensureDirectChild(shell, "span", `knowledge-title-meta knowledge-title-meta-${family}`, {
+    ariaHidden: true,
+  });
+
+  if (badge) {
+    if (family === "obsidian-vault") badge.textContent = "VX";
+    else if (family === "chrome-matrix") badge.textContent = "MX";
+    else if (family === "museum-catalog") badge.textContent = "CAT";
+    else if (family === "atelier-board") badge.textContent = "AX";
+    else if (family === "abyss-chart") badge.textContent = "SEA";
+    else if (family === "prism-glass") badge.textContent = "PR";
+    else if (family === "velvet-theater") badge.textContent = "ACT";
+    else if (family === "neon-circuit") badge.textContent = "NT";
+    else if (family === "solar-folio") badge.textContent = "SOL";
+    else if (family === "astral-orbit") badge.textContent = "OR";
+    else badge.textContent = "•";
+  }
+
+  if (meta) {
+    meta.textContent = getKnowledgeClusterBadgeLabel(family, clusterIndex);
+  }
+
+  if (family === "chrome-matrix") {
+    const rail = ensureDirectChild(shell, "span", "knowledge-title-rail knowledge-title-rail-chrome", {
+      ariaHidden: true,
+      prepend: true,
+    });
+    rail?.classList.add("knowledge-title-rail-distinct");
+  } else if (family === "museum-catalog") {
+    ensureDirectChild(shell, "span", "knowledge-title-tag-hole knowledge-title-tag-hole-museum", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "atelier-board") {
+    ensureDirectChild(shell, "span", "knowledge-title-axis knowledge-title-axis-atelier", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "abyss-chart") {
+    ensureDirectChild(shell, "span", "knowledge-title-sonar knowledge-title-sonar-abyss", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "prism-glass") {
+    ensureDirectChild(shell, "span", "knowledge-title-prism knowledge-title-prism-glass", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "velvet-theater") {
+    ensureDirectChild(shell, "span", "knowledge-title-curtain knowledge-title-curtain-velvet", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "neon-circuit") {
+    ensureDirectChild(shell, "span", "knowledge-title-bus knowledge-title-bus-neon", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "solar-folio") {
+    ensureDirectChild(shell, "span", "knowledge-title-halo knowledge-title-halo-solar", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  } else if (family === "astral-orbit") {
+    ensureDirectChild(shell, "span", "knowledge-title-orbit knowledge-title-orbit-astral", {
+      ariaHidden: true,
+      prepend: true,
+    });
+  }
+
+  return shell;
+}
+
+function decorateQuestionTitleShell(card, family) {
+  if (!card || !family) {
+    return;
+  }
+
+  const title = card.querySelector(":scope .question-card-title");
+  if (!title) {
+    return;
+  }
+
+  title.classList.add(`question-card-title-family-${family}`);
+  ensureElementTextSpan(title, "question-card-title-text");
+  const shell = wrapElementWithClass(title, "div", `question-card-title-shell question-card-title-shell-${family}`);
+
+  if (!shell) {
+    return;
+  }
+
+  const order = Number.parseInt(card.dataset.questionIndex || "", 10) || 1;
+  shell.dataset.layoutFamily = family;
+  shell.dataset.questionOrder = String(order);
+  shell.classList.add("question-card-title-shell-distinct");
+
+  const badge = ensureDirectChild(shell, "span", `question-title-mark question-title-mark-${family}`, {
+    ariaHidden: true,
+    prepend: true,
+  });
+  const meta = ensureDirectChild(shell, "span", `question-title-meta question-title-meta-${family}`, {
+    ariaHidden: true,
+  });
+
+  if (badge) {
+    if (family === "obsidian-vault") badge.textContent = "题";
+    else if (family === "chrome-matrix") badge.textContent = "Q";
+    else if (family === "museum-catalog") badge.textContent = "注";
+    else if (family === "atelier-board") badge.textContent = "式";
+    else if (family === "abyss-chart") badge.textContent = "解";
+    else if (family === "prism-glass") badge.textContent = "析";
+    else if (family === "velvet-theater") badge.textContent = "幕";
+    else if (family === "neon-circuit") badge.textContent = "算";
+    else if (family === "solar-folio") badge.textContent = "曜";
+    else if (family === "astral-orbit") badge.textContent = "轨";
+    else badge.textContent = "题";
+  }
+
+  if (meta) {
+    meta.textContent = getDistinctFamilyOrderLabel(family, order - 1);
+  }
+}
+
+function decorateKnowledgeGroupShell(group, family, groupIndex) {
+  if (!group || !family) {
+    return;
+  }
+
+  const variant = getKnowledgeGroupVariant(family, groupIndex);
+  group.dataset.layoutFamily = family;
+  group.dataset.knowledgeGroupOrder = String(groupIndex + 1);
+  group.dataset.knowledgeGroupVariant = variant;
+  group.classList.add(
+    "knowledge-group-distinct",
+    `knowledge-group-family-${family}`,
+    `knowledge-group-variant-${variant}`,
+  );
+
+  const subtitle = group.querySelector(":scope > .knowledge-subtitle");
+  const content = group.querySelector(":scope > .knowledge-group-content");
+
+  if (subtitle) {
+    subtitle.dataset.layoutFamily = family;
+    subtitle.dataset.knowledgeGroupOrder = String(groupIndex + 1);
+    subtitle.dataset.knowledgeGroupVariant = variant;
+    subtitle.classList.add(`knowledge-subtitle-family-${family}`);
+    ensureElementTextSpan(subtitle, "knowledge-subtitle-text");
+    const chip = ensureDirectChild(subtitle, "span", `knowledge-subtitle-chip knowledge-subtitle-chip-${family}`, {
+      ariaHidden: true,
+      prepend: true,
+    });
+    if (chip) {
+      chip.textContent = getKnowledgeGroupChipLabel(family, groupIndex);
+    }
+  }
+
+  if (content) {
+    content.dataset.layoutFamily = family;
+    content.dataset.knowledgeGroupOrder = String(groupIndex + 1);
+    content.dataset.knowledgeGroupVariant = variant;
+    content.classList.add(`knowledge-group-content-family-${family}`);
+  }
+}
+
+function copyKnowledgeFragmentMetadata(target, ...sources) {
+  if (!target || !target.classList) {
+    return;
+  }
+
+  const classNames = new Set();
+  sources.forEach((source) => {
+    if (!source) {
+      return;
+    }
+
+    if (source.dataset) {
+      if (source.dataset.layoutFamily && !target.dataset.layoutFamily) {
+        target.dataset.layoutFamily = source.dataset.layoutFamily;
+      }
+      if (source.dataset.knowledgeGroupOrder && !target.dataset.knowledgeGroupOrder) {
+        target.dataset.knowledgeGroupOrder = source.dataset.knowledgeGroupOrder;
+      }
+      if (source.dataset.knowledgeGroupVariant && !target.dataset.knowledgeGroupVariant) {
+        target.dataset.knowledgeGroupVariant = source.dataset.knowledgeGroupVariant;
+      }
+      if (source.dataset.knowledgeClusterOrder && !target.dataset.knowledgeClusterOrder) {
+        target.dataset.knowledgeClusterOrder = source.dataset.knowledgeClusterOrder;
+      }
+    }
+
+    if (source.classList) {
+      Array.from(source.classList).forEach((className) => {
+        if (
+          className === "knowledge-cluster-distinct"
+          || className === "knowledge-group-distinct"
+          || className.startsWith("knowledge-cluster-family-")
+          || className.startsWith("knowledge-group-family-")
+          || className.startsWith("knowledge-group-variant-")
+          || className.startsWith("knowledge-cluster-header-family-")
+          || className.startsWith("knowledge-cluster-body-family-")
+          || className.startsWith("knowledge-cluster-title-family-")
+          || className.startsWith("knowledge-subtitle-family-")
+          || className.startsWith("knowledge-group-content-family-")
+        ) {
+          classNames.add(className);
+        }
+      });
+    }
+  });
+
+  if (classNames.size) {
+    target.classList.add(...classNames);
+  }
+}
+
+function isDistinctKnowledgeFamily(family) {
+  return DISTINCT_LAYOUT_FAMILIES.includes(String(family || ""));
+}
+
 function classifyKnowledgeBlock(block) {
   if (!block || !block.tagName) {
     return "knowledge-block-flow";
@@ -13177,7 +14144,7 @@ function isQuestionAnswerBankBlock(element) {
 }
 
 function isQuestionTypeHeading(element) {
-  if (!element || element.tagName !== "H2" || isQuestionAnswerBankHeading(element)) {
+  if (!element || !["H2", "H3", "H4"].includes(element.tagName || "") || isQuestionAnswerBankHeading(element)) {
     return false;
   }
 
@@ -13185,7 +14152,7 @@ function isQuestionTypeHeading(element) {
 }
 
 function hasQuestionTypeHeadings(root) {
-  return Array.from(root.querySelectorAll(":scope > h2")).some(isQuestionTypeHeading);
+  return Array.from(root.querySelectorAll(":scope > h2, :scope > h3, :scope > h4")).some(isQuestionTypeHeading);
 }
 
 function isQuestionDetailKind(kind) {
@@ -13360,6 +14327,7 @@ function buildQuestionCardWithFamily(title, blocks, family = "") {
 
   card.dataset.layoutFamily = family;
   card.classList.add("question-card-distinct", `question-card-family-${family}`);
+  decorateQuestionTitleShell(card, family);
 
   if (family === "chrome-matrix" || family === "prism-glass") {
     const split = ensureDirectChild(card, "div", "question-card-structure-split", { prepend: true });
@@ -13384,6 +14352,28 @@ function buildQuestionCardWithFamily(title, blocks, family = "") {
     ensureDirectChild(card, "div", "question-card-solar-core", { ariaHidden: true, prepend: true });
   } else if (family === "astral-orbit") {
     ensureDirectChild(card, "div", "question-card-orbit-ring", { ariaHidden: true, prepend: true });
+  }
+
+  if (family === "obsidian-vault") {
+    const shell = ensureDirectChild(card, "div", "question-card-shell question-card-shell-obsidian", { prepend: true });
+    Array.from(card.querySelectorAll(":scope > .question-panel, :scope > .question-card-title-shell, :scope > .question-card-corners")).forEach((child) => {
+      if (child !== shell) shell.appendChild(child);
+    });
+  } else if (family === "museum-catalog") {
+    const shell = ensureDirectChild(card, "div", "question-card-shell question-card-shell-museum", { prepend: true });
+    Array.from(card.querySelectorAll(":scope > .question-panel, :scope > .question-card-title-shell, :scope > .question-card-side-tag")).forEach((child) => {
+      if (child !== shell) shell.appendChild(child);
+    });
+  } else if (family === "velvet-theater") {
+    const shell = ensureDirectChild(card, "div", "question-card-shell question-card-shell-velvet", { prepend: true });
+    Array.from(card.querySelectorAll(":scope > .question-panel, :scope > .question-card-title-shell, :scope > .question-card-stage-arch")).forEach((child) => {
+      if (child !== shell) shell.appendChild(child);
+    });
+  } else if (family === "neon-circuit") {
+    const shell = ensureDirectChild(card, "div", "question-card-shell question-card-shell-neon", { prepend: true });
+    Array.from(card.querySelectorAll(":scope > .question-panel, :scope > .question-card-title-shell, :scope > .question-card-circuit-bus")).forEach((child) => {
+      if (child !== shell) shell.appendChild(child);
+    });
   }
 
   return card;
@@ -13767,6 +14757,99 @@ function moveQuestionBlockDetailsToAnswerBank(root) {
   answerItems.forEach((item) => root.appendChild(item));
 }
 
+function createExamQuestionColumnItem(index) {
+  const item = document.createElement("section");
+
+  item.className = "exam-question-item";
+  item.dataset.questionIndex = String(index);
+  return item;
+}
+
+function groupExamBodyQuestions(root) {
+  if (!root?.children || !root.classList?.contains("question-body-layout")) {
+    return;
+  }
+
+  const blocks = Array.from(root.children);
+  const fragment = document.createDocumentFragment();
+  let currentItem = null;
+  let currentQuestionIndex = 0;
+  let hasGroupedQuestion = false;
+
+  const ensureCurrentItem = () => {
+    if (!currentItem) {
+      return null;
+    }
+
+    if (!currentItem.parentElement) {
+      fragment.appendChild(currentItem);
+    }
+
+    return currentItem;
+  };
+
+  const appendToCurrentItem = (block) => {
+    const item = ensureCurrentItem();
+
+    if (!item || !block) {
+      return false;
+    }
+
+    item.appendChild(block);
+    hasGroupedQuestion = true;
+    return true;
+  };
+
+  blocks.forEach((block) => {
+    if (!block || !block.tagName || block.parentElement !== root) {
+      return;
+    }
+
+    if (isQuestionTypeHeading(block) || isQuestionAnswerBankBlock(block)) {
+      currentItem = null;
+      fragment.appendChild(block);
+      return;
+    }
+
+    if (["OL", "UL"].includes(block.tagName || "")) {
+      if (currentItem && appendToCurrentItem(block)) {
+        return;
+      }
+
+      currentItem = null;
+      fragment.appendChild(block);
+      return;
+    }
+
+    if (block.classList?.contains("question-answer-item")) {
+      currentItem = null;
+      fragment.appendChild(block);
+      return;
+    }
+
+    if (block.classList?.contains("question-answer-bank-title")) {
+      currentItem = null;
+      fragment.appendChild(block);
+      return;
+    }
+
+    if (block.classList?.contains("question-body-title") || isQuestionNumberedBlock(block)) {
+      currentQuestionIndex += 1;
+      currentItem = createExamQuestionColumnItem(currentQuestionIndex);
+      appendToCurrentItem(block);
+      return;
+    }
+
+    if (currentItem && appendToCurrentItem(block)) {
+      return;
+    }
+
+    fragment.appendChild(block);
+  });
+
+  root.replaceChildren(fragment);
+}
+
 function applyQuestionLayoutPreset(root) {
   const answerLayout = getQuestionAnswerLayout(root);
 
@@ -13884,6 +14967,10 @@ function enhanceQuestionMode(root) {
 
   groupQuestionCards(root);
   applyQuestionLayoutPreset(root);
+
+  if (root.dataset?.sourceMode === EXAM_MODE) {
+    groupExamBodyQuestions(root);
+  }
 }
 
 function enhanceArticleMode(root) {
@@ -13914,25 +15001,118 @@ function decorateDistinctHeading(root, family, mode) {
   ensureDirectChild(heading, "span", "layout-heading-shell", { ariaHidden: true, prepend: true });
 }
 
+function buildDistinctKnowledgeClusterSkeleton(cluster, family, clusterIndex) {
+  if (!cluster || !family) {
+    return;
+  }
+
+  const header = cluster.querySelector(".knowledge-cluster-header");
+  const body = cluster.querySelector(".knowledge-cluster-body");
+  const title = header?.querySelector(".knowledge-cluster-title");
+
+  cluster.dataset.layoutFamily = family;
+  cluster.dataset.knowledgeClusterOrder = String(clusterIndex + 1);
+  cluster.classList.add("knowledge-cluster-distinct", `knowledge-cluster-family-${family}`);
+  header?.classList.add(`knowledge-cluster-header-family-${family}`);
+  body?.classList.add(`knowledge-cluster-body-family-${family}`);
+
+  decorateKnowledgeTitleShell(title, family, clusterIndex);
+
+  Array.from(cluster.querySelectorAll(":scope .knowledge-group")).forEach((group, groupIndex) => {
+    decorateKnowledgeGroupShell(group, family, groupIndex);
+  });
+
+  if (family === "obsidian-vault") {
+    const frame = ensureDirectChild(cluster, "div", "knowledge-cluster-frame knowledge-cluster-frame-obsidian", {
+      prepend: true,
+    });
+    frame.dataset.layoutFamily = family;
+    if (header) frame.appendChild(header);
+    if (body) frame.appendChild(body);
+    ensureDirectChild(frame, "div", "knowledge-cluster-vault-panel", { ariaHidden: true, prepend: true });
+    ensureDirectChild(frame, "div", "knowledge-cluster-vault-etch", { ariaHidden: true });
+    ensureDirectChild(cluster, "div", "knowledge-cluster-corner-cuts", { ariaHidden: true, prepend: true });
+  } else if (family === "chrome-matrix") {
+    const shell = ensureDirectChild(cluster, "div", "knowledge-cluster-matrix-shell", { prepend: true });
+    const mast = ensureDirectChild(shell, "div", "knowledge-cluster-matrix-mast", { prepend: true });
+    const board = ensureDirectChild(shell, "div", "knowledge-cluster-matrix-board");
+    if (header) mast.appendChild(header);
+    if (body) board.appendChild(body);
+    ensureDirectChild(mast, "span", "knowledge-cluster-matrix-status", { ariaHidden: true, prepend: true });
+    ensureDirectChild(board, "div", "knowledge-cluster-matrix-grid", { ariaHidden: true, prepend: true });
+  } else if (family === "museum-catalog") {
+    const binder = ensureDirectChild(cluster, "div", "knowledge-cluster-catalog-binder", { prepend: true });
+    const card = ensureDirectChild(binder, "div", "knowledge-cluster-catalog-card");
+    if (header) card.appendChild(header);
+    if (body) card.appendChild(body);
+    ensureDirectChild(binder, "div", "knowledge-cluster-spine-tag", { ariaHidden: true, prepend: true });
+    ensureDirectChild(card, "div", "knowledge-cluster-catalog-ticket", { ariaHidden: true, prepend: true });
+  } else if (family === "atelier-board") {
+    const board = ensureDirectChild(cluster, "div", "knowledge-cluster-atelier-board-shell", { prepend: true });
+    const rail = ensureDirectChild(board, "div", "knowledge-cluster-atelier-rail", { prepend: true });
+    const canvas = ensureDirectChild(board, "div", "knowledge-cluster-atelier-canvas");
+    if (header) rail.appendChild(header);
+    if (body) canvas.appendChild(body);
+    ensureDirectChild(board, "div", "knowledge-cluster-axis-grid", { ariaHidden: true, prepend: true });
+    ensureDirectChild(canvas, "div", "knowledge-cluster-atelier-scale", { ariaHidden: true });
+  } else if (family === "abyss-chart") {
+    const shell = ensureDirectChild(cluster, "div", "knowledge-cluster-abyss-shell", { prepend: true });
+    const crest = ensureDirectChild(shell, "div", "knowledge-cluster-abyss-crest", { prepend: true });
+    const route = ensureDirectChild(shell, "div", "knowledge-cluster-abyss-route");
+    if (header) crest.appendChild(header);
+    if (body) route.appendChild(body);
+    ensureDirectChild(route, "div", "knowledge-cluster-abyss-grid", { ariaHidden: true, prepend: true });
+    ensureDirectChild(route, "div", "knowledge-cluster-abyss-beacon", { ariaHidden: true });
+  } else if (family === "prism-glass") {
+    const shell = ensureDirectChild(cluster, "div", "knowledge-cluster-prism-shell", { prepend: true });
+    const ribbon = ensureDirectChild(shell, "div", "knowledge-cluster-prism-ribbon", { prepend: true });
+    const panes = ensureDirectChild(shell, "div", "knowledge-cluster-prism-panes");
+    if (header) ribbon.appendChild(header);
+    if (body) panes.appendChild(body);
+    ensureDirectChild(shell, "div", "knowledge-cluster-prism-glow", { ariaHidden: true, prepend: true });
+    ensureDirectChild(panes, "div", "knowledge-cluster-prism-shards", { ariaHidden: true });
+  } else if (family === "velvet-theater") {
+    const stage = ensureDirectChild(cluster, "div", "knowledge-cluster-theater-stage", { prepend: true });
+    const marquee = ensureDirectChild(stage, "div", "knowledge-cluster-theater-marquee", { prepend: true });
+    const acts = ensureDirectChild(stage, "div", "knowledge-cluster-theater-acts");
+    if (header) marquee.appendChild(header);
+    if (body) acts.appendChild(body);
+    ensureDirectChild(stage, "div", "knowledge-cluster-theater-curtain", { ariaHidden: true, prepend: true });
+    ensureDirectChild(acts, "div", "knowledge-cluster-theater-footlights", { ariaHidden: true });
+  } else if (family === "neon-circuit") {
+    const rack = ensureDirectChild(cluster, "div", "knowledge-cluster-neon-rack", { prepend: true });
+    const trunk = ensureDirectChild(rack, "div", "knowledge-cluster-neon-trunk", { prepend: true });
+    const mesh = ensureDirectChild(rack, "div", "knowledge-cluster-neon-mesh");
+    if (header) trunk.appendChild(header);
+    if (body) mesh.appendChild(body);
+    ensureDirectChild(rack, "div", "knowledge-cluster-circuit-bus", { ariaHidden: true, prepend: true });
+    ensureDirectChild(mesh, "div", "knowledge-cluster-neon-nodes", { ariaHidden: true });
+  } else if (family === "solar-folio") {
+    const folio = ensureDirectChild(cluster, "div", "knowledge-cluster-solar-folio-shell", { prepend: true });
+    const crown = ensureDirectChild(folio, "div", "knowledge-cluster-solar-crown", { prepend: true });
+    const pages = ensureDirectChild(folio, "div", "knowledge-cluster-solar-pages");
+    if (header) crown.appendChild(header);
+    if (body) pages.appendChild(body);
+    ensureDirectChild(folio, "div", "knowledge-cluster-solar-rays", { ariaHidden: true, prepend: true });
+    ensureDirectChild(pages, "div", "knowledge-cluster-solar-disc", { ariaHidden: true });
+  } else if (family === "astral-orbit") {
+    const observatory = ensureDirectChild(cluster, "div", "knowledge-cluster-astral-observatory", { prepend: true });
+    const dome = ensureDirectChild(observatory, "div", "knowledge-cluster-astral-dome", { prepend: true });
+    const map = ensureDirectChild(observatory, "div", "knowledge-cluster-astral-map");
+    if (header) dome.appendChild(header);
+    if (body) map.appendChild(body);
+    ensureDirectChild(observatory, "div", "knowledge-cluster-starfield", { ariaHidden: true, prepend: true });
+    ensureDirectChild(map, "div", "knowledge-cluster-astral-orbits", { ariaHidden: true });
+  }
+}
+
 function decorateDistinctKnowledge(root, family) {
   if (!root || !family) {
     return;
   }
 
-  Array.from(root.querySelectorAll(".knowledge-cluster")).forEach((cluster) => {
-    cluster.dataset.layoutFamily = family;
-    cluster.classList.add("knowledge-cluster-distinct", `knowledge-cluster-family-${family}`);
-    if (family === "museum-catalog") {
-      ensureDirectChild(cluster, "div", "knowledge-cluster-spine-tag", { ariaHidden: true, prepend: true });
-    } else if (family === "atelier-board") {
-      ensureDirectChild(cluster, "div", "knowledge-cluster-axis-grid", { ariaHidden: true, prepend: true });
-    } else if (family === "obsidian-vault") {
-      ensureDirectChild(cluster, "div", "knowledge-cluster-corner-cuts", { ariaHidden: true, prepend: true });
-    } else if (family === "neon-circuit") {
-      ensureDirectChild(cluster, "div", "knowledge-cluster-circuit-bus", { ariaHidden: true, prepend: true });
-    } else if (family === "astral-orbit") {
-      ensureDirectChild(cluster, "div", "knowledge-cluster-starfield", { ariaHidden: true, prepend: true });
-    }
+  Array.from(root.querySelectorAll(".knowledge-cluster")).forEach((cluster, clusterIndex) => {
+    buildDistinctKnowledgeClusterSkeleton(cluster, family, clusterIndex);
   });
 }
 
@@ -13985,12 +15165,31 @@ function decorateDistinctArticleBlocks(root, family) {
       ensureDirectChild(block, "div", "article-block-orbit", { ariaHidden: true, prepend: true });
     }
   });
+
+  if (family === "obsidian-vault" || family === "museum-catalog" || family === "neon-circuit" || family === "velvet-theater") {
+    const lead = root.querySelector(".lead-paragraph");
+    if (lead) {
+      lead.classList.add(`lead-paragraph-featured-${family}`);
+      ensureElementTextSpan(lead, "lead-paragraph-text");
+    }
+  }
 }
 
 function applyDistinctLayoutStructure(root, mode) {
   const family = getLayoutPresetFamilyKey(root?.dataset?.layoutPreset);
 
-  if (!root || !family) {
+  if (!root) {
+    return;
+  }
+
+  Array.from(root.classList || []).forEach((className) => {
+    if (className === "layout-distinct-root" || className.startsWith("layout-distinct-root-")) {
+      root.classList.remove(className);
+    }
+  });
+  delete root.dataset.layoutFamily;
+
+  if (!family) {
     return;
   }
 
@@ -14011,7 +15210,7 @@ function enhanceRenderedArticle(root, mode) {
 
   if (mode === "knowledge") {
     enhanceKnowledgeMode(root);
-  } else if (mode === "question") {
+  } else if (isQuestionLikeMode(mode)) {
     enhanceQuestionMode(root);
   } else {
     enhanceArticleMode(root);
@@ -14489,7 +15688,7 @@ function formatLayoutPresetShortLabel(label) {
 function getLayoutPresetPreviewKind(presetId, mode) {
   const id = String(presetId || "");
 
-  if (mode === "question" || id.includes("question-")) {
+  if (isQuestionLikeMode(mode) || id.includes("question-") || id.includes("exam-")) {
     return id.includes("review") || id.includes("journal") || id.includes("autumn") ? "question-review" : "question";
   }
   if (mode === "article" || id.includes("article-")) {
@@ -14552,6 +15751,7 @@ function createSvgElement(tagName, attrs = {}) {
 
 function createLayoutPresetPreviewSvg(preset, mode) {
   const wrap = document.createElement("span");
+  const sourceMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
   const svg = createSvgElement("svg", {
     viewBox: "0 0 120 72",
     "aria-hidden": "true",
@@ -14576,7 +15776,74 @@ function createLayoutPresetPreviewSvg(preset, mode) {
   svg.appendChild(createSvgElement("circle", { cx: 100, cy: 13, r: 2, class: "layout-preset-svg-dot" }));
   svg.appendChild(createSvgElement("circle", { cx: 94, cy: 13, r: 2, class: "layout-preset-svg-dot-muted" }));
 
-  if (kind === "blueprint") {
+  if (preset?.id === "knowledge-obsidian-vault") {
+    svg.appendChild(createSvgElement("path", { d: "M16 17H52L58 23V55L52 61H16L10 55V23Z", class: "layout-preset-svg-card" }));
+    svg.appendChild(createSvgElement("path", { d: "M66 18H104V30H66ZM66 36H104V56H66", class: "layout-preset-svg-muted" }));
+    line(20, 24, 20, "layout-preset-svg-accent");
+    line(72, 23, 18);
+    line(72, 41, 24);
+    svg.appendChild(createSvgElement("path", { d: "M59 19L66 12M59 53L66 60M52 61L58 55M16 17L10 23", class: "layout-preset-svg-cutline" }));
+  } else if (preset?.id === "knowledge-chrome-matrix") {
+    svg.appendChild(createSvgElement("rect", { x: 14, y: 16, width: 92, height: 9, rx: 4, class: "layout-preset-svg-muted" }));
+    svg.appendChild(createSvgElement("path", { d: "M16 34H104M16 46H104M16 58H104M34 28V60M56 28V60M78 28V60", class: "layout-preset-svg-grid" }));
+    svg.appendChild(createSvgElement("rect", { x: 20, y: 38, width: 28, height: 12, rx: 3, class: "layout-preset-svg-card" }));
+    svg.appendChild(createSvgElement("rect", { x: 62, y: 38, width: 34, height: 16, rx: 3, class: "layout-preset-svg-muted" }));
+    line(24, 19, 22, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-museum-catalog") {
+    svg.appendChild(createSvgElement("rect", { x: 18, y: 14, width: 18, height: 44, rx: 9, class: "layout-preset-svg-ticket" }));
+    svg.appendChild(createSvgElement("rect", { x: 28, y: 16, width: 72, height: 42, rx: 6, class: "layout-preset-svg-card" }));
+    svg.appendChild(createSvgElement("rect", { x: 38, y: 20, width: 52, height: 10, rx: 5, class: "layout-preset-svg-muted" }));
+    svg.appendChild(createSvgElement("rect", { x: 38, y: 36, width: 24, height: 16, rx: 2, class: "layout-preset-svg-muted" }));
+    svg.appendChild(createSvgElement("rect", { x: 68, y: 36, width: 24, height: 16, rx: 2, class: "layout-preset-svg-card" }));
+    line(44, 24, 24, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-atelier-board") {
+    svg.appendChild(createSvgElement("path", { d: "M20 16V58M20 16H104M20 58H104", class: "layout-preset-svg-grid" }));
+    svg.appendChild(createSvgElement("path", { d: "M34 20H96M34 34H72M34 46H98", class: "layout-preset-svg-line" }));
+    svg.appendChild(createSvgElement("rect", { x: 34, y: 24, width: 24, height: 8, rx: 0, class: "layout-preset-svg-card" }));
+    svg.appendChild(createSvgElement("rect", { x: 76, y: 30, width: 20, height: 18, rx: 0, class: "layout-preset-svg-muted" }));
+    svg.appendChild(createSvgElement("path", { d: "M24 20V54M28 24V54M88 50H102", class: "layout-preset-svg-rule" }));
+    line(36, 26, 14, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-abyss-chart") {
+    svg.appendChild(createSvgElement("path", { d: "M18 24C30 18 40 18 50 24C62 31 74 31 86 24C94 19 100 19 106 22", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M18 44C28 38 38 38 48 44C61 51 75 51 88 44C96 40 101 39 106 41", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("circle", { cx: 28, cy: 24, r: 5, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 76, cy: 44, r: 5, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("rect", { x: 44, y: 30, width: 20, height: 10, rx: 5, class: "layout-preset-svg-card" }));
+    line(47, 34, 10, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-prism-glass") {
+    svg.appendChild(createSvgElement("path", { d: "M18 18H102V58H18Z", class: "layout-preset-svg-muted" }));
+    svg.appendChild(createSvgElement("path", { d: "M18 58L42 18L66 58L90 18L102 40", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M42 18L66 58M66 58L90 18M18 40H102", class: "layout-preset-svg-cutline" }));
+    svg.appendChild(createSvgElement("path", { d: "M24 22H58V32H24Z", class: "layout-preset-svg-card" }));
+    line(28, 26, 16, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-velvet-theater") {
+    svg.appendChild(createSvgElement("path", { d: "M18 18C24 12 32 12 38 18C44 12 52 12 58 18C64 12 72 12 78 18C84 12 92 12 98 18V56H18Z", class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M28 18V56M42 18V56M56 18V56M70 18V56M84 18V56", class: "layout-preset-svg-cutline" }));
+    svg.appendChild(createSvgElement("rect", { x: 30, y: 28, width: 56, height: 16, rx: 8, class: "layout-preset-svg-card" }));
+    line(40, 34, 20, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-neon-circuit") {
+    svg.appendChild(createSvgElement("path", { d: "M18 24H42V34H64V22H88V42H104", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M18 50H34V42H54V54H84V46H104", class: "layout-preset-svg-motif-line" }));
+    [18, 42, 64, 88, 104, 34, 54, 84].forEach((cx, index) => {
+      const cy = [24, 24, 34, 22, 42, 50, 42, 54][index];
+      svg.appendChild(createSvgElement("circle", { cx, cy, r: 2.2, class: "layout-preset-svg-motif" }));
+    });
+    svg.appendChild(createSvgElement("rect", { x: 40, y: 28, width: 20, height: 12, rx: 4, class: "layout-preset-svg-card" }));
+  } else if (preset?.id === "knowledge-solar-folio") {
+    svg.appendChild(createSvgElement("circle", { cx: 60, cy: 20, r: 10, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("path", { d: "M60 6V10M60 30V34M46 20H50M70 20H74M50 10L53 13M67 27L70 30M70 10L67 13M53 27L50 30", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("rect", { x: 22, y: 36, width: 76, height: 18, rx: 9, class: "layout-preset-svg-card" }));
+    svg.appendChild(createSvgElement("rect", { x: 34, y: 40, width: 20, height: 10, rx: 5, class: "layout-preset-svg-muted" }));
+    line(60, 43, 20, "layout-preset-svg-accent");
+  } else if (preset?.id === "knowledge-astral-orbit") {
+    svg.appendChild(createSvgElement("path", { d: "M22 37A38 14 0 0 1 98 37A38 14 0 0 1 22 37Z", class: "layout-preset-svg-motif-line" }));
+    svg.appendChild(createSvgElement("path", { d: "M34 37A26 9 0 0 1 86 37A26 9 0 0 1 34 37Z", class: "layout-preset-svg-cutline" }));
+    svg.appendChild(createSvgElement("circle", { cx: 60, cy: 37, r: 6, class: "layout-preset-svg-motif" }));
+    svg.appendChild(createSvgElement("circle", { cx: 34, cy: 37, r: 2, class: "layout-preset-svg-dot" }));
+    svg.appendChild(createSvgElement("circle", { cx: 86, cy: 37, r: 2, class: "layout-preset-svg-dot" }));
+    svg.appendChild(createSvgElement("rect", { x: 42, y: 16, width: 36, height: 8, rx: 4, class: "layout-preset-svg-card" }));
+    line(48, 19, 18, "layout-preset-svg-accent");
+  } else if (kind === "blueprint") {
     [24, 44, 64, 84].forEach((x) => svg.appendChild(createSvgElement("path", { d: `M${x} 8V64`, class: "layout-preset-svg-grid" })));
     [20, 36, 52].forEach((y) => svg.appendChild(createSvgElement("path", { d: `M10 ${y}H110`, class: "layout-preset-svg-grid" })));
     card(15, 16, 30, 16);
@@ -14604,6 +15871,38 @@ function createLayoutPresetPreviewSvg(preset, mode) {
     card(63, 18, 36, 12);
     card(63, 38, 42, 14, "layout-preset-svg-muted");
     svg.appendChild(createSvgElement("path", { d: "M18 51H101", class: "layout-preset-svg-rule" }));
+  } else if (sourceMode === EXAM_MODE && preset?.id === "question-proof") {
+    svg.appendChild(createSvgElement("rect", { x: 10, y: 10, width: 16, height: 52, rx: 2, class: "layout-preset-svg-ticket" }));
+    svg.appendChild(createSvgElement("rect", { x: 15, y: 10, width: 6, height: 52, rx: 1, class: "layout-preset-svg-card" }));
+    [18, 30, 42, 54].forEach((cy) => {
+      svg.appendChild(createSvgElement("circle", { cx: 12.8, cy, r: 1.3, class: "layout-preset-svg-dot-muted" }));
+      svg.appendChild(createSvgElement("circle", { cx: 23.2, cy, r: 1.3, class: "layout-preset-svg-dot-muted" }));
+    });
+    svg.appendChild(createSvgElement("path", { d: "M18 15V57M13 22H13M13 34H13M13 46H13M23 22H23M23 34H23M23 46H23", class: "layout-preset-svg-motif-line" }));
+
+    svg.appendChild(createSvgElement("rect", { x: 31, y: 14, width: 73, height: 44, rx: 3, class: "layout-preset-svg-page" }));
+    svg.appendChild(createSvgElement("path", { d: "M66 17V56", class: "layout-preset-svg-rule" }));
+    svg.appendChild(createSvgElement("path", { d: "M35 21H62M70 21H97", class: "layout-preset-svg-rule" }));
+    line(42, 16, 22, "layout-preset-svg-accent");
+    line(47, 20, 12);
+
+    line(36, 26, 8);
+    line(47, 26, 13);
+    line(36, 31, 25);
+    line(36, 36, 23);
+    svg.appendChild(createSvgElement("rect", { x: 36, y: 40, width: 22, height: 3, rx: 1.5, class: "layout-preset-svg-accent" }));
+    line(36, 45, 18);
+    line(36, 50, 20);
+
+    line(71, 26, 23);
+    line(71, 31, 21);
+    card(75, 35, 18, 8, "layout-preset-svg-muted");
+    svg.appendChild(createSvgElement("path", { d: "M75 46H95", class: "layout-preset-svg-rule" }));
+    line(71, 49, 9);
+    line(85, 49, 9);
+
+    svg.appendChild(createSvgElement("path", { d: "M103 19V54", class: "layout-preset-svg-grid" }));
+    svg.appendChild(createSvgElement("path", { d: "M101 24H105M101 30H105M101 36H105M101 42H105M101 48H105", class: "layout-preset-svg-motif-line" }));
   } else if (kind === "question" || kind === "question-review") {
     card(14, 13, 92, 16, "layout-preset-svg-muted");
     line(20, 20, 56, "layout-preset-svg-accent");
@@ -14925,6 +16224,7 @@ async function initPagedApp() {
   const previewPaginationStrategySelect = document.getElementById("previewPaginationStrategySelect");
   const exportBackgroundInput = document.getElementById("exportBackgroundInput");
   const exportBackgroundName = document.getElementById("exportBackgroundName");
+  const pdfIgnoreBackgroundToggle = document.getElementById("pdfIgnoreBackgroundToggle");
 
   if (previewHeaderActions) {
     const toolbar = document.querySelector(".toolbar");
@@ -15288,6 +16588,7 @@ async function initPagedApp() {
     watermarkOpacity: DEFAULT_WATERMARK_OPACITY,
     exportBackgroundSrc: DEFAULT_EXPORT_BACKGROUND_SRC,
     exportBackgroundName: DEFAULT_EXPORT_BACKGROUND_NAME,
+    pdfIgnoreBackground: DEFAULT_PDF_IGNORE_BACKGROUND,
     paginationStrategy: DEFAULT_PAGINATION_STRATEGY,
     elementStyles: getElementStyleDefaults(),
     elementStylePresets: {},
@@ -15299,6 +16600,8 @@ async function initPagedApp() {
     latestCharacterCount: 0,
     latestBlockCount: 0,
     latestPageCount: 0,
+    examPageLayout: buildExamPageLayout(),
+    standardPageLayout: buildStandardPageLayout(),
   };
 
   function mountExportBackgroundPresets() {
@@ -15489,7 +16792,7 @@ async function initPagedApp() {
       });
     }
 
-    const isQuestionMode = state.mode === "question";
+    const isQuestionMode = isQuestionLikeMode(state.mode);
     const panel = questionAnswerLayoutPicker.closest(".question-answer-layout-panel");
     if (panel) {
       panel.hidden = !isQuestionMode;
@@ -15530,6 +16833,8 @@ async function initPagedApp() {
       tableLayouts: normalizeTableLayouts(state.tableLayouts),
       cardLayouts: normalizeCardLayouts(state.cardLayouts),
       cardOrder: normalizeCardOrder(state.cardOrder),
+      examPageLayout: buildExamPageLayout(state.examPageLayout),
+      standardPageLayout: buildStandardPageLayout(state.standardPageLayout),
     };
 
     ARTICLE_STYLE_CONTROLS.forEach((control) => {
@@ -15560,7 +16865,7 @@ async function initPagedApp() {
   }
 
   async function refreshLayoutHistoryEntries() {
-    state.layoutHistoryEntries = await requestLayoutHistoryEntries();
+    state.layoutHistoryEntries = filterManualLayoutHistoryEntries(await requestLayoutHistoryEntries());
     return state.layoutHistoryEntries;
   }
 
@@ -15612,21 +16917,6 @@ async function initPagedApp() {
     return entry;
   }
 
-  function scheduleAutoLayoutHistory(markdown) {
-    window.clearTimeout(autoLayoutHistoryTimer);
-    autoLayoutHistoryTimer = window.setTimeout(async () => {
-      try {
-        await addLayoutHistoryEntry({
-        markdown,
-        source: "auto",
-        name: getLayoutHistoryTitle(markdown),
-        });
-      } catch (_error) {
-        // Ignore auto-save failures to avoid interrupting editing.
-      }
-    }, 900);
-  }
-
   function applyLayoutHistoryEntry(entry) {
     const normalized = sanitizeLayoutHistoryEntry(entry);
 
@@ -15659,6 +16949,8 @@ async function initPagedApp() {
     state.tableLayouts = normalizeTableLayouts(snapshot.tableLayouts);
     state.cardLayouts = normalizeCardLayouts(snapshot.cardLayouts);
     state.cardOrder = normalizeCardOrder(snapshot.cardOrder);
+    state.examPageLayout = buildExamPageLayout(snapshot.examPageLayout);
+    state.standardPageLayout = buildStandardPageLayout(snapshot.standardPageLayout);
 
     ARTICLE_STYLE_CONTROLS.forEach((control) => {
       state[control.key] = snapshot[control.key];
@@ -15697,7 +16989,7 @@ async function initPagedApp() {
         <div class="formula-editor-head">
           <div>
             <h2 id="layoutHistoryTitle" class="formula-editor-title">排版历史</h2>
-            <p class="formula-editor-note">自动记录最近排版内容，也支持手动保存常用版本。</p>
+            <p class="formula-editor-note">手动保存常用排版版本，之后可在这里快速恢复。</p>
           </div>
           <button type="button" class="formula-editor-close" data-layout-history-close aria-label="关闭">×</button>
         </div>
@@ -15783,14 +17075,14 @@ async function initPagedApp() {
     if (!state.layoutHistoryEntries.length) {
       list.innerHTML = `
         <div class="layout-history-empty">
-          <p>还没有历史记录。输入内容后点“保存排版”，或直接开始排版，系统会自动记录最近内容。</p>
+          <p>还没有历史记录。输入内容后点“保存排版”，手动保存当前排版。</p>
         </div>
       `;
       return;
     }
 
     list.innerHTML = state.layoutHistoryEntries.map((entry) => {
-      const label = entry.source === "manual" ? LAYOUT_HISTORY_MANUAL_LABEL : LAYOUT_HISTORY_AUTO_LABEL;
+      const label = LAYOUT_HISTORY_MANUAL_LABEL;
       const savedAt = formatLayoutHistoryTime(entry.savedAt);
       const modeLabel = MODE_METADATA[entry.snapshot.mode]?.title || "排版";
       const themeLabel = THEME_LABELS[entry.snapshot.theme] || "";
@@ -15888,7 +17180,6 @@ async function initPagedApp() {
   let renderTimer = null;
   let statusTimer = null;
   let previewSyncTimer = null;
-  let autoLayoutHistoryTimer = null;
   let exportBusy = false;
   let activeRibbonTab = DEFAULT_RIBBON_TAB;
   let previewHasPendingSync = false;
@@ -16082,9 +17373,9 @@ async function initPagedApp() {
       button.setAttribute("aria-pressed", String(isActive));
     });
 
-    elementStyleGrid.querySelectorAll("[data-element-style-field]").forEach((range) => {
-      const groupId = range.getAttribute("data-element-style-group-field");
-      const fieldKey = range.getAttribute("data-element-style-field");
+    elementStyleGrid.querySelectorAll("[data-element-style-field]").forEach((control) => {
+      const groupId = control.getAttribute("data-element-style-group-field");
+      const fieldKey = control.getAttribute("data-element-style-field");
       const field = getElementStyleField(groupId, fieldKey);
       const group = state.elementStyles?.[groupId];
 
@@ -16092,15 +17383,29 @@ async function initPagedApp() {
         return;
       }
 
-      const value = clampNumber(group[fieldKey], field.min, field.max, field.defaultValue);
-      const fieldEl = range.closest(".element-style-field");
+      const value = normalizeElementStyleFieldValue(field, group[fieldKey]);
+      const fieldEl = control.closest(".element-style-field");
       const valueEl = fieldEl?.querySelector(".element-style-value");
 
-      range.value = String(value);
-      updateRangeControlVisual(range);
+      if (isElementStyleToggleField(field)) {
+        const enabled = Boolean(value);
+        if (valueEl) {
+          valueEl.textContent = field.formatValue ? field.formatValue(enabled) : (enabled ? "开启" : "关闭");
+        }
+        control.classList.toggle("is-active", enabled);
+        control.setAttribute("aria-pressed", String(enabled));
+        control.textContent = enabled ? "关闭" : "开启";
+        control.title = `${enabled ? "关闭" : "开启"}${field.label}`;
+        fieldEl?.classList.toggle("is-active", enabled);
+        return;
+      }
+
+      control.value = String(value);
+      updateRangeControlVisual(control);
       if (valueEl) {
         valueEl.textContent = field.formatValue ? field.formatValue(value) : String(value);
       }
+      fieldEl?.classList.remove("is-active");
     });
 
     if (elementStyleNote) {
@@ -16164,14 +17469,38 @@ async function initPagedApp() {
       groupFields.dataset.elementStyleFieldsGroup = group.id;
 
       group.fields.forEach((field) => {
-        const fieldEl = document.createElement("label");
+        const fieldEl = document.createElement(isElementStyleToggleField(field) ? "div" : "label");
         const label = document.createElement("span");
         const value = document.createElement("span");
-        const range = document.createElement("input");
 
         fieldEl.className = "element-style-field";
         label.className = "element-style-label";
         value.className = "element-style-value";
+        label.textContent = field.label;
+
+        if (isElementStyleToggleField(field)) {
+          const toggleButton = document.createElement("button");
+          toggleButton.type = "button";
+          toggleButton.className = "element-style-toggle-button";
+          toggleButton.dataset.elementStyleGroupField = group.id;
+          toggleButton.dataset.elementStyleField = field.key;
+          toggleButton.setAttribute("aria-pressed", "false");
+
+          fieldEl.classList.add("element-style-field-toggle");
+          fieldEl.append(label, value, toggleButton);
+          groupFields.appendChild(fieldEl);
+
+          toggleButton.addEventListener("click", () => {
+            const normalizedStyles = normalizeElementStyles(state.elementStyles);
+            normalizedStyles[group.id][field.key] = !Boolean(normalizedStyles[group.id][field.key]);
+            state.elementStyles = normalizedStyles;
+            syncElementStylePanel();
+            applyUiState({ rerender: true });
+          });
+          return;
+        }
+
+        const range = document.createElement("input");
         range.type = "range";
         range.className = "precision-range";
         range.min = String(field.min);
@@ -16180,7 +17509,6 @@ async function initPagedApp() {
         range.dataset.elementStyleGroupField = group.id;
         range.dataset.elementStyleField = field.key;
 
-        label.textContent = field.label;
         fieldEl.append(label, value, range);
         groupFields.appendChild(fieldEl);
 
@@ -16778,6 +18106,22 @@ async function initPagedApp() {
     };
   }
 
+  function getPdfDocumentOptions(title = "") {
+    const pageOptions = getPageLayoutOptions(state);
+
+    if (state.pdfIgnoreBackground) {
+      pageOptions.exportBackgroundSrc = DEFAULT_EXPORT_BACKGROUND_SRC;
+      pageOptions.exportBackgroundName = DEFAULT_EXPORT_BACKGROUND_NAME;
+    }
+
+    return {
+      title,
+      customFonts: getCustomFontEntries(),
+      ...getArticleExportOptions(state),
+      ...pageOptions,
+    };
+  }
+
   function updateStatusText() {
     const modeLabel = MODE_METADATA[state.mode].title;
     const themeLabel = THEME_LABELS[state.theme];
@@ -16918,7 +18262,12 @@ async function initPagedApp() {
     }
 
     const locatorEntries = collectPreviewLocatorEntries(canvas);
-    const diagnostics = collectPreviewLayoutDiagnostics(canvas);
+    const diagnostics = collectPreviewLayoutDiagnostics(measureCanvas, {
+      mode: state.mode,
+      previewRoot: canvas,
+      questionAnswerLayout: state.questionAnswerLayout,
+      pageOptions: getPageMetrics(state),
+    });
     previewWorkbenchContent.innerHTML = buildPreviewWorkbenchMarkup(locatorEntries, diagnostics);
     setActivePreviewWorkbenchItem(activePreviewWorkbenchBlockId);
   }
@@ -16933,7 +18282,12 @@ async function initPagedApp() {
 
   function runPreviewWorkbenchCheck() {
     refreshPreviewWorkbench();
-    const diagnostics = collectPreviewLayoutDiagnostics(canvas);
+    const diagnostics = collectPreviewLayoutDiagnostics(measureCanvas, {
+      mode: state.mode,
+      previewRoot: canvas,
+      questionAnswerLayout: state.questionAnswerLayout,
+      pageOptions: getPageMetrics(state),
+    });
 
     if (!diagnostics.length) {
       setActiveSettingsSection("review");
@@ -17022,10 +18376,11 @@ async function initPagedApp() {
     return true;
   }
 
-  async function runBrowserPrintFlow(previewWindow, title, fileName) {
+  async function runBrowserPrintFlow(previewWindow, title, fileName, buildOptions = getPdfDocumentOptions(title)) {
     setExportProgress(8, "正在准备浏览器打印...");
     setExportProgress(24, "正在整理当前预览页面...");
-    const html = await buildCurrentExportHtml(title);
+    await waitForNextPaint();
+    const html = await buildExportDocumentHtmlFromPreview(canvas, measureCanvas, buildOptions);
     setExportProgress(58, "正在生成打印 PDF...");
     const result = await requestNativePdfExport(html, fileName, {
       timeoutMs: PDF_EXPORT_REQUEST_TIMEOUT_MS,
@@ -17773,6 +19128,7 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.pageHeaderText, state.pageHeaderText);
       window.localStorage.setItem(STORAGE_KEYS.watermarkEnabled, String(state.watermarkEnabled));
       window.localStorage.setItem(STORAGE_KEYS.watermarkText, state.watermarkText);
+      window.localStorage.setItem(STORAGE_KEYS.pdfIgnoreBackground, String(state.pdfIgnoreBackground));
       window.localStorage.setItem(STORAGE_KEYS.paginationStrategy, state.paginationStrategy);
       window.localStorage.setItem(STORAGE_KEYS.typographyVersion, TYPOGRAPHY_BASELINE_VERSION);
       window.localStorage.setItem(STORAGE_KEYS.elementStyles, JSON.stringify(normalizeElementStyles(state.elementStyles)));
@@ -17780,6 +19136,8 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
       window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
       window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
+      window.localStorage.setItem(STORAGE_KEYS.examPageLayout, JSON.stringify(buildExamPageLayout(state.examPageLayout)));
+      window.localStorage.setItem(STORAGE_KEYS.standardPageLayout, JSON.stringify(buildStandardPageLayout(state.standardPageLayout)));
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
@@ -17800,6 +19158,8 @@ async function initPagedApp() {
   }
 
   function applyUiState({ rerender = false } = {}) {
+    state.examPageLayout = buildExamPageLayout(state.examPageLayout);
+    state.standardPageLayout = buildStandardPageLayout(state.standardPageLayout);
     syncLayoutPresetWithMode(state);
     state.paginationStrategy = sanitizeChoice(
       state.paginationStrategy,
@@ -17818,7 +19178,7 @@ async function initPagedApp() {
     canvas.dataset.mode = state.mode;
     canvas.dataset.layoutPreset = state.layoutPreset;
     canvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
-    measureCanvas.dataset.mode = state.mode;
+    measureCanvas.dataset.mode = getRenderMode(state.mode);
     measureCanvas.dataset.layoutPreset = state.layoutPreset;
     measureCanvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     applyPageBackgroundStyleProperties(canvas, state);
@@ -17987,6 +19347,10 @@ async function initPagedApp() {
       clearExportBackgroundBtn.disabled = !state.exportBackgroundSrc;
     }
 
+    if (pdfIgnoreBackgroundToggle) {
+      pdfIgnoreBackgroundToggle.checked = Boolean(state.pdfIgnoreBackground);
+    }
+
     syncExportBackgroundPresets();
 
     const watermarkOpacityControl = pageStyleControls.find((control) => control.key === "watermarkOpacity");
@@ -18051,14 +19415,14 @@ async function initPagedApp() {
     measureCanvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     applyArticleStyleProperties(measureCanvas, state, pageMetrics.contentWidthPx);
     enhanceRenderedArticle(measureCanvas, state.mode);
-    assignCardLayoutKeys(measureCanvas, state.mode);
+    assignCardLayoutKeys(measureCanvas, getRenderMode(state.mode));
     state.cardOrder = compactCardOrder(measureCanvas, state.cardOrder);
     applyCardOrder(measureCanvas, state.cardOrder);
     applyCardLayouts(measureCanvas, state.cardLayouts);
     fitCardTextToFixedHeight(measureCanvas);
     applyManagedTableLayoutsToTables(measureCanvas, state);
 
-    canvas.dataset.mode = state.mode;
+    canvas.dataset.mode = getRenderMode(state.mode);
     canvas.dataset.layoutPreset = state.layoutPreset;
     canvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     canvas.style.margin = "0";
@@ -18083,8 +19447,6 @@ async function initPagedApp() {
     } catch (_error) {
       // Ignore storage failures in restricted browsers.
     }
-
-    scheduleAutoLayoutHistory(markdown);
 
     updateStatusText();
     schedulePreviewWorkbenchRefresh();
@@ -18203,6 +19565,11 @@ async function initPagedApp() {
   pageStyleControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
+      if (state.mode === EXAM_MODE) {
+        state.examPageLayout = readCurrentPageLayout(state);
+      } else {
+        state.standardPageLayout = buildStandardPageLayout(state);
+      }
       applyUiState({ rerender: true });
     });
   });
@@ -18466,6 +19833,12 @@ async function initPagedApp() {
     flashStatus("已清除导出背景");
   });
 
+  pdfIgnoreBackgroundToggle?.addEventListener("change", (event) => {
+    state.pdfIgnoreBackground = Boolean(event.target.checked);
+    applyUiState();
+    flashStatus(state.pdfIgnoreBackground ? "PDF 导出将忽略背景" : "PDF 导出将保留背景");
+  });
+
   ribbonTabs.forEach((button, index) => {
     button.addEventListener("click", () => {
       applyRibbonTab(button.getAttribute("data-ribbon-tab"));
@@ -18512,8 +19885,23 @@ async function initPagedApp() {
         state.layoutPresetByMode[state.mode] = state.layoutPreset;
       }
 
-      state.mode = sanitizeChoice(button.getAttribute("data-mode-option"), MODE_METADATA, DEFAULT_MODE);
+      const nextMode = sanitizeChoice(button.getAttribute("data-mode-option"), MODE_METADATA, DEFAULT_MODE);
+
+      if (state.mode === EXAM_MODE) {
+        state.examPageLayout = readCurrentPageLayout(state);
+      } else {
+        state.standardPageLayout = buildStandardPageLayout(state);
+      }
+
+      state.mode = nextMode;
       state.layoutPreset = sanitizeLayoutPresetForMode(state.layoutPresetByMode[state.mode], state.mode);
+
+      if (state.mode === EXAM_MODE) {
+        applyPageLayoutToState(state, state.examPageLayout);
+      } else {
+        applyPageLayoutToState(state, state.standardPageLayout);
+      }
+
       applyUiState({ rerender: true });
     });
   });
@@ -19165,7 +20553,7 @@ async function initPagedApp() {
         previewCanvas: canvas,
         title,
         fileName,
-        buildOptions: getDocumentOptions(title),
+        buildOptions: getPdfDocumentOptions(title),
       });
     } catch (error) {
       if (error === PDF_EXPORT_CANCELLED) {
@@ -19209,7 +20597,7 @@ async function initPagedApp() {
         exportBusy = true;
         browserPrintBtn.disabled = true;
 
-        await runBrowserPrintFlow(previewWindow, title, fileName);
+        await runBrowserPrintFlow(previewWindow, title, fileName, getPdfDocumentOptions(title));
       } catch (error) {
         if (error === PDF_EXPORT_CANCELLED) {
           return;
@@ -19248,6 +20636,7 @@ async function initPagedApp() {
     const savedPageHeaderText = window.localStorage.getItem(STORAGE_KEYS.pageHeaderText);
     const savedWatermarkEnabled = window.localStorage.getItem(STORAGE_KEYS.watermarkEnabled);
     const savedWatermarkText = window.localStorage.getItem(STORAGE_KEYS.watermarkText);
+    const savedPdfIgnoreBackground = window.localStorage.getItem(STORAGE_KEYS.pdfIgnoreBackground);
     const savedExportBackgroundSrc = window.localStorage.getItem(STORAGE_KEYS.exportBackgroundSrc);
     const savedExportBackgroundName = window.localStorage.getItem(STORAGE_KEYS.exportBackgroundName);
     const savedPaginationStrategy = window.localStorage.getItem(STORAGE_KEYS.paginationStrategy);
@@ -19313,6 +20702,45 @@ async function initPagedApp() {
       const savedValue = window.localStorage.getItem(control.storageKey);
       state[control.key] = clampNumber(savedValue, control.min, control.max, control.defaultValue);
     });
+    const savedExamPageLayout = window.localStorage.getItem(STORAGE_KEYS.examPageLayout);
+    const savedStandardPageLayout = window.localStorage.getItem(STORAGE_KEYS.standardPageLayout);
+    if (savedExamPageLayout) {
+      try {
+        state.examPageLayout = buildExamPageLayout(JSON.parse(savedExamPageLayout));
+      } catch (_error) {
+        state.examPageLayout = buildExamPageLayout();
+      }
+    } else {
+      state.examPageLayout = buildExamPageLayout();
+    }
+    if (savedStandardPageLayout) {
+      try {
+        state.standardPageLayout = buildStandardPageLayout(JSON.parse(savedStandardPageLayout));
+      } catch (_error) {
+        state.standardPageLayout = buildStandardPageLayout({
+          pageWidth: state.pageWidth,
+          pageHeight: state.pageHeight,
+          pageMarginTop: state.pageMarginTop,
+          pageMarginRight: state.pageMarginRight,
+          pageMarginBottom: state.pageMarginBottom,
+          pageMarginLeft: state.pageMarginLeft,
+        });
+      }
+    } else {
+      state.standardPageLayout = buildStandardPageLayout({
+        pageWidth: state.pageWidth,
+        pageHeight: state.pageHeight,
+        pageMarginTop: state.pageMarginTop,
+        pageMarginRight: state.pageMarginRight,
+        pageMarginBottom: state.pageMarginBottom,
+        pageMarginLeft: state.pageMarginLeft,
+      });
+    }
+    if (state.mode === EXAM_MODE) {
+      applyPageLayoutToState(state, state.examPageLayout);
+    } else {
+      applyPageLayoutToState(state, state.standardPageLayout);
+    }
 
     state.lineHeight = clampNumber(
       migrateLegacyCompactValue(savedLineHeight, LEGACY_COMPACT_DEFAULTS.lineHeight, DEFAULT_LINE_HEIGHT),
@@ -19349,6 +20777,7 @@ async function initPagedApp() {
     state.pageHeaderText = savedPageHeaderText == null ? DEFAULT_PAGE_HEADER_TEXT : String(savedPageHeaderText);
     state.watermarkEnabled = normalizeBoolean(savedWatermarkEnabled, DEFAULT_WATERMARK_ENABLED);
     state.watermarkText = savedWatermarkText == null ? DEFAULT_WATERMARK_TEXT : String(savedWatermarkText);
+    state.pdfIgnoreBackground = normalizeBoolean(savedPdfIgnoreBackground, DEFAULT_PDF_IGNORE_BACKGROUND);
     state.paginationStrategy = sanitizeChoice(
       savedPaginationStrategy,
       PAGINATION_STRATEGIES,
@@ -19366,13 +20795,13 @@ async function initPagedApp() {
     state.tableLayouts = normalizeTableLayouts(savedTableLayouts ? JSON.parse(savedTableLayouts) : {});
     state.cardLayouts = normalizeCardLayouts(savedCardLayouts);
     state.cardOrder = normalizeCardOrder(savedCardOrder);
-    state.layoutHistoryEntries = normalizeLayoutHistoryEntries(savedLayoutHistoryEntries);
+    state.layoutHistoryEntries = filterManualLayoutHistoryEntries(normalizeLayoutHistoryEntries(savedLayoutHistoryEntries));
   } catch (_error) {
     // Ignore storage failures in restricted browsers.
   }
 
   try {
-    const remoteEntries = await requestLayoutHistoryEntries();
+    const remoteEntries = filterManualLayoutHistoryEntries(await requestLayoutHistoryEntries());
 
     if (remoteEntries.length) {
       state.layoutHistoryEntries = remoteEntries;
@@ -19386,7 +20815,7 @@ async function initPagedApp() {
         }
       }
 
-      state.layoutHistoryEntries = await requestLayoutHistoryEntries();
+      state.layoutHistoryEntries = filterManualLayoutHistoryEntries(await requestLayoutHistoryEntries());
       persistLegacyLayoutHistoryEntries(state.layoutHistoryEntries);
       clearLegacyLayoutHistoryEntries();
     }

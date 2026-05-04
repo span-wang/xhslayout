@@ -6845,25 +6845,29 @@ body {
   padding: 0.72em 0.9em;
   overflow-x: auto;
   overflow-y: visible;
-  border: 1px solid rgba(91, 111, 124, 0.16);
+  border-style: solid;
+  border-width: calc(var(--element-math-show-border, 0) * 1px);
+  border-color: rgba(91, 111, 124, 0.16);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.58);
+  background: transparent;
   cursor: pointer;
   font-family: inherit;
   font-size: 1em;
   line-height: inherit;
-  text-align: center;
+  text-align: left;
 }
 
 .math-block .katex-display {
   margin: 0;
   max-width: 100%;
+  text-align: left;
 }
 
 .math-block .katex-display > .katex {
   font-size: 1em;
   line-height: inherit;
   max-width: 100%;
+  text-align: left;
   white-space: normal;
 }
 
@@ -13291,6 +13295,1513 @@ body.has-compact-controls .range-value {
     radial-gradient(circle at 62% 72%, rgba(102, 120, 181, 0.16) 0 3px, transparent 4px);
 }
 
+.knowledge-cluster-title-shell-distinct,
+.knowledge-cluster-frame,
+.knowledge-cluster-matrix-shell,
+.knowledge-cluster-catalog-binder,
+.knowledge-cluster-atelier-board-shell,
+.knowledge-cluster-abyss-shell,
+.knowledge-cluster-prism-shell,
+.knowledge-cluster-theater-stage,
+.knowledge-cluster-neon-rack,
+.knowledge-cluster-solar-folio-shell,
+.knowledge-cluster-astral-observatory {
+  position: relative;
+}
+
+.knowledge-title-mark,
+.knowledge-title-meta,
+.knowledge-title-rail,
+.knowledge-title-tag-hole,
+.knowledge-title-axis,
+.knowledge-title-sonar,
+.knowledge-title-prism,
+.knowledge-title-curtain,
+.knowledge-title-bus,
+.knowledge-title-halo,
+.knowledge-title-orbit,
+.knowledge-cluster-vault-panel,
+.knowledge-cluster-vault-etch,
+.knowledge-cluster-matrix-status,
+.knowledge-cluster-matrix-grid,
+.knowledge-cluster-catalog-ticket,
+.knowledge-cluster-atelier-scale,
+.knowledge-cluster-abyss-grid,
+.knowledge-cluster-abyss-beacon,
+.knowledge-cluster-prism-glow,
+.knowledge-cluster-prism-shards,
+.knowledge-cluster-theater-curtain,
+.knowledge-cluster-theater-footlights,
+.knowledge-cluster-neon-nodes,
+.knowledge-cluster-solar-rays,
+.knowledge-cluster-solar-disc,
+.knowledge-cluster-astral-orbits,
+.knowledge-subtitle-chip {
+  position: absolute;
+  pointer-events: none;
+}
+
+.knowledge-cluster-title-shell-distinct {
+  display: grid;
+  gap: 8px;
+}
+
+.knowledge-cluster-title-text,
+.knowledge-subtitle-text {
+  position: relative;
+  z-index: 1;
+}
+
+.knowledge-title-mark {
+  display: inline-grid;
+  place-items: center;
+  z-index: 1;
+}
+
+.knowledge-title-meta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.knowledge-subtitle-chip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.2em;
+  margin-right: 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  clip-path: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-frame,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-frame {
+  display: grid;
+  gap: 16px;
+  padding: 18px 20px 20px;
+  border: 1.5px solid rgba(197, 162, 88, 0.32);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  background:
+    linear-gradient(180deg, rgba(22, 20, 18, 0.96), rgba(35, 31, 27, 0.94));
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 234, 208, 0.06),
+    0 18px 28px rgba(0, 0, 0, 0.24);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-vault-panel,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-vault-panel {
+  inset: 10px;
+  border: 1px solid rgba(197, 162, 88, 0.1);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-vault-etch,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-vault-etch {
+  right: 18px;
+  bottom: 18px;
+  width: 84px;
+  height: 84px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(197, 162, 88, 0.08) 0 20%, transparent 22%),
+    radial-gradient(circle, transparent 0 54%, rgba(197, 162, 88, 0.12) 56% 58%, transparent 60%);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-header,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-header {
+  margin-bottom: 0 !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid rgba(197, 162, 88, 0.22);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.14), rgba(197, 162, 88, 0.02) 42%),
+    rgba(48, 40, 31, 0.88);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title {
+  width: auto !important;
+  max-width: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #f5ead0 !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-mark {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(197, 162, 88, 0.42);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  color: rgba(197, 162, 88, 0.8);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-meta {
+  position: relative;
+  padding: 6px 8px 6px 10px;
+  border-left: 1px solid rgba(197, 162, 88, 0.22);
+  color: rgba(197, 162, 88, 0.82);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-body,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-body {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group {
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  border: 1px solid rgba(197, 162, 88, 0.12) !important;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  background: rgba(57, 47, 37, 0.6) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group + .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group + .knowledge-group {
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(197, 162, 88, 0.12) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: rgba(245, 234, 208, 0.88) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-subtitle-chip {
+  position: relative;
+  min-width: 2.6em;
+  padding: 0.22em 0.55em;
+  background: rgba(197, 162, 88, 0.16);
+  color: rgba(245, 234, 208, 0.9);
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-content,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-content {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-content > :is(.knowledge-block-emphasis, .knowledge-block-feature:not(pre), .fact-row),
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-content > :is(.knowledge-block-emphasis, .knowledge-block-feature:not(pre), .fact-row) {
+  border-color: rgba(197, 162, 88, 0.16) !important;
+  background: rgba(71, 58, 45, 0.74) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-shell {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(118, 145, 165, 0.22);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(233, 240, 245, 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 -1px 0 rgba(118, 145, 165, 0.16),
+    0 10px 18px rgba(69, 92, 108, 0.08);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-mast,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-mast {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(225, 233, 238, 0.9));
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-status,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-status {
+  left: 12px;
+  top: 50%;
+  width: 48px;
+  height: 8px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(118, 145, 165, 0.3) 0 34%, transparent 34% 40%, rgba(118, 145, 165, 0.16) 40% 70%, transparent 70% 76%, rgba(118, 145, 165, 0.12) 76% 100%);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 0 0 58px;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title {
+  padding: 8px 14px !important;
+  border: 1px solid rgba(118, 145, 165, 0.22) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-mark {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: rgba(118, 145, 165, 0.18);
+  color: rgba(74, 105, 124, 0.9);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-meta {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(118, 145, 165, 0.12);
+  color: rgba(74, 105, 124, 0.86);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-board,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-board {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(250, 253, 255, 0.88);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-grid,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-grid {
+  inset: 0;
+  border-radius: 18px;
+  background:
+    linear-gradient(rgba(118, 145, 165, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(118, 145, 165, 0.08) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px !important;
+  border: 1px solid rgba(118, 145, 165, 0.14) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.84) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group + .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group + .knowledge-group {
+  padding-top: 12px !important;
+  border-top: 1px solid rgba(118, 145, 165, 0.12) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: rgba(74, 105, 124, 0.9) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-subtitle-chip {
+  padding: 0.22em 0.55em;
+  background: rgba(118, 145, 165, 0.14);
+  color: rgba(74, 105, 124, 0.9);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-binder,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-binder {
+  position: relative;
+  padding-left: 18px;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-spine-tag,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-spine-tag {
+  left: 0;
+  top: 20px;
+  bottom: 20px;
+  width: 16px;
+  height: auto;
+  border: 1px dashed rgba(136, 102, 70, 0.36);
+  border-radius: 999px;
+  background: rgba(255, 250, 243, 0.96);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding: 18px 18px 18px 20px;
+  border: 1px dashed rgba(136, 102, 70, 0.34);
+  border-radius: 28px 20px 20px 28px;
+  background: rgba(255, 250, 243, 0.94);
+  box-shadow:
+    0 2px 0 rgba(136, 102, 70, 0.12),
+    0 14px 24px rgba(136, 102, 70, 0.06);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-ticket,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-ticket {
+  right: 16px;
+  top: -10px;
+  width: 54px;
+  height: 18px;
+  border: 1px dashed rgba(136, 102, 70, 0.34);
+  border-radius: 999px;
+  background: rgba(255, 246, 235, 0.96);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title {
+  width: fit-content !important;
+  max-width: 100% !important;
+  padding: 8px 16px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.34) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 253, 248, 0.9) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-mark {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border: 1.5px dashed rgba(136, 102, 70, 0.42);
+  border-radius: 999px;
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(122, 88, 56, 0.82);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group {
+  gap: 10px !important;
+  padding: 12px 14px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.26) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 251, 0.74) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-subtitle {
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.5em;
+  border: 1px dashed rgba(136, 102, 70, 0.3);
+  background: rgba(255, 250, 243, 0.9);
+  color: rgba(122, 88, 56, 0.82);
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-board-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-board-shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(91, 121, 131, 0.2);
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    rgba(251, 253, 253, 0.94);
+  background-size: 18px 18px, 18px 18px, auto;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-axis-grid,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-axis-grid {
+  inset: 0;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-rail,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-rail {
+  display: grid;
+  align-content: start;
+  padding-right: 12px;
+  border-right: 1px solid rgba(91, 121, 131, 0.2);
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-canvas,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-canvas {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding-left: 4px;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-scale,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-scale {
+  right: 0;
+  top: 0;
+  width: 36px;
+  height: 100%;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.28), rgba(91, 121, 131, 0.28)) right 9px top 0 / 1px 100% no-repeat,
+    linear-gradient(rgba(91, 121, 131, 0.2), rgba(91, 121, 131, 0.2)) right 0 top 18px / 18px 1px repeat-y;
+  background-size: 1px 100%, 18px 18px;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title {
+  padding: 0 0 10px 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(91, 121, 131, 0.24) !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-mark,
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(74, 104, 116, 0.82);
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group {
+  gap: 8px !important;
+  padding: 10px 0 10px 12px !important;
+  border: 0 !important;
+  border-left: 2px solid rgba(91, 121, 131, 0.18) !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.48em;
+  background: rgba(91, 121, 131, 0.12);
+  color: rgba(74, 104, 116, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-shell {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(247, 252, 254, 0.96), rgba(230, 243, 247, 0.92));
+  box-shadow: 0 12px 24px rgba(41, 111, 140, 0.08);
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-crest,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-crest {
+  padding: 6px 0 2px;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title {
+  padding: 8px 14px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 18px 50%, rgba(41, 111, 140, 0.18) 0 4px, transparent 5px),
+    rgba(255, 255, 255, 0.84) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-mark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(41, 111, 140, 0.16);
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(41, 111, 140, 0.78);
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-route,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-route {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-grid,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-grid {
+  inset: 0;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 10px 100%, rgba(41, 111, 140, 0.18) 0 10px, transparent 11px) left top / 40px 18px repeat-x;
+  opacity: 0.8;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-beacon,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-beacon {
+  right: 14px;
+  top: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(41, 111, 140, 0.18) 0 34%, transparent 36%),
+    radial-gradient(circle, transparent 0 58%, rgba(41, 111, 140, 0.14) 60% 70%, transparent 72%);
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+  border: 1px solid rgba(41, 111, 140, 0.12) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-subtitle-chip {
+  padding: 0.2em 0.52em;
+  background: rgba(41, 111, 140, 0.14);
+  color: rgba(41, 111, 140, 0.82);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shell {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(126, 152, 177, 0.26);
+  border-radius: 24px 10px 24px 10px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(236, 241, 251, 0.64));
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 12px 26px rgba(126, 152, 177, 0.12);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-glow,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-glow {
+  inset: -8px;
+  border-radius: 28px 12px 28px 12px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(126, 152, 177, 0.08)),
+    linear-gradient(225deg, rgba(155, 125, 176, 0.08), transparent);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title {
+  padding: 10px 14px !important;
+  border: 1px solid rgba(126, 152, 177, 0.26) !important;
+  border-radius: 18px 8px 18px 8px !important;
+  background:
+    linear-gradient(90deg, rgba(126, 152, 177, 0.16), rgba(155, 125, 176, 0.12)),
+    rgba(255, 255, 255, 0.74) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-mark {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(126, 152, 177, 0.22), rgba(155, 125, 176, 0.16));
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(99, 123, 145, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes {
+  position: relative;
+  display: grid;
+  gap: 12px;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shards,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shards {
+  right: 12px;
+  top: 12px;
+  width: 74px;
+  height: 74px;
+  background:
+    linear-gradient(135deg, rgba(126, 152, 177, 0.14), transparent 44%),
+    linear-gradient(225deg, rgba(155, 125, 176, 0.14), transparent 48%);
+  clip-path: polygon(16% 0, 100% 18%, 82% 100%, 0 74%);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(126, 152, 177, 0.18) !important;
+  border-radius: 18px 8px 18px 8px !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  backdrop-filter: blur(8px);
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-subtitle {
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.5em;
+  background: linear-gradient(135deg, rgba(126, 152, 177, 0.12), rgba(155, 125, 176, 0.14));
+  color: rgba(99, 123, 145, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-stage,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-stage {
+  display: grid;
+  gap: 16px;
+  padding: 20px 18px 18px;
+  border-radius: 26px 26px 12px 12px;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.16), rgba(255, 250, 252, 0.94) 24%),
+    rgba(255, 250, 252, 0.94);
+  box-shadow:
+    inset 0 12px 0 rgba(134, 66, 88, 0.06),
+    0 14px 24px rgba(134, 66, 88, 0.08);
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-curtain,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-curtain {
+  left: 18px;
+  right: 18px;
+  top: -16px;
+  height: 34px;
+  border-radius: 999px 999px 10px 10px;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.2), rgba(134, 66, 88, 0.06)),
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(134, 66, 88, 0.08) 10px 12px);
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title {
+  padding: 10px 16px !important;
+  border: 1px solid rgba(134, 66, 88, 0.22) !important;
+  border-radius: 999px 999px 8px 8px !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.92)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-mark,
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(127, 54, 74, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-acts,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-acts {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-footlights,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-footlights {
+  left: 14px;
+  right: 14px;
+  bottom: -10px;
+  height: 14px;
+  background:
+    radial-gradient(circle, rgba(134, 66, 88, 0.24) 0 3px, transparent 4px) left center / 18px 14px repeat-x;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(134, 66, 88, 0.14) !important;
+  border-radius: 20px 20px 10px 10px !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.52em;
+  background: rgba(134, 66, 88, 0.12);
+  color: rgba(127, 54, 74, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-rack,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-rack {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(49, 194, 186, 0.2);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+  background: rgba(13, 24, 29, 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 0 1px rgba(49, 194, 186, 0.14),
+    0 0 18px rgba(49, 194, 186, 0.14);
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-circuit-bus,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-circuit-bus {
+  left: 14px;
+  right: 14px;
+  top: -12px;
+  height: 24px;
+  background:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.26) 0 12%, transparent 12% 16%, rgba(49, 194, 186, 0.18) 16% 32%, transparent 32% 36%, rgba(49, 194, 186, 0.12) 36% 100%);
+  box-shadow: 0 0 10px rgba(49, 194, 186, 0.18);
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title {
+  padding: 10px 14px !important;
+  border: 1px solid rgba(49, 194, 186, 0.28) !important;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+  background:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.18), rgba(49, 194, 186, 0.02) 54%),
+    rgba(18, 34, 39, 0.96) !important;
+  box-shadow: 0 0 12px rgba(49, 194, 186, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-mark {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(49, 194, 186, 0.24);
+  box-shadow: 0 0 8px rgba(49, 194, 186, 0.24);
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(49, 194, 186, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh {
+  position: relative;
+  display: grid;
+  gap: 12px;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-nodes,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-nodes {
+  right: 12px;
+  top: 12px;
+  width: 70px;
+  height: 70px;
+  background:
+    radial-gradient(circle, rgba(49, 194, 186, 0.34) 0 2px, transparent 3px) left 10px top 16px / 24px 24px repeat,
+    linear-gradient(90deg, rgba(49, 194, 186, 0.18), transparent 58%);
+  opacity: 0.8;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(49, 194, 186, 0.16) !important;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+  background: rgba(18, 34, 39, 0.88) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: rgba(205, 251, 247, 0.88) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.5em;
+  background: rgba(49, 194, 186, 0.14);
+  color: rgba(49, 194, 186, 0.88);
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-folio-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-folio-shell {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(191, 124, 44, 0.16), transparent 34%),
+    rgba(255, 250, 238, 0.96);
+  box-shadow: 0 14px 24px rgba(191, 124, 44, 0.08);
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-rays,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-rays {
+  left: 50%;
+  top: -18px;
+  width: 68px;
+  height: 68px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(191, 124, 44, 0.2) 0 34%, transparent 36%),
+    radial-gradient(circle, transparent 0 56%, rgba(191, 124, 44, 0.16) 58% 70%, transparent 72%);
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title {
+  padding: 10px 16px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 18px 50%, rgba(191, 124, 44, 0.22) 0 5px, transparent 6px),
+    rgba(255, 255, 255, 0.82) !important;
+  box-shadow: inset 0 0 0 1px rgba(191, 124, 44, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-mark,
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(191, 124, 44, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-pages,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-pages {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-disc,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-disc {
+  right: 12px;
+  top: 12px;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(191, 124, 44, 0.16) 0 36%, transparent 38%),
+    radial-gradient(circle, transparent 0 58%, rgba(191, 124, 44, 0.12) 60% 66%, transparent 68%);
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  border: 1px solid rgba(191, 124, 44, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-subtitle {
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.52em;
+  background: rgba(191, 124, 44, 0.12);
+  color: rgba(191, 124, 44, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-observatory,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-observatory {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 24%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    linear-gradient(180deg, rgba(251, 252, 255, 0.98), rgba(236, 239, 251, 0.96));
+  box-shadow: 0 12px 24px rgba(102, 120, 181, 0.08);
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-starfield,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-starfield {
+  inset: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title {
+  padding: 10px 16px !important;
+  border: 1px solid rgba(102, 120, 181, 0.2) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 16px 50%, rgba(102, 120, 181, 0.24) 0 3px, transparent 4px),
+    linear-gradient(90deg, rgba(102, 120, 181, 0.12), transparent 56%),
+    rgba(251, 252, 255, 0.94) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-mark,
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-meta {
+  position: relative;
+  color: rgba(102, 120, 181, 0.84);
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-map,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-map {
+  position: relative;
+  display: grid;
+  gap: 14px;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-orbits,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-orbits {
+  left: 50%;
+  top: -16px;
+  width: 92px;
+  height: 38px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(102, 120, 181, 0.2);
+  border-radius: 999px;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-orbits::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-orbits::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(102, 120, 181, 0.24);
+  transform: translateY(-50%);
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group {
+  gap: 8px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(102, 120, 181, 0.14) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-subtitle {
+  width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-subtitle-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-subtitle-chip {
+  padding: 0.18em 0.52em;
+  background: rgba(102, 120, 181, 0.12);
+  color: rgba(102, 120, 181, 0.84);
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-content-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-fragment,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-content-fragment {
+  border-right: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-header-family-obsidian-vault.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 20px 10px !important;
+  border: 1.5px solid rgba(197, 162, 88, 0.28) !important;
+  border-bottom: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%) !important;
+  background: linear-gradient(180deg, rgba(22, 20, 18, 0.96), rgba(35, 31, 27, 0.94)) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-content-fragment {
+  padding: 0 20px 12px !important;
+  border-left: 1.5px solid rgba(197, 162, 88, 0.28) !important;
+  border-right: 1.5px solid rgba(197, 162, 88, 0.28) !important;
+  background: rgba(35, 31, 27, 0.94) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-fragment-title {
+  padding-top: 6px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-fragment-end.knowledge-group-family-obsidian-vault {
+  padding-bottom: 18px !important;
+  border-bottom: 1.5px solid rgba(197, 162, 88, 0.28) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-header-family-chrome-matrix.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 16px 18px 10px !important;
+  border: 1px solid rgba(118, 145, 165, 0.22) !important;
+  border-bottom: 0 !important;
+  border-radius: 20px 20px 0 0 !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(233, 240, 245, 0.92)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.96) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(118, 145, 165, 0.22) !important;
+  border-right: 1px solid rgba(118, 145, 165, 0.22) !important;
+  background:
+    linear-gradient(rgba(118, 145, 165, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(118, 145, 165, 0.06) 1px, transparent 1px),
+    rgba(250, 253, 255, 0.88) !important;
+  background-size: 18px 18px, 18px 18px, auto !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-fragment-end.knowledge-group-family-chrome-matrix {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(118, 145, 165, 0.22) !important;
+  border-radius: 0 0 20px 20px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-header-family-museum-catalog.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px 22px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.32) !important;
+  border-bottom: 0 !important;
+  border-radius: 28px 20px 0 28px !important;
+  background: rgba(255, 250, 243, 0.94) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-content-fragment {
+  padding: 0 18px 10px 22px !important;
+  border-left: 1px dashed rgba(136, 102, 70, 0.32) !important;
+  border-right: 1px dashed rgba(136, 102, 70, 0.32) !important;
+  background: rgba(255, 250, 243, 0.94) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-fragment-end.knowledge-group-family-museum-catalog {
+  padding-bottom: 16px !important;
+  border-bottom: 1px dashed rgba(136, 102, 70, 0.32) !important;
+  border-radius: 0 0 20px 28px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-header-family-atelier-board.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 16px 18px 8px !important;
+  border-top: 1px solid rgba(91, 121, 131, 0.24) !important;
+  border-left: 1px solid rgba(91, 121, 131, 0.16) !important;
+  border-right: 1px solid rgba(91, 121, 131, 0.16) !important;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    rgba(251, 253, 253, 0.94) !important;
+  background-size: 18px 18px, 18px 18px, auto !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-content-fragment {
+  padding: 0 18px 8px 26px !important;
+  border-left: 1px solid rgba(91, 121, 131, 0.16) !important;
+  border-right: 1px solid rgba(91, 121, 131, 0.16) !important;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 121, 131, 0.06) 1px, transparent 1px),
+    rgba(251, 253, 253, 0.94) !important;
+  background-size: 18px 18px, 18px 18px, auto !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-fragment-end.knowledge-group-family-atelier-board {
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid rgba(91, 121, 131, 0.18) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-header-family-abyss-chart.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px !important;
+  border: 1px solid rgba(41, 111, 140, 0.18) !important;
+  border-bottom: 0 !important;
+  border-radius: 26px 26px 0 0 !important;
+  background:
+    radial-gradient(circle at 8% 100%, rgba(41, 111, 140, 0.18) 0 10px, transparent 11px),
+    linear-gradient(180deg, rgba(247, 252, 254, 0.96), rgba(230, 243, 247, 0.92)) !important;
+  background-size: 24px 12px, auto !important;
+  background-repeat: no-repeat !important;
+  background-position: left bottom, left top !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(41, 111, 140, 0.18) !important;
+  border-right: 1px solid rgba(41, 111, 140, 0.18) !important;
+  background: rgba(247, 252, 254, 0.94) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-fragment-end.knowledge-group-family-abyss-chart {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(41, 111, 140, 0.18) !important;
+  border-radius: 0 0 24px 24px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-header-family-prism-glass.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px !important;
+  border: 1px solid rgba(126, 152, 177, 0.24) !important;
+  border-bottom: 0 !important;
+  border-radius: 24px 10px 0 0 !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(236, 241, 251, 0.64)) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(126, 152, 177, 0.24) !important;
+  border-right: 1px solid rgba(126, 152, 177, 0.24) !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-fragment-end.knowledge-group-family-prism-glass {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(126, 152, 177, 0.24) !important;
+  border-radius: 0 0 24px 10px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-header-family-velvet-theater.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 20px 18px 10px !important;
+  border: 1px solid rgba(134, 66, 88, 0.18) !important;
+  border-bottom: 0 !important;
+  border-radius: 26px 26px 0 0 !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.94) 32%),
+    rgba(255, 250, 252, 0.94) !important;
+  box-shadow: inset 0 12px 0 rgba(134, 66, 88, 0.06) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(134, 66, 88, 0.18) !important;
+  border-right: 1px solid rgba(134, 66, 88, 0.18) !important;
+  background: rgba(255, 250, 252, 0.94) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-fragment-end.knowledge-group-family-velvet-theater {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(134, 66, 88, 0.18) !important;
+  border-radius: 0 0 12px 12px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-header-family-neon-circuit.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px !important;
+  border: 1px solid rgba(49, 194, 186, 0.22) !important;
+  border-bottom: 0 !important;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%) !important;
+  background: rgba(13, 24, 29, 0.96) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 0 1px rgba(49, 194, 186, 0.14),
+    0 0 16px rgba(49, 194, 186, 0.12) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(49, 194, 186, 0.22) !important;
+  border-right: 1px solid rgba(49, 194, 186, 0.22) !important;
+  background: rgba(13, 24, 29, 0.96) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-fragment-end.knowledge-group-family-neon-circuit {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(49, 194, 186, 0.22) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px)) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-header-family-solar-folio.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px !important;
+  border: 1px solid rgba(191, 124, 44, 0.18) !important;
+  border-bottom: 0 !important;
+  border-radius: 28px 28px 0 0 !important;
+  background:
+    radial-gradient(circle at 50% 0, rgba(191, 124, 44, 0.16), transparent 30%),
+    rgba(255, 250, 238, 0.96) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(191, 124, 44, 0.18) !important;
+  border-right: 1px solid rgba(191, 124, 44, 0.18) !important;
+  background: rgba(255, 250, 238, 0.96) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-fragment-end.knowledge-group-family-solar-folio {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(191, 124, 44, 0.18) !important;
+  border-radius: 0 0 24px 24px !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-header-family-astral-orbit.knowledge-cluster-fragment-header {
+  margin: 0 !important;
+  padding: 18px 18px 10px !important;
+  border: 1px solid rgba(102, 120, 181, 0.18) !important;
+  border-bottom: 0 !important;
+  border-radius: 22px 22px 0 0 !important;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 24%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    rgba(251, 252, 255, 0.98) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-fragment-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-content-fragment {
+  padding: 0 18px 10px !important;
+  border-left: 1px solid rgba(102, 120, 181, 0.18) !important;
+  border-right: 1px solid rgba(102, 120, 181, 0.18) !important;
+  background: rgba(251, 252, 255, 0.98) !important;
+}
+
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-content-fragment.knowledge-group-fragment-end,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-fragment-end.knowledge-group-family-astral-orbit {
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid rgba(102, 120, 181, 0.18) !important;
+  border-radius: 0 0 22px 22px !important;
+}
+
 .layout-heading-shell {
   inset: -10px;
 }
@@ -14173,6 +15684,61 @@ body.has-compact-controls .range-value {
 .article-canvas[data-mode="question"].question-body-layout .question-answer-box.question-followup-box .question-role,
 .page-sheet .article-canvas[data-mode="question"].question-body-layout .question-answer-box.question-followup-box .question-role {
   min-width: 0 !important;
+}
+
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout {
+  column-count: 2;
+  column-gap: 28px;
+  column-rule: 1px solid rgba(17, 19, 21, 0.18);
+}
+
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > * ,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > * {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h1,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h1,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h2,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h2,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h3,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h3,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h4,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h4,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-body-title,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-body-title,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-answer-bank-title,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-answer-bank-title {
+  column-span: all;
+  break-after: avoid;
+}
+
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item {
+  display: grid;
+  gap: 0.3em;
+  margin: 0 0 0.9em;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item > .question-body-title,
+.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item > .question-body-title {
+  margin: 0 0 0.12em !important;
+  font-weight: 900 !important;
+}
+
+@media (max-width: 860px) {
+  .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout,
+  .page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout {
+    column-count: 1;
+    column-gap: 0;
+    column-rule: 0;
+  }
 }
 
 /* Final ribbon collision fixes: keep each control group in its own lane. */
@@ -16060,6 +17626,15 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94) !important;
 }
 
+.element-style-field-toggle {
+  grid-template-rows: auto auto !important;
+  min-height: 0 !important;
+}
+
+.element-style-field-toggle.is-active {
+  border-color: rgba(32, 74, 115, 0.18) !important;
+}
+
 .element-style-label,
 .element-style-value {
   min-width: 0 !important;
@@ -16162,6 +17737,43 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
     0 0 0 1px rgba(23, 33, 43, 0.08) !important;
 }
 
+.element-style-toggle-button {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  min-height: 26px !important;
+  padding: 0 10px !important;
+  border: 1px solid rgba(17, 19, 21, 0.1) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: var(--ink) !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease !important;
+}
+
+.element-style-toggle-button:hover {
+  border-color: rgba(17, 19, 21, 0.18) !important;
+}
+
+.element-style-toggle-button:focus-visible {
+  outline: 2px solid rgba(32, 74, 115, 0.28) !important;
+  outline-offset: 2px !important;
+}
+
+.element-style-toggle-button.is-active,
+.element-style-toggle-button[aria-pressed="true"] {
+  border-color: rgba(32, 74, 115, 0.3) !important;
+  background: #111315 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(17, 19, 21, 0.14) !important;
+}
+
 .element-style-reset {
   flex: 0 0 auto !important;
 }
@@ -16229,6 +17841,7 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   --element-math-padding-y: 10px;
   --element-math-radius: 12px;
   --element-math-space-after: 12px;
+  --element-math-show-border: 0;
   --element-mindmap-root-width: 56px;
   --element-mindmap-node-font-size: calc(var(--user-font-size) - 1px);
   --element-mindmap-node-padding-x: 10px;
@@ -16398,6 +18011,7 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .page-sheet .article-canvas .math-block {
   margin-bottom: var(--element-math-space-after) !important;
   padding: var(--element-math-padding-y) var(--element-math-padding-x) !important;
+  border-width: calc(var(--element-math-show-border, 0) * 1px) !important;
   border-radius: var(--element-math-radius) !important;
   font-size: var(--element-math-font-size) !important;
   line-height: var(--element-p-line-height) !important;
@@ -16487,6 +18101,1581 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .page-sheet .article-canvas .article-pullquote {
   padding: var(--element-article-pullquote-padding-y) var(--element-article-pullquote-padding-x) !important;
   margin-bottom: var(--element-article-pullquote-space-after) !important;
+}
+
+/* Exam mode real-page override: make question-proof look like a paper spread, not a note page. */
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] {
+  --page-background-fill: #fffdfa;
+  --page-background-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(250, 247, 240, 0.99));
+  padding-left: calc((var(--page-margin-left-mm, 16) * 1mm) + 46px);
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"]::before {
+  inset: 10px 10px 10px 6px;
+  border-color: rgba(17, 19, 21, 0.08);
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-frame {
+  position: relative;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-frame::before {
+  content: "";
+  position: absolute;
+  left: -40px;
+  top: 2px;
+  bottom: 8px;
+  width: 28px;
+  border: 1px solid rgba(17, 19, 21, 0.22);
+  background:
+    linear-gradient(90deg, transparent 0 27%, rgba(17, 19, 21, 0.75) 27% 29%, transparent 29% 71%, rgba(17, 19, 21, 0.75) 71% 73%, transparent 73% 100%),
+    linear-gradient(180deg, rgba(17, 19, 21, 0.05), rgba(17, 19, 21, 0.01));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-frame::after {
+  content: "密封线 姓名 班级 考号";
+  position: absolute;
+  left: -35px;
+  top: 18px;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(17, 19, 21, 0.84);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.16em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  pointer-events: none;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-header {
+  min-height: 0;
+  padding: 2px 0 10px;
+  border-bottom: 0;
+  background-image: none;
+  color: rgba(17, 19, 21, 0.7);
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-header-text {
+  max-width: calc(100% - 44px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-page-number {
+  color: rgba(17, 19, 21, 0.96);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-footer {
+  bottom: 0;
+  height: 0;
+  background: none !important;
+}
+
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-footer::before,
+.page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-footer::after {
+  content: none !important;
+  display: none !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] {
+  column-count: 2;
+  column-gap: 32px;
+  column-rule: 1px solid rgba(17, 19, 21, 0.16);
+  color: rgba(17, 19, 21, 0.96);
+  --body-line-height: 1.72;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] > * {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] > h1 {
+  margin: 10px 0 16px !important;
+  padding: 0 0 14px !important;
+  background: none !important;
+  border: 0 !important;
+  border-bottom: 1.5px solid rgba(17, 19, 21, 0.16) !important;
+  box-shadow: none !important;
+  color: rgba(17, 19, 21, 0.98) !important;
+  font-size: min(var(--user-h1-size), 28px) !important;
+  font-weight: 900 !important;
+  line-height: 1.28 !important;
+  letter-spacing: 0.02em !important;
+  text-align: center !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(h2, .question-card-title, .question-body-title, .question-answer-bank-title, .question-answer-item-title) {
+  margin: 0.18em 0 0.32em !important;
+  padding: 5px 12px !important;
+  border: 1px solid rgba(165, 129, 67, 0.2) !important;
+  border-left: 4px solid rgba(165, 129, 67, 0.7) !important;
+  border-radius: 4px !important;
+  background: linear-gradient(90deg, rgba(243, 230, 203, 0.78), rgba(255, 255, 255, 0.96)) !important;
+  box-shadow: none !important;
+  color: rgba(17, 19, 21, 0.98) !important;
+  font-size: calc(var(--user-h2-size) - 3px) !important;
+  font-weight: 900 !important;
+  line-height: 1.38 !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(p, li, .list-item-copy, .list-item-text, .list-item-body) {
+  color: rgba(17, 19, 21, 0.96) !important;
+  line-height: 1.72 !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(.question-card, .question-panel, .question-detail-section, .question-answer-box, .callout-box, .brush-block, blockquote) {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(.callout-box, .brush-block, blockquote) {
+  border: 1px solid rgba(17, 19, 21, 0.14) !important;
+  background: rgba(247, 247, 247, 0.82) !important;
+}
+
+@media (max-width: 860px) {
+  .page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] {
+    padding-left: calc((var(--page-margin-left-mm, 16) * 1mm) + 18px);
+  }
+
+  .page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-frame::before,
+  .page-sheet[data-source-mode="exam"][data-layout-preset="question-proof"] .page-sheet-frame::after {
+    display: none;
+  }
+
+  .page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] {
+    column-count: 1;
+    column-gap: 0;
+    column-rule: 0;
+  }
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(h2, .question-card-title, .question-body-title, .question-answer-bank-title, .question-answer-item-title) {
+  padding: 2px 0 4px 10px !important;
+  border: 0 !important;
+  border-left: 3px solid rgba(141, 108, 51, 0.72) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(.question-card, .question-panel, .question-panel-body, .question-detail-section, .question-followup-box, .question-answer-box, .question-answer-item, .question-answer-item-detail) {
+  display: block !important;
+  margin: 0 0 0.42em !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] :is(.question-panel-stem + .question-panel-detail, .question-detail-section + .question-detail-section, .question-answer-box-row + .question-answer-box-row) {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: 0 !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] .question-detail-section::before,
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] .question-card-title::after {
+  content: none !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] .question-answer-box-row {
+  display: block !important;
+  margin: 0 0 0.24em !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] .question-answer-box-label {
+  display: inline !important;
+  width: auto !important;
+  margin: 0 0.22em 0 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgba(17, 19, 21, 0.96) !important;
+  font-size: inherit !important;
+  font-weight: 900 !important;
+  line-height: inherit !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+  vertical-align: baseline !important;
+}
+
+.page-sheet[data-layout-preset="knowledge-obsidian-vault"],
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M34 26H726L700 52H60Z' fill='none' stroke='%23c5a258' stroke-opacity='.28' stroke-width='1.2'/%3E%3Cpath d='M72 74H688' stroke='%23c5a258' stroke-opacity='.16'/%3E%3Cpath d='M112 128H640' stroke='%23c5a258' stroke-opacity='.08'/%3E%3Cpath d='M548 94c28 0 52 22 52 50s-24 50-52 50' fill='none' stroke='%23c5a258' stroke-opacity='.18' stroke-width='1.2'/%3E%3Ccircle cx='548' cy='144' r='14' fill='none' stroke='%23c5a258' stroke-opacity='.18'/%3E%3Cpath d='M176 110l34-34l30 30l40-40l28 28' fill='none' stroke='%23f0d8a3' stroke-opacity='.12' stroke-width='1.2'/%3E%3Cpath d='M130 180H336' stroke='%23c5a258' stroke-opacity='.12' stroke-width='1.4'/%3E%3Cpath d='M130 188H274' stroke='%23c5a258' stroke-opacity='.07'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-chrome-matrix"],
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M48 30H712V188H48Z' fill='none' stroke='%235e7e95' stroke-opacity='.12'/%3E%3Cpath d='M48 78H712M48 126H712M48 174H712M190 30V188M356 30V188M522 30V188' stroke='%235e7e95' stroke-opacity='.08'/%3E%3Crect x='102' y='56' width='142' height='40' rx='10' fill='none' stroke='%235e7e95' stroke-opacity='.16'/%3E%3Crect x='292' y='100' width='186' height='48' rx='12' fill='none' stroke='%235e7e95' stroke-opacity='.14'/%3E%3Crect x='532' y='52' width='118' height='28' rx='8' fill='none' stroke='%235e7e95' stroke-opacity='.18'/%3E%3Ccircle cx='132' cy='68' r='4' fill='%235e7e95' fill-opacity='.18'/%3E%3Ccircle cx='564' cy='66' r='3' fill='%235e7e95' fill-opacity='.16'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-museum-catalog"],
+.article-canvas[data-layout-preset="knowledge-museum-catalog"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M60 36H700a24 24 0 0 1 24 24v100a24 24 0 0 1-24 24H60a24 24 0 0 1-24-24V60a24 24 0 0 1 24-24Z' fill='none' stroke='%23886646' stroke-opacity='.14' stroke-dasharray='3 4'/%3E%3Ccircle cx='94' cy='88' r='10' fill='none' stroke='%23886646' stroke-opacity='.18'/%3E%3Cpath d='M124 88H324M124 100H286M124 112H236' stroke='%23886646' stroke-opacity='.16' stroke-linecap='round'/%3E%3Crect x='454' y='72' width='190' height='88' rx='18' fill='none' stroke='%23886646' stroke-opacity='.12'/%3E%3Cpath d='M484 104H614M484 118H596M484 132H548' stroke='%23886646' stroke-opacity='.16' stroke-linecap='round'/%3E%3Cpath d='M84 168H676' stroke='%23886646' stroke-opacity='.08'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-atelier-board"],
+.article-canvas[data-layout-preset="knowledge-atelier-board"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M48 28H712V192H48Z' fill='none' stroke='%235b7983' stroke-opacity='.12'/%3E%3Cpath d='M48 82H712M48 136H712M48 190H712M172 28V192M338 28V192M504 28V192' stroke='%235b7983' stroke-opacity='.08'/%3E%3Cpath d='M100 166L206 72L322 166' fill='none' stroke='%235b7983' stroke-opacity='.18' stroke-width='1.2'/%3E%3Cpath d='M406 164L406 66L542 66L542 164' fill='none' stroke='%235b7983' stroke-opacity='.16'/%3E%3Ccircle cx='542' cy='66' r='6' fill='none' stroke='%235b7983' stroke-opacity='.2'/%3E%3Cpath d='M592 72H668M592 88H654M592 104H632' stroke='%235b7983' stroke-opacity='.18' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-abyss-chart"],
+.article-canvas[data-layout-preset="knowledge-abyss-chart"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M58 62c46-26 94-26 140 0c42 24 86 24 132 0c48-26 98-26 146 0c42 24 86 24 130 0c34-18 66-20 96-8' fill='none' stroke='%23296f8c' stroke-opacity='.18' stroke-width='1.4'/%3E%3Cpath d='M58 108c36-20 74-20 110 0c46 26 96 26 142 0c48-28 102-28 150 0c42 24 86 24 130 0c34-18 66-18 102-4' fill='none' stroke='%23296f8c' stroke-opacity='.12' stroke-width='1.2'/%3E%3Cpath d='M58 154c30-16 60-16 90 0c44 24 96 24 140 0c50-28 106-28 156 0c42 24 86 24 128 0c34-18 66-18 100-6' fill='none' stroke='%23296f8c' stroke-opacity='.08' stroke-width='1.1'/%3E%3Ccircle cx='164' cy='108' r='9' fill='none' stroke='%23296f8c' stroke-opacity='.18'/%3E%3Ccircle cx='510' cy='62' r='11' fill='none' stroke='%23296f8c' stroke-opacity='.16'/%3E%3Cpath d='M510 51v22M499 62h22' stroke='%23296f8c' stroke-opacity='.12'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-prism-glass"],
+.article-canvas[data-layout-preset="knowledge-prism-glass"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M74 40L238 40L180 180L40 180Z' fill='none' stroke='%23668699' stroke-opacity='.14'/%3E%3Cpath d='M222 58L398 58L334 188L166 188Z' fill='none' stroke='%239b7db0' stroke-opacity='.12'/%3E%3Cpath d='M408 40L690 40L622 180L346 180Z' fill='none' stroke='%23668699' stroke-opacity='.12'/%3E%3Cpath d='M74 40L180 180L408 40L622 180' fill='none' stroke='%23668699' stroke-opacity='.08'/%3E%3Cpath d='M258 116H614' stroke='%239b7db0' stroke-opacity='.12'/%3E%3Ccircle cx='610' cy='82' r='7' fill='%23668699' fill-opacity='.1'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-velvet-theater"],
+.article-canvas[data-layout-preset="knowledge-velvet-theater"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M54 42c30-28 62-28 92 0c30-28 62-28 92 0c30-28 62-28 92 0c30-28 62-28 92 0c30-28 62-28 92 0c30-28 62-28 92 0v120H54Z' fill='none' stroke='%23864258' stroke-opacity='.16'/%3E%3Cpath d='M112 42v120M204 42v120M296 42v120M388 42v120M480 42v120M572 42v120M664 42v120' stroke='%23864258' stroke-opacity='.08'/%3E%3Cpath d='M156 162H606' stroke='%23864258' stroke-opacity='.12'/%3E%3Ccircle cx='198' cy='88' r='6' fill='%23864258' fill-opacity='.12'/%3E%3Ccircle cx='562' cy='88' r='6' fill='%23864258' fill-opacity='.12'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-neon-circuit"],
+.article-canvas[data-layout-preset="knowledge-neon-circuit"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M52 52H174V94H284V70H424V134H594V88H706' fill='none' stroke='%2331c2ba' stroke-opacity='.3' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M52 152H162V128H298V168H468V110H650V146H706' fill='none' stroke='%2331c2ba' stroke-opacity='.18' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='52' cy='52' r='5' fill='%2331c2ba' fill-opacity='.3'/%3E%3Ccircle cx='174' cy='94' r='5' fill='%2331c2ba' fill-opacity='.24'/%3E%3Ccircle cx='284' cy='70' r='5' fill='%2331c2ba' fill-opacity='.2'/%3E%3Ccircle cx='424' cy='134' r='5' fill='%2331c2ba' fill-opacity='.3'/%3E%3Ccircle cx='594' cy='88' r='5' fill='%2331c2ba' fill-opacity='.24'/%3E%3Ccircle cx='706' cy='88' r='5' fill='%2331c2ba' fill-opacity='.32'/%3E%3Crect x='228' y='132' width='54' height='30' rx='8' fill='none' stroke='%2331c2ba' stroke-opacity='.18'/%3E%3Crect x='512' y='46' width='58' height='32' rx='8' fill='none' stroke='%2331c2ba' stroke-opacity='.18'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-solar-folio"],
+.article-canvas[data-layout-preset="knowledge-solar-folio"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Ccircle cx='380' cy='112' r='46' fill='none' stroke='%23bf7c2c' stroke-opacity='.16'/%3E%3Cpath d='M380 24v42M380 158v42M292 112h42M426 112h42M318 50l28 28M442 146l28 28M442 50l-28 28M318 146l-28 28' stroke='%23bf7c2c' stroke-opacity='.18' stroke-width='1.4' stroke-linecap='round'/%3E%3Cpath d='M198 84h110M452 84h110M198 140h96M466 140h96' stroke='%23bf7c2c' stroke-opacity='.12' stroke-linecap='round'/%3E%3Ccircle cx='380' cy='112' r='12' fill='%23bf7c2c' fill-opacity='.08'/%3E%3C/svg%3E");
+}
+
+.page-sheet[data-layout-preset="knowledge-astral-orbit"],
+.article-canvas[data-layout-preset="knowledge-astral-orbit"],
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] {
+  --preset-hero-doodle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='220' viewBox='0 0 760 220'%3E%3Cpath d='M110 114A270 68 0 0 1 650 114A270 68 0 0 1 110 114Z' fill='none' stroke='%236678b5' stroke-opacity='.14'/%3E%3Cpath d='M164 114A216 52 0 0 1 596 114A216 52 0 0 1 164 114Z' fill='none' stroke='%236678b5' stroke-opacity='.12'/%3E%3Cpath d='M234 114A146 34 0 0 1 526 114A146 34 0 0 1 234 114Z' fill='none' stroke='%236678b5' stroke-opacity='.08'/%3E%3Ccircle cx='380' cy='114' r='18' fill='none' stroke='%236678b5' stroke-opacity='.18'/%3E%3Ccircle cx='234' cy='114' r='5' fill='%236678b5' fill-opacity='.16'/%3E%3Ccircle cx='526' cy='114' r='5' fill='%236678b5' fill-opacity='.16'/%3E%3Ccircle cx='470' cy='80' r='4' fill='%236678b5' fill-opacity='.18'/%3E%3Ccircle cx='308' cy='150' r='4' fill='%236678b5' fill-opacity='.18'/%3E%3Ccircle cx='186' cy='68' r='2' fill='%236678b5' fill-opacity='.14'/%3E%3Ccircle cx='612' cy='162' r='2' fill='%236678b5' fill-opacity='.14'/%3E%3C/svg%3E");
+}
+
+/* Question mode: keep stems and list copy synced with paragraph text sizing. */
+.article-canvas[data-mode="question"] :is(.question-card-title, .question-body-title, .question-role-stem),
+.page-sheet .article-canvas[data-mode="question"] :is(.question-card-title, .question-body-title, .question-role-stem) {
+  font-size: var(--element-p-font-size) !important;
+  line-height: var(--element-p-line-height) !important;
+}
+
+.article-canvas[data-mode="question"] :is(ul, ol, .note-list, .ordered-list, .bullet-list),
+.page-sheet .article-canvas[data-mode="question"] :is(ul, ol, .note-list, .ordered-list, .bullet-list),
+.article-canvas[data-mode="question"] :is(li, .list-item-copy, .list-item-body, .list-item-text),
+.page-sheet .article-canvas[data-mode="question"] :is(li, .list-item-copy, .list-item-body, .list-item-text) {
+  font-size: var(--element-p-font-size) !important;
+  line-height: var(--element-p-line-height) !important;
+}
+
+/* Premium refresh for the 10 custom knowledge presets.
+   Keep this at EOF so these families win over earlier structural polish. */
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] h1 {
+  width: fit-content !important;
+  margin: 0 0 34px !important;
+  padding: 18px 28px 18px 22px !important;
+  border: 1px solid rgba(197, 162, 88, 0.18) !important;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)) !important;
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.02) 48%),
+    rgba(24, 22, 20, 0.96) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 242, 212, 0.04),
+    0 16px 30px rgba(0, 0, 0, 0.22) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell {
+  grid-template-columns: 64px minmax(0, 1fr) 88px !important;
+  gap: 18px !important;
+  padding: 18px 22px !important;
+  border-width: 1px !important;
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.12), rgba(197, 162, 88, 0.02) 38%),
+    linear-gradient(180deg, rgba(64, 53, 40, 0.94), rgba(52, 43, 34, 0.92)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-mark {
+  width: 46px !important;
+  height: 46px !important;
+  border-width: 1px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.18em !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(197, 162, 88, 0.18), rgba(197, 162, 88, 0.04)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-title-meta {
+  justify-self: end !important;
+  padding: 8px 0 8px 16px !important;
+  border-left-width: 1px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.24em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group {
+  padding: 16px 18px !important;
+  background:
+    linear-gradient(180deg, rgba(60, 49, 39, 0.68), rgba(47, 40, 33, 0.64)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] h1 {
+  margin: 0 0 28px !important;
+  padding: 0 0 16px !important;
+  border: 0 !important;
+  background:
+    linear-gradient(90deg, rgba(118, 145, 165, 0.22) 0 18%, transparent 18% 22%, rgba(118, 145, 165, 0.14) 22% 48%, transparent 48% 52%, rgba(118, 145, 165, 0.08) 52% 100%) left bottom / 100% 8px no-repeat !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-shell {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: 14px !important;
+  border-radius: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-mast,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-mast {
+  padding: 10px 14px !important;
+  border: 1px solid rgba(118, 145, 165, 0.18) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell {
+  grid-template-columns: 74px minmax(0, 1fr) 92px !important;
+  padding: 0 0 0 74px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title {
+  padding: 10px 16px !important;
+  border-radius: 10px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(233, 240, 245, 0.88)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-mark {
+  width: 52px !important;
+  height: 30px !important;
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.16em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-title-meta {
+  justify-self: end !important;
+  padding: 8px 10px !important;
+  border-radius: 8px !important;
+  font-size: 10px !important;
+  letter-spacing: 0.18em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group {
+  border-radius: 10px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    inset 0 -1px 0 rgba(118, 145, 165, 0.12) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 10px 22px 10px 34px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.32) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 252, 247, 0.94) !important;
+  box-shadow: 0 8px 18px rgba(136, 102, 70, 0.06) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card {
+  gap: 18px !important;
+  padding: 22px 20px 18px 22px !important;
+  border-radius: 34px 18px 18px 34px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell {
+  grid-template-columns: 24px minmax(0, 1fr) 96px !important;
+  gap: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title {
+  padding: 10px 18px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-mark {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-title-meta {
+  justify-self: end !important;
+  letter-spacing: 0.2em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group {
+  border-style: dashed !important;
+  border-radius: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] h1 {
+  margin: 0 0 34px !important;
+  padding: 0 0 14px 22px !important;
+  border: 0 !important;
+  border-left: 2px solid rgba(91, 121, 131, 0.34) !important;
+  border-bottom: 1px solid rgba(91, 121, 131, 0.18) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-board-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-board-shell {
+  grid-template-columns: 180px minmax(0, 1fr) !important;
+  gap: 22px !important;
+  padding: 20px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title {
+  padding: 0 0 12px 0 !important;
+  font-family: "Helvetica Neue", "PingFang SC", sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-meta,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-title-meta {
+  align-self: start !important;
+  padding-top: 4px !important;
+  letter-spacing: 0.22em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group {
+  padding-left: 18px !important;
+  border-left-width: 1px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 16px 26px !important;
+  border: 1px solid rgba(41, 111, 140, 0.18) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(41, 111, 140, 0.1), transparent 64%),
+    rgba(247, 252, 254, 0.92) !important;
+  box-shadow: 0 10px 20px rgba(41, 111, 140, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-shell {
+  padding: 22px 20px 18px !important;
+  border-radius: 32px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell {
+  grid-template-columns: 34px minmax(0, 1fr) 92px !important;
+  gap: 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-title-mark {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 14px 24px !important;
+  border: 1px solid rgba(126, 152, 177, 0.22) !important;
+  border-radius: 24px 10px 24px 10px !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(236, 241, 251, 0.64)) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 14px 30px rgba(126, 152, 177, 0.12) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-shell {
+  padding: 22px 20px 18px !important;
+  border-radius: 30px 12px 30px 12px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell {
+  grid-template-columns: 42px minmax(0, 1fr) 84px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  border-radius: 20px 8px 20px 8px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-title-mark {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 8px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] h1 {
+  width: fit-content !important;
+  margin: 0 0 32px !important;
+  padding: 18px 34px 14px !important;
+  border: 1px solid rgba(134, 66, 88, 0.2) !important;
+  border-radius: 999px 999px 10px 10px !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.92)) !important;
+  box-shadow: 0 14px 28px rgba(134, 66, 88, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-stage,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-stage {
+  padding: 24px 20px 18px !important;
+  border-radius: 34px 34px 14px 14px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell {
+  grid-template-columns: 56px minmax(0, 1fr) 84px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  border-radius: 999px 999px 10px 10px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-title-mark {
+  width: 44px !important;
+  height: 26px !important;
+  border-radius: 999px 999px 6px 6px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.16em !important;
+  background: rgba(134, 66, 88, 0.16) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 14px 26px !important;
+  border: 1px solid rgba(49, 194, 186, 0.26) !important;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%) !important;
+  background: rgba(13, 24, 29, 0.96) !important;
+  box-shadow:
+    0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 18px rgba(49, 194, 186, 0.16) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-rack,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-rack {
+  padding: 22px 20px 18px !important;
+  clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell {
+  grid-template-columns: 42px minmax(0, 1fr) 92px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-title-mark {
+  width: 18px !important;
+  height: 18px !important;
+  box-shadow: 0 0 10px rgba(49, 194, 186, 0.3) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 18px 30px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(191, 124, 44, 0.2), rgba(255, 250, 238, 0.92) 64%) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(191, 124, 44, 0.14),
+    0 12px 24px rgba(191, 124, 44, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-folio-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-folio-shell {
+  padding: 24px 20px 18px !important;
+  border-radius: 34px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell {
+  grid-template-columns: 54px minmax(0, 1fr) 88px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-title-mark {
+  width: 42px !important;
+  height: 42px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.14em !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] h1,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 16px 28px !important;
+  border: 1px solid rgba(102, 120, 181, 0.18) !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(102, 120, 181, 0.1), transparent 58%),
+    rgba(251, 252, 255, 0.94) !important;
+  box-shadow:
+    inset 0 0 0 10px rgba(102, 120, 181, 0.04),
+    0 14px 24px rgba(102, 120, 181, 0.08) !important;
+}
+
+.article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) h1,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) h1 {
+  position: relative;
+  overflow: visible;
+}
+
+.article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) h1::before,
+.page-sheet .article-canvas:is(
+  [data-layout-preset="knowledge-obsidian-vault"],
+  [data-layout-preset="knowledge-chrome-matrix"],
+  [data-layout-preset="knowledge-museum-catalog"],
+  [data-layout-preset="knowledge-atelier-board"],
+  [data-layout-preset="knowledge-abyss-chart"],
+  [data-layout-preset="knowledge-prism-glass"],
+  [data-layout-preset="knowledge-velvet-theater"],
+  [data-layout-preset="knowledge-neon-circuit"],
+  [data-layout-preset="knowledge-solar-folio"],
+  [data-layout-preset="knowledge-astral-orbit"]
+) h1::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 54%;
+  width: min(760px, calc(100vw - 140px));
+  height: 220px;
+  transform: translateY(-50%);
+  background-image: var(--preset-hero-doodle);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  opacity: 0.82;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-frame::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-frame::before {
+  content: "";
+  position: absolute;
+  right: 24px;
+  top: 18px;
+  width: 220px;
+  height: 150px;
+  background-image: var(--preset-hero-doodle);
+  background-repeat: no-repeat;
+  background-size: 220px 150px;
+  background-position: right top;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-board::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-matrix-board::before,
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-catalog-card::before,
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-canvas::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-atelier-canvas::before,
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-route::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-abyss-route::before,
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes::before,
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-acts::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-theater-acts::before,
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh::before,
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-pages::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-solar-pages::before,
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-map::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-map::before {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 6px;
+  width: 240px;
+  height: 150px;
+  background-image: var(--preset-hero-doodle);
+  background-repeat: no-repeat;
+  background-size: 240px 150px;
+  background-position: right top;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-prism-panes::before {
+  opacity: 0.22;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-neon-mesh::before {
+  opacity: 0.2;
+  filter: drop-shadow(0 0 10px rgba(49, 194, 186, 0.16));
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-observatory,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-astral-observatory {
+  padding: 22px 20px 18px !important;
+  border-radius: 28px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell {
+  grid-template-columns: 44px minmax(0, 1fr) 88px !important;
+  gap: 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title {
+  padding: 12px 18px !important;
+  border-radius: 999px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-mark,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-title-mark {
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 10px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.16em !important;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(102, 120, 181, 0.22), rgba(102, 120, 181, 0.06)) !important;
+}
+
+.layout-preset-preview.layout-preset-theme-obsidian .layout-preset-svg-page {
+  stroke-width: 1.6 !important;
+}
+
+.layout-preset-preview.layout-preset-theme-neon .layout-preset-svg-motif-line {
+  stroke-width: 1.8 !important;
+  filter: drop-shadow(0 0 2px rgba(49, 194, 186, 0.32));
+}
+
+.layout-preset-preview.layout-preset-theme-prism .layout-preset-svg-motif,
+.layout-preset-preview.layout-preset-theme-prism .layout-preset-svg-card {
+  opacity: 0.92;
+}
+
+/* Second-pass premium differentiation: distinct title grammar and group skeletons */
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell > *,
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell > *,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(255, 232, 188, 0.06);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone {
+  display: grid !important;
+  grid-template-columns: 72px minmax(0, 1fr) !important;
+  gap: 12px 16px !important;
+  align-items: start !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone > .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone > .knowledge-subtitle {
+  grid-column: 1 !important;
+  align-self: stretch !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone > .knowledge-group-content,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-keystone > .knowledge-group-content {
+  grid-column: 2 !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-ledger,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-ledger {
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.08), transparent 58%),
+    linear-gradient(180deg, rgba(60, 49, 39, 0.72), rgba(43, 37, 32, 0.68)) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-facet,
+.page-sheet .article-canvas[data-layout-preset="knowledge-obsidian-vault"] .knowledge-group-family-obsidian-vault.knowledge-group-variant-facet {
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 74px;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(118, 145, 165, 0.18), transparent 68%);
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command {
+  display: grid !important;
+  grid-template-columns: 118px minmax(0, 1fr) !important;
+  gap: 8px 14px !important;
+  align-items: start !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command > .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command > .knowledge-subtitle {
+  grid-column: 1 !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command > .knowledge-group-content,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-command > .knowledge-group-content {
+  grid-column: 2 !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-cell,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-cell {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    inset 0 -1px 0 rgba(118, 145, 165, 0.08),
+    0 8px 16px rgba(69, 92, 108, 0.05) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-wide > .knowledge-subtitle,
+.page-sheet .article-canvas[data-layout-preset="knowledge-chrome-matrix"] .knowledge-group-family-chrome-matrix.knowledge-group-variant-wide > .knowledge-subtitle {
+  margin-bottom: 2px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  right: 98px;
+  bottom: -8px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(136, 102, 70, 0.18), transparent 72%);
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-placard,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-placard {
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr) !important;
+  gap: 8px 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-ticket,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-ticket {
+  border-style: dashed !important;
+  background:
+    linear-gradient(90deg, rgba(136, 102, 70, 0.06), transparent 54%),
+    rgba(255, 255, 251, 0.76) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-archive,
+.page-sheet .article-canvas[data-layout-preset="knowledge-museum-catalog"] .knowledge-group-family-museum-catalog.knowledge-group-variant-archive {
+  border-radius: 8px 18px 18px 8px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 0;
+  bottom: -12px;
+  width: 1px;
+  background: rgba(91, 121, 131, 0.22);
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-drawing,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-drawing {
+  display: grid !important;
+  grid-template-columns: 132px minmax(0, 1fr) !important;
+  gap: 8px 18px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-detail,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-detail {
+  background:
+    linear-gradient(90deg, rgba(91, 121, 131, 0.08), transparent 26%),
+    transparent !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-measure,
+.page-sheet .article-canvas[data-layout-preset="knowledge-atelier-board"] .knowledge-group-family-atelier-board.knowledge-group-variant-measure {
+  padding-right: 26px !important;
+  background:
+    linear-gradient(rgba(91, 121, 131, 0.18), rgba(91, 121, 131, 0.18)) right 12px top 0 / 1px 100% no-repeat !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell::after,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-cluster-title-shell::after {
+  content: "";
+  position: absolute;
+  left: 38px;
+  right: 92px;
+  bottom: -10px;
+  height: 12px;
+  background:
+    radial-gradient(circle at 12px 0, rgba(41, 111, 140, 0.16) 0 10px, transparent 11px) left top / 26px 12px repeat-x;
+  opacity: 0.85;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-beacon,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-beacon {
+  display: grid !important;
+  grid-template-columns: 98px minmax(0, 1fr) !important;
+  gap: 10px 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-route,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-route {
+  background:
+    linear-gradient(90deg, rgba(41, 111, 140, 0.08), transparent 52%),
+    rgba(255, 255, 255, 0.76) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-current,
+.page-sheet .article-canvas[data-layout-preset="knowledge-abyss-chart"] .knowledge-group-family-abyss-chart.knowledge-group-variant-current {
+  border-radius: 18px 18px 22px 22px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  inset: -4px 18px -6px 18px;
+  background:
+    linear-gradient(120deg, rgba(126, 152, 177, 0.08), transparent 44%),
+    linear-gradient(300deg, rgba(155, 125, 176, 0.08), transparent 42%);
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  opacity: 0.8;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-pane,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-pane {
+  display: grid !important;
+  grid-template-columns: 82px minmax(0, 1fr) !important;
+  gap: 10px 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-shard,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-shard {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-bloom,
+.page-sheet .article-canvas[data-layout-preset="knowledge-prism-glass"] .knowledge-group-family-prism-glass.knowledge-group-variant-bloom {
+  background:
+    radial-gradient(circle at 16% 20%, rgba(126, 152, 177, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 18%, rgba(155, 125, 176, 0.12), transparent 26%),
+    rgba(255, 255, 255, 0.62) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  right: 84px;
+  top: -10px;
+  height: 14px;
+  background:
+    radial-gradient(circle, rgba(134, 66, 88, 0.26) 0 3px, transparent 4px) left center / 18px 14px repeat-x;
+  opacity: 0.72;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-prologue,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-prologue {
+  display: grid !important;
+  grid-template-columns: 112px minmax(0, 1fr) !important;
+  gap: 10px 18px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-act,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-act {
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.1), transparent 34%),
+    rgba(255, 255, 255, 0.74) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-encore,
+.page-sheet .article-canvas[data-layout-preset="knowledge-velvet-theater"] .knowledge-group-family-velvet-theater.knowledge-group-variant-encore {
+  border-radius: 16px 16px 12px 12px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 42px;
+  right: 92px;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.4) 0 18%, transparent 18% 22%, rgba(49, 194, 186, 0.22) 22% 54%, transparent 54% 58%, rgba(49, 194, 186, 0.12) 58% 100%);
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-bus,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-bus {
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
+  gap: 10px 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-chip,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-chip {
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 10px rgba(49, 194, 186, 0.08) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-signal,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-signal,
+.article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-relay,
+.page-sheet .article-canvas[data-layout-preset="knowledge-neon-circuit"] .knowledge-group-family-neon-circuit.knowledge-group-variant-relay {
+  background:
+    linear-gradient(90deg, rgba(49, 194, 186, 0.08), transparent 46%),
+    rgba(18, 34, 39, 0.88) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 28px;
+  right: 92px;
+  top: -20px;
+  height: 28px;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(191, 124, 44, 0.18) 0 14px, transparent 15px),
+    linear-gradient(90deg, rgba(191, 124, 44, 0.14), transparent 64%);
+  background-size: 28px 28px, 100% 4px;
+  background-repeat: no-repeat;
+  background-position: left top, left 12px;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-crown,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-crown {
+  display: grid !important;
+  grid-template-columns: 100px minmax(0, 1fr) !important;
+  gap: 10px 18px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-folio,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-folio {
+  background:
+    linear-gradient(180deg, rgba(191, 124, 44, 0.08), transparent 30%),
+    rgba(255, 255, 255, 0.76) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-orbit,
+.page-sheet .article-canvas[data-layout-preset="knowledge-solar-folio"] .knowledge-group-family-solar-folio.knowledge-group-variant-orbit {
+  border-radius: 999px 22px 22px 22px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell::before,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-cluster-title-shell::before {
+  content: "";
+  position: absolute;
+  left: 34px;
+  right: 88px;
+  top: -18px;
+  height: 32px;
+  border: 1px solid rgba(102, 120, 181, 0.16);
+  border-radius: 999px;
+  transform: skewX(-12deg);
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-nexus,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-nexus {
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
+  gap: 10px 16px !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-star,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-star {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 78% 22%, rgba(102, 120, 181, 0.08) 0 2px, transparent 3px),
+    rgba(255, 255, 255, 0.76) !important;
+}
+
+.article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-arc,
+.page-sheet .article-canvas[data-layout-preset="knowledge-astral-orbit"] .knowledge-group-family-astral-orbit.knowledge-group-variant-arc {
+  border-radius: 999px 18px 18px 18px !important;
+}
+
+/* Question/article premium divergence for the same 10 families */
+.question-card-title-shell-distinct,
+.question-card-shell,
+.question-title-mark,
+.question-title-meta {
+  position: relative;
+}
+
+.question-card-title-shell-distinct {
+  display: grid;
+  align-items: center;
+}
+
+.question-title-mark,
+.question-title-meta {
+  z-index: 1;
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-card,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-card {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-shell,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-shell {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1.5px solid rgba(197, 162, 88, 0.28);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  background:
+    linear-gradient(180deg, rgba(24, 22, 20, 0.96), rgba(36, 30, 26, 0.94));
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.22);
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-title-shell,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-title-shell {
+  grid-template-columns: 46px minmax(0, 1fr) 92px;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(197, 162, 88, 0.18);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  background: linear-gradient(90deg, rgba(197, 162, 88, 0.14), rgba(197, 162, 88, 0.02) 42%);
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-title,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-card-title {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #f5ead0 !important;
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-title-mark,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-title-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(197, 162, 88, 0.36);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  color: rgba(245, 234, 208, 0.84);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-title-meta,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-title-meta {
+  justify-self: end;
+  padding-left: 14px;
+  border-left: 1px solid rgba(197, 162, 88, 0.18);
+  color: rgba(197, 162, 88, 0.82);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-panel,
+.article-canvas[data-layout-preset="question-obsidian-vault"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-panel,
+.page-sheet .article-canvas[data-layout-preset="question-obsidian-vault"] .question-detail-section {
+  min-width: 0 !important;
+  border: 1px solid rgba(197, 162, 88, 0.16) !important;
+  background: rgba(60, 49, 39, 0.72) !important;
+}
+
+.article-canvas[data-layout-preset="question-museum-catalog"] .question-card,
+.page-sheet .article-canvas[data-layout-preset="question-museum-catalog"] .question-card,
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-card,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-card,
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-card,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-card {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.article-canvas[data-layout-preset="question-museum-catalog"] .question-card-shell,
+.page-sheet .article-canvas[data-layout-preset="question-museum-catalog"] .question-card-shell {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px dashed rgba(136, 102, 70, 0.3);
+  border-radius: 30px 16px 16px 30px;
+  background: rgba(255, 250, 243, 0.94);
+  box-shadow: 0 10px 22px rgba(136, 102, 70, 0.06);
+}
+
+.article-canvas[data-layout-preset="question-museum-catalog"] .question-card-title-shell,
+.page-sheet .article-canvas[data-layout-preset="question-museum-catalog"] .question-card-title-shell {
+  grid-template-columns: 34px minmax(0, 1fr) 96px;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px dashed rgba(136, 102, 70, 0.2);
+}
+
+.article-canvas[data-layout-preset="question-museum-catalog"] .question-title-mark,
+.page-sheet .article-canvas[data-layout-preset="question-museum-catalog"] .question-title-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px dashed rgba(136, 102, 70, 0.42);
+  border-radius: 999px;
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="question-museum-catalog"] .question-title-meta,
+.page-sheet .article-canvas[data-layout-preset="question-museum-catalog"] .question-title-meta {
+  justify-self: end;
+  color: rgba(122, 88, 56, 0.82);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-card-shell,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-card-shell {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid rgba(49, 194, 186, 0.22);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+  background: rgba(13, 24, 29, 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgba(49, 194, 186, 0.08),
+    0 0 18px rgba(49, 194, 186, 0.14);
+}
+
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-card-title-shell,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-card-title-shell {
+  grid-template-columns: 38px minmax(0, 1fr) 92px;
+  gap: 14px;
+  padding: 12px 16px;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+  background: linear-gradient(90deg, rgba(49, 194, 186, 0.16), rgba(49, 194, 186, 0.02) 54%);
+}
+
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-title-mark,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-title-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(49, 194, 186, 0.24);
+  box-shadow: 0 0 8px rgba(49, 194, 186, 0.3);
+  color: transparent;
+}
+
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-title-meta,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-title-meta {
+  justify-self: end;
+  color: rgba(49, 194, 186, 0.84);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-panel,
+.article-canvas[data-layout-preset="question-neon-circuit"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-panel,
+.page-sheet .article-canvas[data-layout-preset="question-neon-circuit"] .question-detail-section {
+  min-width: 0 !important;
+  border: 1px solid rgba(49, 194, 186, 0.16) !important;
+  background: rgba(18, 34, 39, 0.88) !important;
+}
+
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-card-shell,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-card-shell {
+  display: grid;
+  gap: 14px;
+  padding: 22px 18px 18px;
+  border-radius: 30px 30px 12px 12px;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.94) 28%),
+    rgba(255, 250, 252, 0.94);
+  box-shadow: 0 14px 24px rgba(134, 66, 88, 0.08);
+}
+
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-card-title-shell,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-card-title-shell {
+  grid-template-columns: 54px minmax(0, 1fr) 84px;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 999px 999px 10px 10px;
+  background: linear-gradient(180deg, rgba(134, 66, 88, 0.14), rgba(255, 250, 252, 0.92));
+}
+
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-title-mark,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-title-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px 999px 6px 6px;
+  background: rgba(134, 66, 88, 0.14);
+  color: rgba(127, 54, 74, 0.84);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-title-meta,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-title-meta {
+  justify-self: end;
+  color: rgba(127, 54, 74, 0.82);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-panel,
+.article-canvas[data-layout-preset="question-velvet-theater"] .question-detail-section,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-panel,
+.page-sheet .article-canvas[data-layout-preset="question-velvet-theater"] .question-detail-section {
+  min-width: 0 !important;
+}
+
+.article-canvas[data-layout-preset="article-obsidian-vault"] h1,
+.page-sheet .article-canvas[data-layout-preset="article-obsidian-vault"] h1 {
+  width: fit-content !important;
+  margin: 0 0 34px !important;
+  padding: 18px 28px !important;
+  border: 1px solid rgba(197, 162, 88, 0.18) !important;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px)) !important;
+  background:
+    linear-gradient(90deg, rgba(197, 162, 88, 0.16), rgba(197, 162, 88, 0.02) 44%),
+    rgba(24, 22, 20, 0.96) !important;
+}
+
+.article-canvas[data-layout-preset="article-obsidian-vault"] .lead-paragraph,
+.page-sheet .article-canvas[data-layout-preset="article-obsidian-vault"] .lead-paragraph {
+  padding: 22px 24px !important;
+  border: 1px solid rgba(197, 162, 88, 0.16) !important;
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px)) !important;
+  background:
+    linear-gradient(180deg, rgba(54, 45, 35, 0.78), rgba(37, 31, 27, 0.72)) !important;
+  color: #f5ead0 !important;
+}
+
+.article-canvas[data-layout-preset="article-museum-catalog"] h1,
+.page-sheet .article-canvas[data-layout-preset="article-museum-catalog"] h1 {
+  width: fit-content !important;
+  margin: 0 0 28px !important;
+  padding: 12px 24px 12px 34px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.3) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 252, 247, 0.94) !important;
+}
+
+.article-canvas[data-layout-preset="article-museum-catalog"] .lead-paragraph,
+.page-sheet .article-canvas[data-layout-preset="article-museum-catalog"] .lead-paragraph {
+  padding: 20px 22px !important;
+  border: 1px dashed rgba(136, 102, 70, 0.24) !important;
+  border-radius: 20px 12px 12px 20px !important;
+  background: rgba(255, 250, 243, 0.9) !important;
+}
+
+.article-canvas[data-layout-preset="article-neon-circuit"] h1,
+.page-sheet .article-canvas[data-layout-preset="article-neon-circuit"] h1 {
+  width: fit-content !important;
+  margin: 0 0 28px !important;
+  padding: 14px 26px !important;
+  border: 1px solid rgba(49, 194, 186, 0.3) !important;
+  clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0 50%) !important;
+  background: rgba(13, 24, 29, 0.96) !important;
+  box-shadow: 0 0 16px rgba(49, 194, 186, 0.14) !important;
+}
+
+.article-canvas[data-layout-preset="article-neon-circuit"] .lead-paragraph,
+.page-sheet .article-canvas[data-layout-preset="article-neon-circuit"] .lead-paragraph {
+  padding: 20px 22px !important;
+  border: 1px solid rgba(49, 194, 186, 0.16) !important;
+  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%) !important;
+  background: rgba(18, 34, 39, 0.88) !important;
+  color: rgba(205, 251, 247, 0.9) !important;
+}
+
+.article-canvas[data-layout-preset="article-velvet-theater"] h1,
+.page-sheet .article-canvas[data-layout-preset="article-velvet-theater"] h1 {
+  width: fit-content !important;
+  margin: 0 0 30px !important;
+  padding: 18px 34px 14px !important;
+  border: 1px solid rgba(134, 66, 88, 0.2) !important;
+  border-radius: 999px 999px 10px 10px !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.18), rgba(255, 250, 252, 0.92)) !important;
+}
+
+.article-canvas[data-layout-preset="article-velvet-theater"] .lead-paragraph,
+.page-sheet .article-canvas[data-layout-preset="article-velvet-theater"] .lead-paragraph {
+  padding: 22px 24px 20px !important;
+  border: 1px solid rgba(134, 66, 88, 0.16) !important;
+  border-radius: 26px 26px 10px 10px !important;
+  background:
+    linear-gradient(180deg, rgba(134, 66, 88, 0.12), rgba(255, 250, 252, 0.9)) !important;
 }
 
 .article-canvas :is(.knowledge-cluster, .knowledge-cluster-fragment, .question-card, .question-answer-item)[data-card-layout-key],
@@ -18717,6 +21906,7 @@ body.has-compact-controls .range-field input[type="range"].precision-range::-moz
 .page-sheet .article-canvas .math-block {
   margin-bottom: var(--element-math-space-after) !important;
   padding: var(--element-math-padding-y) var(--element-math-padding-x) !important;
+  border-width: calc(var(--element-math-show-border, 0) * 1px) !important;
   border-radius: var(--element-math-radius) !important;
   font-size: var(--element-math-font-size) !important;
 }
