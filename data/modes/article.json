@@ -1,0 +1,24 @@
+{
+  "id": "article",
+  "name": "文章模式",
+  "title": "文章模式",
+  "summary": "保留长文节奏，适合教程和正文阅读。",
+  "highlights": [
+    "导语突出",
+    "节奏更顺",
+    "适合长文"
+  ],
+  "sort": 50,
+  "enabled": true,
+  "renderMode": "article",
+  "templateFile": "article.md",
+  "templateVersion": "2026-05-04.1",
+  "updatedAt": "2026-05-04T00:00:00.000Z",
+  "placeholders": [
+    {
+      "key": "sourceContent",
+      "label": "原始资料",
+      "required": true
+    }
+  ]
+}

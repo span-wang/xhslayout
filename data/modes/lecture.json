@@ -1,0 +1,24 @@
+{
+  "id": "lecture",
+  "name": "精读讲义",
+  "title": "精读讲义模式",
+  "summary": "按导读、章节、小节和结论组织长内容，适合逐层理解和复习。",
+  "highlights": [
+    "导读先行",
+    "章节清楚",
+    "结论可扫"
+  ],
+  "sort": 20,
+  "enabled": true,
+  "renderMode": "lecture",
+  "templateFile": "lecture.md",
+  "templateVersion": "2026-05-04.1",
+  "updatedAt": "2026-05-04T00:00:00.000Z",
+  "placeholders": [
+    {
+      "key": "sourceContent",
+      "label": "原始资料",
+      "required": true
+    }
+  ]
+}

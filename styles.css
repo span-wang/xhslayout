@@ -3727,6 +3727,7 @@ hr {
   --page-background-image: none;
   position: relative;
   width: calc(var(--page-width-mm, 210) * 1mm);
+  height: calc(var(--page-height-mm, 297) * 1mm);
   min-height: calc(var(--page-height-mm, 297) * 1mm);
   padding:
     calc(var(--page-margin-top-mm, 18) * 1mm)
@@ -3756,6 +3757,9 @@ hr {
   z-index: 1;
   display: flex;
   flex-direction: column;
+  height: calc(
+    (var(--page-height-mm, 297) - var(--page-margin-top-mm, 18) - var(--page-margin-bottom-mm, 18)) * 1mm
+  );
   min-height: calc(
     (var(--page-height-mm, 297) - var(--page-margin-top-mm, 18) - var(--page-margin-bottom-mm, 18)) * 1mm
   );
@@ -3791,7 +3795,9 @@ hr {
 
 .page-sheet-body {
   flex: 1 1 auto;
+  height: 100%;
   min-height: 0;
+  overflow: hidden;
 }
 
 .page-sheet-watermark {
@@ -5340,7 +5346,8 @@ body.has-compact-controls .range-value {
     .mindmap-card,
     table,
     figure,
-    pre
+    pre,
+    .math-block
   ) {
     break-inside: avoid-page;
     page-break-inside: avoid;
@@ -5467,10 +5474,15 @@ body {
   font-weight: 600;
   letter-spacing: 0.02em;
   opacity: 0.9;
+  content: attr(data-render-mode);
 }
 
 .segmented-chip[data-mode-option="knowledge"]::after {
   content: "Cards / Blocks";
+}
+
+.segmented-chip[data-mode-option="lecture"]::after {
+  content: "Deep Read";
 }
 
 .segmented-chip[data-mode-option="question"]::after {
@@ -5479,6 +5491,10 @@ body {
 
 .segmented-chip[data-mode-option="article"]::after {
   content: "Editorial / Read";
+}
+
+.segmented-chip[data-mode-option="exam"]::after {
+  content: "Paper / Print";
 }
 
 .segmented-chip.is-active {
@@ -5491,6 +5507,12 @@ body {
   background: linear-gradient(180deg, rgba(255, 250, 243, 0.98), rgba(248, 241, 232, 0.98));
 }
 
+.segmented-chip[data-mode-option="lecture"].is-active {
+  color: #315f78;
+  border-color: rgba(49, 95, 120, 0.18);
+  background: linear-gradient(180deg, rgba(251, 254, 255, 0.98), rgba(236, 246, 249, 0.98));
+}
+
 .segmented-chip[data-mode-option="question"].is-active {
   color: #2a587e;
   border-color: rgba(32, 74, 115, 0.16);
@@ -5501,6 +5523,13 @@ body {
   color: #4f4c45;
   border-color: rgba(79, 76, 69, 0.16);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 244, 239, 0.98));
+}
+
+.segmented-chip[data-mode-option="exam"].is-active,
+.segmented-chip[data-render-mode="exam"].is-active {
+  color: #5a4d8f;
+  border-color: rgba(90, 77, 143, 0.16);
+  background: linear-gradient(180deg, rgba(251, 249, 255, 0.98), rgba(242, 238, 250, 0.98));
 }
 
 .mode-benefit-card {
@@ -6818,10 +6847,11 @@ body {
 }
 
 .math-inline {
-  display: inline-block;
+  display: inline-flex;
+  align-items: baseline;
   max-width: 100%;
-  margin: 0 0.08em;
-  vertical-align: -0.16em;
+  margin: 0 0.05em;
+  vertical-align: -0.1em;
   cursor: pointer;
   font-family: inherit;
   font-size: 1em;
@@ -6837,13 +6867,15 @@ body {
 }
 
 .chem-inline {
-  vertical-align: -0.08em;
+  vertical-align: -0.04em;
 }
 
 .math-block {
-  margin: 0.9em 0;
-  padding: 0.72em 0.9em;
-  overflow-x: auto;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0.72em 0 0.82em;
+  padding: 0.42em 0.5em;
+  overflow-x: hidden;
   overflow-y: visible;
   border-style: solid;
   border-width: calc(var(--element-math-show-border, 0) * 1px);
@@ -6855,6 +6887,8 @@ body {
   font-size: 1em;
   line-height: inherit;
   text-align: left;
+  break-inside: avoid;
+  page-break-inside: avoid;
 }
 
 .math-block .katex-display {
@@ -6864,9 +6898,10 @@ body {
 }
 
 .math-block .katex-display > .katex {
-  font-size: 1em;
+  display: inline-block;
+  font-size: calc(1em * var(--math-fit-scale, 1));
   line-height: inherit;
-  max-width: 100%;
+  max-width: none;
   text-align: left;
   white-space: normal;
 }
@@ -6874,7 +6909,7 @@ body {
 .math-block .katex-display > .katex > .katex-html {
   display: inline-block;
   min-width: max-content;
-  max-width: 100%;
+  max-width: none;
 }
 
 .math-inline:focus-visible,
@@ -10443,6 +10478,7 @@ body.has-compact-controls .range-value {
   [data-layout-preset$="-cherry-ink"],
   [data-layout-preset$="-ledger"]
 ) .mindmap-node {
+  --mindmap-node-deco-right: 20px;
   padding-right: 30px !important;
   border: 1px solid var(--preset-rule) !important;
   background:
@@ -11008,6 +11044,7 @@ body.has-compact-controls .range-value {
   [data-layout-preset$="-spring-shoot"],
   [data-layout-preset$="-autumn-note"]
 ) .mindmap-node {
+  --mindmap-node-deco-right: 28px;
   padding-right: 38px !important;
   border: 1px solid var(--preset-rule) !important;
   background:
@@ -11968,6 +12005,7 @@ body.has-compact-controls .range-value {
   [data-layout-preset$="-solar-folio"],
   [data-layout-preset$="-astral-orbit"]
 ) .mindmap-node {
+  --mindmap-node-deco-right: 24px;
   padding-right: 34px !important;
   border: 1px solid var(--preset-rule) !important;
   background:
@@ -15686,38 +15724,29 @@ body.has-compact-controls .range-value {
   min-width: 0 !important;
 }
 
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout {
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) {
   column-count: 2;
   column-gap: 28px;
   column-rule: 1px solid rgba(17, 19, 21, 0.18);
 }
 
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > * ,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > * {
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > * {
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
 }
 
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h1,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h1,
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h2,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h2,
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h3,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h3,
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h4,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > h4,
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-body-title,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-body-title,
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-answer-bank-title,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .question-answer-bank-title {
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > h1,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > h2,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > h3,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > h4,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > .question-body-title,
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > .question-answer-bank-title {
   column-span: all;
   break-after: avoid;
 }
 
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item {
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > .exam-question-item {
   display: grid;
   gap: 0.3em;
   margin: 0 0 0.9em;
@@ -15726,15 +15755,13 @@ body.has-compact-controls .range-value {
   page-break-inside: avoid;
 }
 
-.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item > .question-body-title,
-.page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout > .exam-question-item > .question-body-title {
+.article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) > .exam-question-item > .question-body-title {
   margin: 0 0 0.12em !important;
   font-weight: 900 !important;
 }
 
 @media (max-width: 860px) {
-  .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout,
-  .page-sheet .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout {
+  .article-canvas[data-mode="question"][data-source-mode="exam"].question-body-layout:not(.exam-column-spread) {
     column-count: 1;
     column-gap: 0;
     column-rule: 0;
@@ -17837,11 +17864,13 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   --element-code-radius: 16px;
   --element-code-space-after: 14px;
   --element-math-font-size: var(--element-p-font-size);
-  --element-math-padding-x: 12px;
-  --element-math-padding-y: 10px;
-  --element-math-radius: 12px;
-  --element-math-space-after: 12px;
+  --element-math-padding-x: 4px;
+  --element-math-padding-y: 4px;
+  --element-math-radius: 6px;
+  --element-math-space-after: 10px;
   --element-math-show-border: 0;
+  --element-mindmap-container-width: 0px;
+  --element-mindmap-container-height: 0px;
   --element-mindmap-root-width: 56px;
   --element-mindmap-node-font-size: calc(var(--user-font-size) - 1px);
   --element-mindmap-node-padding-x: 10px;
@@ -18031,7 +18060,11 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .article-canvas .mindmap-card-axis .mindmap-node,
 .page-sheet .article-canvas .mindmap-card-axis .mindmap-node {
   font-size: var(--element-mindmap-node-font-size) !important;
-  padding: var(--element-mindmap-node-padding-y) var(--element-mindmap-node-padding-x) !important;
+  padding:
+    calc(var(--element-mindmap-node-padding-y) + var(--mindmap-node-deco-top, 0px))
+    calc(var(--element-mindmap-node-padding-x) + var(--mindmap-node-deco-right, 0px))
+    calc(var(--element-mindmap-node-padding-y) + var(--mindmap-node-deco-bottom, 0px))
+    calc(var(--element-mindmap-node-padding-x) + var(--mindmap-node-deco-left, 0px)) !important;
 }
 
 .article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label),
@@ -18101,6 +18134,356 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
 .page-sheet .article-canvas .article-pullquote {
   padding: var(--element-article-pullquote-padding-y) var(--element-article-pullquote-padding-x) !important;
   margin-bottom: var(--element-article-pullquote-space-after) !important;
+}
+
+/* 精读讲义模式：导读、章节、小节、结论的长文阅读结构。 */
+.article-canvas[data-mode="lecture"],
+.page-sheet .article-canvas[data-mode="lecture"] {
+  --canvas-width: 860px;
+  --canvas-padding: clamp(22px, 3vw, 38px);
+  --body-line-height: 1.72;
+  --lecture-ink: var(--preset-ink, #1f2c34);
+  --lecture-muted: var(--preset-muted, rgba(31, 44, 52, 0.66));
+  --lecture-rule: var(--preset-rule, rgba(32, 74, 115, 0.14));
+  --lecture-rule-strong: var(--preset-rule-strong, rgba(32, 74, 115, 0.28));
+  --lecture-surface: var(--preset-surface, rgba(255, 255, 255, 0.88));
+  --lecture-soft: var(--preset-soft, rgba(239, 246, 249, 0.82));
+  --lecture-accent: var(--preset-accent, rgba(47, 95, 120, 0.72));
+  --lecture-accent-soft: var(--preset-accent-soft, rgba(117, 164, 188, 0.14));
+  --lecture-radius: min(var(--preset-radius, 6px), 8px);
+  color: var(--lecture-ink);
+}
+
+.article-canvas[data-mode="lecture"] h1,
+.page-sheet .article-canvas[data-mode="lecture"] h1 {
+  margin: 0 0 18px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid var(--lecture-rule-strong);
+  color: var(--lecture-ink);
+  font-size: min(var(--user-h1-size), 42px);
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-lead,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-lead {
+  margin: 0 0 18px !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--lecture-rule) !important;
+  border-left: 5px solid var(--lecture-accent) !important;
+  border-radius: var(--lecture-radius) !important;
+  background: var(--lecture-soft) !important;
+  color: var(--lecture-ink) !important;
+  font-size: calc(var(--user-font-size) + 1px);
+  line-height: calc(var(--user-line-height) + 0.05);
+  text-indent: 0 !important;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--lecture-rule);
+  border-radius: var(--lecture-radius);
+  background: var(--lecture-surface);
+  box-shadow: inset 5px 0 0 var(--lecture-accent-soft), 0 10px 22px rgba(17, 19, 21, 0.04);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-fragment,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-fragment {
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border-left: 5px solid var(--lecture-accent-soft);
+  background: var(--lecture-surface);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-fragment-header,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-fragment-header {
+  padding-bottom: 8px;
+  border: 1px solid var(--lecture-rule);
+  border-left: 5px solid var(--lecture-accent);
+  border-radius: var(--lecture-radius) var(--lecture-radius) 0 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-fragment-end,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-fragment-end {
+  border-bottom: 1px solid var(--lecture-rule);
+  border-radius: 0 0 var(--lecture-radius) var(--lecture-radius);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-header,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-header {
+  min-width: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-title,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-title,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .lecture-section-title {
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 7px 42px 8px 12px !important;
+  border: 1px solid var(--lecture-rule) !important;
+  border-left: 5px solid var(--lecture-accent) !important;
+  border-radius: var(--lecture-radius) !important;
+  background-color: var(--lecture-surface) !important;
+  background-image: var(--preset-doodle, none) !important;
+  background-position: right 11px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 22px 22px !important;
+  color: var(--lecture-ink) !important;
+  font-size: calc(var(--user-h2-size) - 1px);
+  line-height: 1.3;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-section-body,
+.article-canvas[data-mode="lecture"] .lecture-subsection,
+.article-canvas[data-mode="lecture"] .lecture-subsection-body,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-section-body,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-subsection,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-subsection-body {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-subsection + .lecture-subsection,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-subsection + .lecture-subsection {
+  padding-top: 10px;
+  border-top: 1px solid var(--lecture-rule);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-subsection-title,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-subsection-title,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .lecture-subsection-title {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 !important;
+  padding: 3px 9px 4px !important;
+  border: 1px solid var(--lecture-rule) !important;
+  border-radius: var(--lecture-radius) !important;
+  background: var(--lecture-soft) !important;
+  color: var(--lecture-muted) !important;
+  font-size: calc(var(--user-h3-size) - 1px);
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-minor-title,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-minor-title {
+  margin: 2px 0 0 !important;
+  padding-left: 10px !important;
+  border-left: 3px solid var(--lecture-accent) !important;
+  color: var(--lecture-ink) !important;
+  font-size: calc(var(--user-h4-size) - 1px);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.article-canvas[data-mode="lecture"] p[data-md-block="paragraph"],
+.page-sheet .article-canvas[data-mode="lecture"] p[data-md-block="paragraph"] {
+  line-height: var(--user-line-height);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-note,
+.article-canvas[data-mode="lecture"] .lecture-block-summary,
+.article-canvas[data-mode="lecture"] .lecture-pullnote,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-note,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-summary,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-pullnote {
+  padding: 10px 12px !important;
+  border: 1px solid var(--lecture-rule) !important;
+  border-left: 4px solid var(--lecture-accent) !important;
+  border-radius: var(--lecture-radius) !important;
+  background: linear-gradient(90deg, var(--lecture-accent-soft), rgba(255, 255, 255, 0.72)) !important;
+  color: var(--lecture-ink) !important;
+  text-indent: 0 !important;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-summary,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-summary {
+  border-left-width: 0 !important;
+  box-shadow: inset 0 3px 0 var(--lecture-accent);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-feature,
+.article-canvas[data-mode="lecture"] .lecture-block-table,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-feature,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-table {
+  border-color: var(--lecture-rule) !important;
+  border-radius: var(--lecture-radius) !important;
+  background-color: var(--lecture-surface) !important;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .mindmap-card-axis {
+  --mindmap-root-width: 44px;
+  --mindmap-root-height: 88px;
+  --mindmap-branch-gap: 8px;
+  --mindmap-level-gap: 7px;
+  --mindmap-topic-max: min(176px, 100%);
+  --mindmap-detail-max: min(176px, 100%);
+  padding: 10px 8px !important;
+  zoom: 0.78;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-shell,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-shell,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-shell {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-list,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-list {
+  gap: 7px;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item {
+  min-height: 24px;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-topic,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-topic,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-topic {
+  min-height: 24px;
+  padding: 3px 6px !important;
+  font-size: 12px !important;
+  line-height: 1.22;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-detail-item,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-detail-item {
+  min-height: 18px;
+}
+
+.article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-detail,
+.page-sheet .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-detail,
+.live-preview-canvas .article-canvas[data-mode="lecture"] .mindmap-card-axis .mindmap-node-detail {
+  min-height: 18px;
+  padding: 1px 5px !important;
+  font-size: 10.5px !important;
+  line-height: 1.18;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-list,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-list {
+  gap: 0.34em;
+  padding: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-list > li,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-list > li {
+  padding: 0 0 0.38em;
+  border-bottom: 1px dashed var(--lecture-rule);
+}
+
+.article-canvas[data-mode="lecture"] .lecture-block-list > li:last-child,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-block-list > li:last-child {
+  border-bottom: 0;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-role .content-kicker,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-role .content-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.62em;
+  padding: 0 0.62em !important;
+  border: 1px solid var(--lecture-rule) !important;
+  border-radius: var(--lecture-radius) !important;
+  background: var(--lecture-surface) !important;
+  color: var(--lecture-accent) !important;
+  font-size: calc(var(--user-accent-font-size) - 2px) !important;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0;
+  vertical-align: 0.02em;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-role-summary .content-kicker,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-role-summary .content-kicker {
+  background: var(--lecture-accent) !important;
+  color: #ffffff !important;
+}
+
+.article-canvas[data-mode="lecture"] .lecture-divider,
+.page-sheet .article-canvas[data-mode="lecture"] .lecture-divider {
+  height: 1px;
+  margin: 4px 0;
+  border: 0;
+  background: var(--lecture-rule-strong);
+}
+
+.article-canvas[data-layout-preset="lecture-snowpeak"],
+.page-sheet .article-canvas[data-layout-preset="lecture-snowpeak"] {
+  --lecture-ink: #1f2c34;
+  --lecture-muted: rgba(31, 44, 52, 0.68);
+  --lecture-rule: rgba(47, 95, 120, 0.16);
+  --lecture-rule-strong: rgba(47, 95, 120, 0.32);
+  --lecture-surface: rgba(251, 253, 255, 0.9);
+  --lecture-soft: rgba(231, 241, 247, 0.86);
+  --lecture-accent: rgba(47, 95, 120, 0.76);
+  --lecture-accent-soft: rgba(117, 164, 188, 0.16);
+}
+
+.article-canvas[data-layout-preset="lecture-snowpeak"] .lecture-section,
+.page-sheet .article-canvas[data-layout-preset="lecture-snowpeak"] .lecture-section {
+  background:
+    linear-gradient(180deg, rgba(251, 253, 255, 0.96), rgba(244, 249, 252, 0.9)),
+    var(--preset-header-doodle) left top / 100% 24px no-repeat;
+}
+
+.article-canvas[data-layout-preset="lecture-snowpeak"] .lecture-lead,
+.page-sheet .article-canvas[data-layout-preset="lecture-snowpeak"] .lecture-lead {
+  background:
+    var(--preset-doodle) right 13px top 12px / 28px 28px no-repeat,
+    linear-gradient(90deg, rgba(231, 241, 247, 0.94), rgba(251, 253, 255, 0.9)) !important;
+}
+
+.article-canvas[data-layout-preset="lecture-spring-shoot"],
+.page-sheet .article-canvas[data-layout-preset="lecture-spring-shoot"] {
+  --lecture-ink: #213529;
+  --lecture-muted: rgba(33, 53, 41, 0.68);
+  --lecture-rule: rgba(79, 138, 95, 0.16);
+  --lecture-rule-strong: rgba(79, 138, 95, 0.3);
+  --lecture-surface: rgba(255, 253, 245, 0.9);
+  --lecture-soft: rgba(229, 241, 224, 0.86);
+  --lecture-accent: rgba(79, 138, 95, 0.76);
+  --lecture-accent-soft: rgba(169, 198, 128, 0.18);
+}
+
+.article-canvas[data-layout-preset="lecture-spring-shoot"] .lecture-section,
+.page-sheet .article-canvas[data-layout-preset="lecture-spring-shoot"] .lecture-section {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 245, 0.96), rgba(241, 249, 236, 0.9)),
+    var(--preset-header-doodle) left top / 100% 24px no-repeat;
+}
+
+.article-canvas[data-layout-preset="lecture-spring-shoot"] .lecture-lead,
+.page-sheet .article-canvas[data-layout-preset="lecture-spring-shoot"] .lecture-lead {
+  background:
+    var(--preset-doodle) right 13px top 12px / 28px 28px no-repeat,
+    linear-gradient(90deg, rgba(229, 241, 224, 0.94), rgba(255, 253, 245, 0.9)) !important;
+}
+
+@media (max-width: 760px) {
+  .article-canvas[data-mode="lecture"] .lecture-section,
+  .page-sheet .article-canvas[data-mode="lecture"] .lecture-section {
+    padding: 13px 14px;
+  }
+
+  .article-canvas[data-mode="lecture"] .lecture-section-title,
+  .page-sheet .article-canvas[data-mode="lecture"] .lecture-section-title {
+    width: 100% !important;
+  }
 }
 
 /* Exam mode real-page override: make question-proof look like a paper spread, not a note page. */
@@ -18190,12 +18573,71 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   display: none !important;
 }
 
-.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] {
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"]:not(.exam-column-spread) {
   column-count: 2;
   column-gap: 32px;
   column-rule: 1px solid rgba(17, 19, 21, 0.16);
   color: rgba(17, 19, 21, 0.96);
   --body-line-height: 1.72;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"][data-layout-preset="question-proof"] {
+  color: rgba(17, 19, 21, 0.96);
+  --body-line-height: 1.72;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-full {
+  display: grid;
+  gap: 0;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-full:empty {
+  display: none;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 32px;
+  align-items: start;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px solid rgba(17, 19, 21, 0.16);
+  transform: translateX(-0.5px);
+  pointer-events: none;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] .exam-column-spread-column {
+  display: grid;
+  align-content: start;
+  gap: 0;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] .exam-column-spread-column:empty {
+  min-height: 1px;
 }
 
 .page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] > * {
@@ -18204,7 +18646,26 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
   page-break-inside: avoid;
 }
 
-.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] > h1 {
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > *,
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] .exam-column-spread-column > * {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] .exam-question-item {
+  display: grid;
+  gap: 0.3em;
+  margin: 0 0 0.9em;
+}
+
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"][data-layout-preset="question-proof"] .exam-question-item > .question-body-title {
+  margin: 0 0 0.12em !important;
+  font-weight: 900 !important;
+}
+
+.page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] > h1,
+.page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"][data-layout-preset="question-proof"] > .exam-column-spread-full > h1 {
   margin: 10px 0 16px !important;
   padding: 0 0 14px !important;
   background: none !important;
@@ -18258,10 +18719,19 @@ body.has-compact-controls .option-panel-page .range-grid-page-meta .range-field 
     display: none;
   }
 
-  .page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"] {
+  .page-sheet .article-canvas[data-source-mode="exam"][data-layout-preset="question-proof"]:not(.exam-column-spread) {
     column-count: 1;
     column-gap: 0;
     column-rule: 0;
+  }
+
+  .page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-grid {
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: 0;
+  }
+
+  .page-sheet .article-canvas.exam-column-spread[data-source-mode="exam"] > .exam-column-spread-grid::before {
+    display: none;
   }
 }
 
@@ -20510,10 +20980,23 @@ body.has-compact-controls .option-panel-type .range-grid-scale .range-field inpu
     linear-gradient(180deg, rgba(141, 101, 59, 0.16), rgba(141, 101, 59, 0.05)) !important;
 }
 
+.option-panel-mode .segmented-chip[data-mode-option="lecture"]::before {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 55%),
+    linear-gradient(180deg, rgba(49, 95, 120, 0.15), rgba(79, 138, 95, 0.06)) !important;
+}
+
 .option-panel-mode .segmented-chip[data-mode-option="article"]::before {
   background:
     radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 55%),
     linear-gradient(180deg, rgba(79, 76, 69, 0.14), rgba(79, 76, 69, 0.05)) !important;
+}
+
+.option-panel-mode .segmented-chip[data-mode-option="exam"]::before,
+.option-panel-mode .segmented-chip[data-render-mode="exam"]::before {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.94), transparent 55%),
+    linear-gradient(180deg, rgba(90, 77, 143, 0.14), rgba(90, 77, 143, 0.05)) !important;
 }
 
 .option-panel-mode .segmented-chip:hover {
@@ -21925,7 +22408,11 @@ body.has-compact-controls .range-field input[type="range"].precision-range::-moz
 .article-canvas .mindmap-card-axis .mindmap-node,
 .page-sheet .article-canvas .mindmap-card-axis .mindmap-node {
   font-size: var(--element-mindmap-node-font-size) !important;
-  padding: var(--element-mindmap-node-padding-y) var(--element-mindmap-node-padding-x) !important;
+  padding:
+    calc(var(--element-mindmap-node-padding-y) + var(--mindmap-node-deco-top, 0px))
+    calc(var(--element-mindmap-node-padding-x) + var(--mindmap-node-deco-right, 0px))
+    calc(var(--element-mindmap-node-padding-y) + var(--mindmap-node-deco-bottom, 0px))
+    calc(var(--element-mindmap-node-padding-x) + var(--mindmap-node-deco-left, 0px)) !important;
 }
 
 .article-canvas :is(.section-stamp, .content-kicker, .question-answer-box-label),
@@ -21970,4 +22457,261 @@ body.has-compact-controls .range-field input[type="range"].precision-range::-moz
 .page-sheet .article-canvas .article-pullquote {
   padding: var(--element-article-pullquote-padding-y) var(--element-article-pullquote-padding-x) !important;
   margin-bottom: var(--element-article-pullquote-space-after) !important;
+}
+
+/* Mindmap stability layer: keep every preset on the same measured box model. */
+.article-canvas .mindmap-card.mindmap-card-axis,
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
+  width: min(100%, var(--mindmap-card-width, 100%)) !important;
+  max-width: 100% !important;
+  min-height: var(--mindmap-card-min-height, 0px) !important;
+  margin-inline: auto !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-shell,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-shell,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-shell {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root,
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis .mindmap-root {
+  width: var(--mindmap-root-width, var(--element-mindmap-root-width)) !important;
+  box-sizing: border-box !important;
+}
+
+.article-canvas .mindmap-card-axis :is(.mindmap-list, .mindmap-list ul, .mindmap-item),
+.page-sheet .article-canvas .mindmap-card-axis :is(.mindmap-list, .mindmap-list ul, .mindmap-item),
+.live-preview-canvas .article-canvas .mindmap-card-axis :is(.mindmap-list, .mindmap-list ul, .mindmap-item) {
+  min-width: 0 !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf {
+  grid-template-columns: minmax(0, min(42%, var(--mindmap-topic-max, var(--mindmap-node-max, 220px)))) minmax(0, 1fr) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
+  grid-template-columns: minmax(0, min(46%, var(--mindmap-detail-max, var(--mindmap-node-max, 220px)))) minmax(0, 1fr) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node-topic,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node-topic,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-node-topic {
+  width: fit-content !important;
+  max-width: min(var(--mindmap-topic-max, var(--mindmap-node-max, 220px)), 100%) !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node-detail,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node-detail,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-node-detail {
+  width: fit-content !important;
+  max-width: min(var(--mindmap-detail-max, var(--mindmap-node-max, 220px)), 100%) !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  box-sizing: border-box !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-link-layer,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-link-layer,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-link-layer {
+  overflow: visible !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-link-path,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-link-path,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-link-path {
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  shape-rendering: geometricPrecision;
+}
+
+@container (max-width: 460px) {
+  .article-canvas .mindmap-card.mindmap-card-axis,
+  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
+  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
+    --mindmap-branch-gap: 8px;
+    --mindmap-level-gap: 8px;
+  }
+
+  .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+  .page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+  .live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item {
+    column-gap: 8px !important;
+  }
+}
+
+.article-canvas .mindmap-card.mindmap-card-axis[data-mindmap-width-mode="fixed"],
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis[data-mindmap-width-mode="fixed"],
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis[data-mindmap-width-mode="fixed"] {
+  width: min(100%, var(--mindmap-card-width, 100%)) !important;
+}
+
+.article-canvas .mindmap-card.mindmap-card-axis:not([data-mindmap-width-mode="fixed"]),
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis:not([data-mindmap-width-mode="fixed"]),
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis:not([data-mindmap-width-mode="fixed"]) {
+  min-width: min(100%, 680px);
+}
+
+.article-canvas .mindmap-card-axis .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-list,
+.article-canvas .mindmap-card-axis .mindmap-list ul,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-list ul,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-list ul,
+.article-canvas .mindmap-card-axis .mindmap-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-item {
+  width: fit-content !important;
+  justify-items: start !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
+  width: fit-content !important;
+  justify-content: start !important;
+  column-gap: 6px !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item {
+  grid-template-columns: max-content minmax(0, auto) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
+  grid-template-columns: max-content minmax(0, auto) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list {
+  width: fit-content !important;
+  padding-left: 8px !important;
+  min-width: 0 !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node-topic,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node-topic,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-node-topic,
+.article-canvas .mindmap-card-axis .mindmap-node-detail,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node-detail,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-node-detail {
+  max-width: min(var(--mindmap-node-max, 220px), 100%) !important;
+  min-width: 0 !important;
+}
+
+/* Mindmap readability: leave breathing room between child nodes and keep SVG links out of text boxes. */
+.article-canvas .mindmap-card.mindmap-card-axis,
+.page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
+.live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
+  --mindmap-branch-gap: 18px;
+  --mindmap-level-gap: 16px;
+  --mindmap-sibling-gap: 10px;
+  --mindmap-topic-gap: 18px;
+  --mindmap-connector-clearance: 5px;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-shell,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-shell,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-shell {
+  isolation: isolate !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-list,
+.article-canvas .mindmap-card-axis .mindmap-list ul,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-list ul,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-list ul {
+  gap: var(--mindmap-sibling-gap) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list {
+  gap: var(--mindmap-topic-gap) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item,
+.article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-topic-item.mindmap-item-leaf,
+.article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item.mindmap-item-branch {
+  column-gap: var(--mindmap-branch-gap) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-detail-item,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item {
+  row-gap: var(--mindmap-sibling-gap) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-axis-list > .mindmap-topic-item > .mindmap-list,
+.article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-detail-item > .mindmap-list {
+  padding-left: var(--mindmap-level-gap) !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-node,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-node,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-node {
+  z-index: 3 !important;
+  background-clip: padding-box !important;
+}
+
+.article-canvas .mindmap-card-axis .mindmap-link-layer,
+.page-sheet .article-canvas .mindmap-card-axis .mindmap-link-layer,
+.live-preview-canvas .article-canvas .mindmap-card-axis .mindmap-link-layer {
+  z-index: 0 !important;
+}
+
+@container (max-width: 460px) {
+  .article-canvas .mindmap-card.mindmap-card-axis,
+  .page-sheet .article-canvas .mindmap-card.mindmap-card-axis,
+  .live-preview-canvas .article-canvas .mindmap-card.mindmap-card-axis {
+    --mindmap-branch-gap: 13px;
+    --mindmap-level-gap: 12px;
+    --mindmap-sibling-gap: 8px;
+    --mindmap-topic-gap: 14px;
+    --mindmap-connector-clearance: 4px;
+  }
 }

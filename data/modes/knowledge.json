@@ -1,0 +1,24 @@
+{
+  "id": "knowledge",
+  "name": "知识卡片",
+  "title": "知识卡片模式",
+  "summary": "同一考点集中成块，适合讲义式速读。",
+  "highlights": [
+    "考点集中",
+    "题签清楚",
+    "信息更密"
+  ],
+  "sort": 10,
+  "enabled": true,
+  "renderMode": "knowledge",
+  "templateFile": "knowledge.md",
+  "templateVersion": "2026-05-04.1",
+  "updatedAt": "2026-05-04T00:00:00.000Z",
+  "placeholders": [
+    {
+      "key": "sourceContent",
+      "label": "原始资料",
+      "required": true
+    }
+  ]
+}

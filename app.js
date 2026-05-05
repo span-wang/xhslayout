@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   mode: "layout-for-xhs-mode",
   examPageLayout: "layout-for-xhs-exam-page-layout",
   standardPageLayout: "layout-for-xhs-standard-page-layout",
+  pageLayoutVersion: "layout-for-xhs-page-layout-version",
   questionAnswerLayout: "layout-for-xhs-question-answer-layout",
   bodyFontFamily: "layout-for-xhs-body-font-family",
   headingFontFamily: "layout-for-xhs-heading-font-family",
@@ -16,6 +17,8 @@ const STORAGE_KEYS = {
   tableFontSize: "layout-for-xhs-table-font-size",
   accentFontSize: "layout-for-xhs-accent-font-size",
   mindmapNodeWidth: "layout-for-xhs-mindmap-node-width",
+  mindmapContainerWidth: "layout-for-xhs-mindmap-container-width",
+  mindmapContainerHeight: "layout-for-xhs-mindmap-container-height",
   lineHeight: "layout-for-xhs-line-height",
   letterSpacing: "layout-for-xhs-letter-spacing",
   paragraphSpacing: "layout-for-xhs-paragraph-spacing",
@@ -64,8 +67,10 @@ const THEME_LABELS = {
   mist: "灰雾蓝",
 };
 
-const MODE_METADATA = {
+const DEFAULT_MODE_METADATA = Object.freeze({
   knowledge: {
+    id: "knowledge",
+    name: "知识卡片",
     title: "知识卡片模式",
     summary: "同一考点集中成块，适合讲义式速读。",
     highlights: [
@@ -73,8 +78,25 @@ const MODE_METADATA = {
       "题签清楚",
       "信息更密",
     ],
+    sort: 10,
+    renderMode: "knowledge",
+  },
+  lecture: {
+    id: "lecture",
+    name: "精读讲义",
+    title: "精读讲义模式",
+    summary: "按导读、章节、小节和结论组织长内容，适合逐层理解和复习。",
+    highlights: [
+      "导读先行",
+      "章节清楚",
+      "结论可扫",
+    ],
+    sort: 20,
+    renderMode: "lecture",
   },
   question: {
+    id: "question",
+    name: "题目模式",
     title: "题目模式",
     summary: "题干、答案、解析分层展开，适合逐题复盘。",
     highlights: [
@@ -82,8 +104,12 @@ const MODE_METADATA = {
       "答案分层",
       "复盘更快",
     ],
+    sort: 30,
+    renderMode: "question",
   },
   exam: {
+    id: "exam",
+    name: "试卷模式",
     title: "试卷模式",
     summary: "切换后自动进入 A3 预览布局，适合整版打印试卷和长大题页面。",
     highlights: [
@@ -91,8 +117,12 @@ const MODE_METADATA = {
       "试卷节奏",
       "打印友好",
     ],
+    sort: 40,
+    renderMode: "exam",
   },
   article: {
+    id: "article",
+    name: "文章模式",
     title: "文章模式",
     summary: "保留长文节奏，适合教程和正文阅读。",
     highlights: [
@@ -100,8 +130,11 @@ const MODE_METADATA = {
       "节奏更顺",
       "适合长文",
     ],
+    sort: 50,
+    renderMode: "article",
   },
-};
+});
+let MODE_METADATA = { ...DEFAULT_MODE_METADATA };
 
 const LAYOUT_HISTORY_MAX_ENTRIES = 24;
 const LAYOUT_HISTORY_MAX_TITLE_LENGTH = 40;
@@ -228,6 +261,18 @@ const MODE_LAYOUT_PRESETS = Object.freeze({
       id: "knowledge-central-editorial",
       label: "集中高级",
       summary: "中轴聚焦、主次块更清晰，适合更有展陈感的知识整理",
+    }),
+  ]),
+  lecture: Object.freeze([
+    Object.freeze({
+      id: "lecture-snowpeak",
+      label: "雪山精读讲义",
+      summary: "冰蓝章节点、留白导读和冷静结论栏，适合严谨深读",
+    }),
+    Object.freeze({
+      id: "lecture-spring-shoot",
+      label: "春笋精读讲义",
+      summary: "竹节式小节、浅绿批注和轻盈重点区，适合温柔精读",
     }),
   ]),
   question: Object.freeze([
@@ -468,6 +513,7 @@ const MODE_LAYOUT_PRESETS = Object.freeze({
 
 const DEFAULT_LAYOUT_PRESET_BY_MODE = Object.freeze({
   knowledge: "knowledge-index",
+  lecture: "lecture-snowpeak",
   question: "question-proof",
   article: "article-editorial",
 });
@@ -585,6 +631,7 @@ const TABLE_SKIP_TOKEN = "{{table-skip}}";
 
 const DEFAULT_THEME = "oat";
 const DEFAULT_MODE = "knowledge";
+const LECTURE_MODE = "lecture";
 const EXAM_MODE = "exam";
 const QUESTION_STYLE_MODE = "question";
 const QUESTION_ANSWER_LAYOUTS = Object.freeze({
@@ -610,6 +657,8 @@ const DEFAULT_TABLE_FONT_SIZE = 14;
 const DEFAULT_TABLE_LINE_HEIGHT = 1.2;
 const DEFAULT_ACCENT_FONT_SIZE = 14;
 const DEFAULT_MINDMAP_NODE_WIDTH = 220;
+const DEFAULT_MINDMAP_CONTAINER_WIDTH = 0;
+const DEFAULT_MINDMAP_CONTAINER_HEIGHT = 0;
 const DEFAULT_LINE_HEIGHT = 1.62;
 const DEFAULT_LETTER_SPACING = 0;
 const DEFAULT_PARAGRAPH_SPACING = 10;
@@ -647,6 +696,7 @@ const DEFAULT_EXPORT_BACKGROUND_SRC = "";
 const DEFAULT_EXPORT_BACKGROUND_NAME = "";
 const DEFAULT_PDF_IGNORE_BACKGROUND = false;
 const DEFAULT_PAGINATION_STRATEGY = "split-first";
+const PAGE_LAYOUT_STORAGE_VERSION = "2026-05-exam-a3-standard-a4-v3";
 const TYPOGRAPHY_BASELINE_VERSION = "2026-04-controlled-readable-scale";
 const MAX_PERSISTED_BACKGROUND_LENGTH = 1500000;
 const CUSTOM_FONT_DB_NAME = "layout-for-xhs-custom-fonts";
@@ -682,6 +732,8 @@ const READABLE_TYPOGRAPHY_BASELINE = Object.freeze({
   tableFontSize: DEFAULT_TABLE_FONT_SIZE,
   accentFontSize: DEFAULT_ACCENT_FONT_SIZE,
   mindmapNodeWidth: DEFAULT_MINDMAP_NODE_WIDTH,
+  mindmapContainerWidth: DEFAULT_MINDMAP_CONTAINER_WIDTH,
+  mindmapContainerHeight: DEFAULT_MINDMAP_CONTAINER_HEIGHT,
   lineHeight: DEFAULT_LINE_HEIGHT,
   letterSpacing: DEFAULT_LETTER_SPACING,
   paragraphSpacing: DEFAULT_PARAGRAPH_SPACING,
@@ -703,6 +755,7 @@ const PAGE_LAYOUT_FIT_TOLERANCE_PX = 2;
 const PAGE_LAYOUT_SAFETY_PX = 4;
 const PAGE_FOOTER_LOGO_HEIGHT_PX = 30;
 const PAGE_FOOTER_LOGO_GAP_PX = 4;
+const EXAM_PAGE_COLUMN_COUNT = 2;
 const PARAGRAPH_PAGINATION_MIN_TEXT_LENGTH = 36;
 const PARAGRAPH_PAGINATION_MIN_FRAGMENT_CHARS = 12;
 const QUESTION_PAGINATION_FRAGMENT_END_CLASSES = Object.freeze([
@@ -1020,6 +1073,28 @@ const ARTICLE_STYLE_CONTROLS = [
     max: 320,
     defaultValue: DEFAULT_MINDMAP_NODE_WIDTH,
   },
+  {
+    key: "mindmapContainerWidth",
+    storageKey: STORAGE_KEYS.mindmapContainerWidth,
+    inputId: "mindmapContainerWidthRange",
+    valueId: "mindmapContainerWidthValue",
+    cssVar: "--user-mindmap-container-width",
+    min: 0,
+    max: 960,
+    defaultValue: DEFAULT_MINDMAP_CONTAINER_WIDTH,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动"),
+  },
+  {
+    key: "mindmapContainerHeight",
+    storageKey: STORAGE_KEYS.mindmapContainerHeight,
+    inputId: "mindmapContainerHeightRange",
+    valueId: "mindmapContainerHeightValue",
+    cssVar: "--user-mindmap-container-height",
+    min: 0,
+    max: 720,
+    defaultValue: DEFAULT_MINDMAP_CONTAINER_HEIGHT,
+    formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动"),
+  },
 ];
 
 const ARTICLE_PARAGRAPH_CONTROLS = [
@@ -1323,6 +1398,8 @@ const ELEMENT_STYLE_SCHEMA = Object.freeze([
     label: "Mindmap",
     selector: ".mindmap-card, .mindmap-root, .mindmap-node",
     fields: Object.freeze([
+      Object.freeze({ key: "containerWidth", label: "Card Width", cssVar: "--element-mindmap-container-width", min: 0, max: 960, step: 10, defaultValue: 0, unit: "px", formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动") }),
+      Object.freeze({ key: "containerHeight", label: "Card Height", cssVar: "--element-mindmap-container-height", min: 0, max: 720, step: 10, defaultValue: 0, unit: "px", formatValue: (value) => (Number(value) > 0 ? formatPixelValue(value) : "自动") }),
       Object.freeze({ key: "rootWidth", label: "Root Width", cssVar: "--element-mindmap-root-width", min: 40, max: 160, step: 2, defaultValue: 56, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "nodeFontSize", label: "Node Size", cssVar: "--element-mindmap-node-font-size", min: 10, max: 24, step: 1, defaultValue: DEFAULT_FONT_SIZE - 1, unit: "px", formatValue: formatPixelValue }),
       Object.freeze({ key: "nodePaddingX", label: "Node Pad X", cssVar: "--element-mindmap-node-padding-x", min: 0, max: 24, step: 1, defaultValue: 10, unit: "px", formatValue: formatPixelValue }),
@@ -1631,12 +1708,15 @@ const EXPORT_STYLE_FALLBACK = `
 
 const PDF_EXPORT_API_URL = "/api/export-pdf";
 const PNG_ZIP_EXPORT_API_URL = "/api/export-png-zip";
+const MODE_REGISTRY_API_URL = "/api/v1/modes";
+const MARKDOWN_DOCUMENTS_API_URL = "/api/v1/markdown-documents";
 const PDF_EXPORT_REQUEST_TIMEOUT_MS = 120000;
 const PDF_EXPORT_STALL_HINT_MS = 15000;
 const PDF_INLINE_IMAGE_MAX_DIMENSION = 2200;
 const PDF_INLINE_IMAGE_JPEG_QUALITY = 0.86;
 const PDF_INLINE_IMAGE_OPTIMIZE_MIN_CHARS = 900000;
 const LAYOUT_HISTORY_API_URL = "/api/layout-history";
+const ELEMENT_STYLE_PRESETS_API_URL = "/api/element-style-presets";
 const STUDY_NOTES_API_URL = "/api/generate-study-notes";
 const PDF_IMPORT_MODULE_SRC = "vendor/pdfjs/pdf.min.mjs";
 const PDF_IMPORT_WORKER_SRC = "vendor/pdfjs/pdf.worker.min.mjs";
@@ -1809,6 +1889,12 @@ function sanitizeLayoutHistorySnapshot(snapshot = {}) {
   const layoutPreset = isLayoutPresetForMode(snapshot.layoutPreset, mode)
     ? snapshot.layoutPreset
     : sanitizeLayoutPresetForMode(layoutPresetByMode[mode], mode);
+  const pageLayoutVersion = String(snapshot.pageLayoutVersion || "");
+  const examPageLayout = buildStoredExamPageLayout(snapshot.examPageLayout || snapshot, pageLayoutVersion);
+  const standardPageLayout = buildStoredStandardPageLayout(
+    snapshot.standardPageLayout || snapshot,
+    pageLayoutVersion,
+  );
   const controlValues = {};
 
   ARTICLE_STYLE_CONTROLS.forEach((control) => {
@@ -1830,6 +1916,7 @@ function sanitizeLayoutHistorySnapshot(snapshot = {}) {
   return {
     theme: sanitizeChoice(snapshot.theme, THEME_LABELS, DEFAULT_THEME),
     mode,
+    pageLayoutVersion: PAGE_LAYOUT_STORAGE_VERSION,
     questionAnswerLayout: sanitizeChoice(
       snapshot.questionAnswerLayout,
       QUESTION_ANSWER_LAYOUTS,
@@ -1845,6 +1932,8 @@ function sanitizeLayoutHistorySnapshot(snapshot = {}) {
     tableLayouts: normalizeTableLayouts(snapshot.tableLayouts || {}),
     cardLayouts: normalizeCardLayouts(snapshot.cardLayouts || {}),
     cardOrder: normalizeCardOrder(snapshot.cardOrder || []),
+    examPageLayout,
+    standardPageLayout,
     pageHeaderEnabled: normalizeBoolean(snapshot.pageHeaderEnabled, DEFAULT_PAGE_HEADER_ENABLED),
     pageHeaderText: String(snapshot.pageHeaderText == null ? DEFAULT_PAGE_HEADER_TEXT : snapshot.pageHeaderText),
     watermarkEnabled: normalizeBoolean(snapshot.watermarkEnabled, DEFAULT_WATERMARK_ENABLED),
@@ -3158,6 +3247,105 @@ function sanitizeChoice(value, collection, fallback) {
   return Object.prototype.hasOwnProperty.call(collection, value) ? value : fallback;
 }
 
+function normalizeModeMetadataEntry(entry) {
+  if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+    return null;
+  }
+
+  const id = String(entry.id || "").trim();
+
+  if (!/^[a-z][a-z0-9-]{0,63}$/.test(id)) {
+    return null;
+  }
+
+  const fallback = DEFAULT_MODE_METADATA[id] || DEFAULT_MODE_METADATA[DEFAULT_MODE];
+  const title = String(entry.title || fallback?.title || id).trim();
+  const name = String(entry.name || title.replace(/模式$/, "") || id).trim();
+  const renderMode = sanitizeChoice(entry.renderMode || id, DEFAULT_MODE_METADATA, "article");
+  const highlights = Array.isArray(entry.highlights)
+    ? entry.highlights.map((item) => String(item || "").trim()).filter(Boolean).slice(0, 8)
+    : [...(fallback?.highlights || [])];
+
+  return {
+    id,
+    name,
+    title,
+    summary: String(entry.summary || fallback?.summary || "").trim(),
+    highlights,
+    sort: Number.isFinite(Number(entry.sort)) ? Number(entry.sort) : fallback?.sort || 1000,
+    renderMode,
+    templateVersion: String(entry.templateVersion || "").trim(),
+    templateUrl: String(entry.templateUrl || "").trim(),
+  };
+}
+
+function normalizeModeRegistryEntries(entries) {
+  const normalized = Array.isArray(entries)
+    ? entries.map(normalizeModeMetadataEntry).filter(Boolean)
+    : [];
+
+  if (!normalized.length) {
+    return { ...DEFAULT_MODE_METADATA };
+  }
+
+  return normalized
+    .sort((left, right) => left.sort - right.sort || left.id.localeCompare(right.id))
+    .reduce((result, entry) => {
+      result[entry.id] = entry;
+      return result;
+    }, {});
+}
+
+async function requestModeRegistry() {
+  const response = await fetch(MODE_REGISTRY_API_URL, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.error || `加载模式失败，状态码 ${response.status}`;
+    throw new Error(message);
+  }
+
+  const entries = Array.isArray(payload?.data) ? payload.data : payload?.modes;
+  return normalizeModeRegistryEntries(entries);
+}
+
+async function loadRemoteModeRegistry() {
+  try {
+    MODE_METADATA = await requestModeRegistry();
+  } catch (error) {
+    console.error(error);
+    MODE_METADATA = { ...DEFAULT_MODE_METADATA };
+  }
+
+  return MODE_METADATA;
+}
+
+function getModeDisplayName(modeId) {
+  const meta = MODE_METADATA[modeId];
+  return meta?.name || meta?.title || modeId;
+}
+
+function getModeRenderMode(modeId) {
+  const meta = MODE_METADATA[modeId];
+  return sanitizeChoice(meta?.renderMode || modeId, DEFAULT_MODE_METADATA, "article");
+}
+
+function isModeRenderedAs(modeId, renderMode) {
+  return getModeRenderMode(sanitizeChoice(modeId, MODE_METADATA, DEFAULT_MODE)) === renderMode;
+}
+
 function getSourceModeValue(valueOrOptions) {
   if (valueOrOptions && typeof valueOrOptions === "object") {
     return sanitizeChoice(valueOrOptions.sourceMode ?? valueOrOptions.mode, MODE_METADATA, DEFAULT_MODE);
@@ -3166,22 +3354,30 @@ function getSourceModeValue(valueOrOptions) {
   return sanitizeChoice(valueOrOptions, MODE_METADATA, DEFAULT_MODE);
 }
 
+function getSourceModeAttributeValue(mode) {
+  const sourceMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  const renderMode = getModeRenderMode(sourceMode);
+  return renderMode === EXAM_MODE ? EXAM_MODE : sourceMode;
+}
+
 function getLayoutPresetsForMode(mode) {
   const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
-  if (resolvedMode === EXAM_MODE) {
+  const renderMode = getModeRenderMode(resolvedMode);
+  if (renderMode === EXAM_MODE) {
     return MODE_LAYOUT_PRESETS[QUESTION_STYLE_MODE] || [];
   }
-  return MODE_LAYOUT_PRESETS[resolvedMode] || MODE_LAYOUT_PRESETS[DEFAULT_MODE] || [];
+  return MODE_LAYOUT_PRESETS[renderMode] || MODE_LAYOUT_PRESETS[DEFAULT_MODE] || [];
 }
 
 function getDefaultLayoutPresetForMode(mode) {
   const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
-  if (resolvedMode === EXAM_MODE) {
+  const renderMode = getModeRenderMode(resolvedMode);
+  if (renderMode === EXAM_MODE) {
     return DEFAULT_LAYOUT_PRESET_BY_MODE[QUESTION_STYLE_MODE]
       || getLayoutPresetsForMode(QUESTION_STYLE_MODE)[0]?.id
       || "";
   }
-  return DEFAULT_LAYOUT_PRESET_BY_MODE[resolvedMode] || getLayoutPresetsForMode(resolvedMode)[0]?.id || "";
+  return DEFAULT_LAYOUT_PRESET_BY_MODE[renderMode] || getLayoutPresetsForMode(resolvedMode)[0]?.id || "";
 }
 
 function isLayoutPresetForMode(value, mode) {
@@ -3202,7 +3398,7 @@ function normalizeLayoutPresetByMode(rawValue) {
   const source = rawValue && typeof rawValue === "object" ? rawValue : {};
 
   return Object.keys(MODE_METADATA).reduce((result, mode) => {
-    result[mode] = sanitizeLayoutPresetForMode(source[mode], mode);
+    result[mode] = sanitizeLayoutPresetForMode(source[mode] || source[getModeRenderMode(mode)], mode);
     return result;
   }, {});
 }
@@ -4366,6 +4562,39 @@ function normalizeElementStylePresets(rawValue) {
   return normalized;
 }
 
+function flattenElementStylePresets(rawValue) {
+  const normalized = normalizeElementStylePresets(rawValue);
+
+  return Object.entries(normalized).flatMap(([groupId, entries]) => (
+    entries.map((entry) => ({
+      ...entry,
+      groupId,
+    }))
+  ));
+}
+
+function groupElementStylePresetList(presets) {
+  const grouped = {};
+
+  (Array.isArray(presets) ? presets : []).forEach((preset) => {
+    const group = getElementStyleGroup(preset?.groupId || preset?.group);
+    const name = String(preset?.name || "").trim().slice(0, 40);
+
+    if (!group || !name) {
+      return;
+    }
+
+    grouped[group.id] = grouped[group.id] || [];
+    grouped[group.id].push({
+      id: sanitizeBlockToken(String(preset.id || name), `${group.id}-${name}`),
+      name,
+      styles: getElementStyleDefaults({ [group.id]: preset.styles || {} })[group.id],
+    });
+  });
+
+  return normalizeElementStylePresets(grouped);
+}
+
 function resolveElementStyles(options = {}, resolvedOptions = {}) {
   if (options.elementStyles) {
     return normalizeElementStyles(options.elementStyles);
@@ -5342,6 +5571,7 @@ function resolveArticleOptions(options = {}) {
   const resolved = {
     theme: sanitizeChoice(options.theme, THEME_LABELS, DEFAULT_THEME),
     sourceMode,
+    sourceModeAttribute: getSourceModeAttributeValue(sourceMode),
     mode: renderMode,
     questionAnswerLayout: sanitizeChoice(
       options.questionAnswerLayout,
@@ -5404,7 +5634,7 @@ function applyArticleStyleProperties(target, options, articleWidth) {
   const resolved = resolveArticleOptions(options);
 
   target.dataset.mode = resolved.mode;
-  target.dataset.sourceMode = resolved.sourceMode;
+  target.dataset.sourceMode = resolved.sourceModeAttribute;
   target.dataset.layoutPreset = resolved.layoutPreset;
   target.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
 
@@ -5472,11 +5702,14 @@ function getArticleExportOptions(state) {
 
 function isQuestionLikeMode(mode) {
   const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
-  return resolvedMode === QUESTION_STYLE_MODE || resolvedMode === EXAM_MODE;
+  const renderMode = getModeRenderMode(resolvedMode);
+  return renderMode === QUESTION_STYLE_MODE || renderMode === EXAM_MODE;
 }
 
 function getRenderMode(mode) {
-  return isQuestionLikeMode(mode) ? QUESTION_STYLE_MODE : sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  const resolvedMode = sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE);
+  const renderMode = getModeRenderMode(resolvedMode);
+  return renderMode === EXAM_MODE ? QUESTION_STYLE_MODE : renderMode;
 }
 
 function buildExamPageLayout(source = {}) {
@@ -5518,8 +5751,10 @@ function readCurrentPageLayout(state) {
   });
 }
 
-function applyPageLayoutToState(state, layout = {}) {
-  const resolved = buildExamPageLayout(layout);
+function applyPageLayoutToState(state, layout = {}, layoutKind = EXAM_MODE) {
+  const resolved = layoutKind === "standard"
+    ? buildStandardPageLayout(layout)
+    : normalizeExamPageLayout(layout);
   state.pageWidth = resolved.pageWidth;
   state.pageHeight = resolved.pageHeight;
   state.pageMarginTop = resolved.pageMarginTop;
@@ -5537,6 +5772,47 @@ function buildStandardPageLayout(source = {}) {
     pageMarginBottom: clampNumber(source.pageMarginBottom, 0, 36, DEFAULT_PAGE_MARGIN_BOTTOM),
     pageMarginLeft: clampNumber(source.pageMarginLeft, 0, 32, DEFAULT_PAGE_MARGIN_LEFT),
   };
+}
+
+function isA3LikePageLayout(source = {}) {
+  const pageWidth = Number(source.pageWidth);
+  const pageHeight = Number(source.pageHeight);
+
+  return (pageWidth === EXAM_PAGE_LAYOUT_DEFAULTS.pageWidth && pageHeight === EXAM_PAGE_LAYOUT_DEFAULTS.pageHeight)
+    || (pageWidth === EXAM_PAGE_LAYOUT_DEFAULTS.pageHeight && pageHeight === EXAM_PAGE_LAYOUT_DEFAULTS.pageWidth);
+}
+
+function isDefaultA4PageLayout(source = {}) {
+  return Number(source.pageWidth) === DEFAULT_PAGE_WIDTH
+    && Number(source.pageHeight) === DEFAULT_PAGE_HEIGHT;
+}
+
+function normalizeExamPageLayout(source = {}) {
+  const resolved = buildExamPageLayout(source);
+
+  if (isDefaultA4PageLayout(resolved)) {
+    return buildExamPageLayout();
+  }
+
+  return resolved;
+}
+
+function buildStoredExamPageLayout(source = {}, storageVersion = PAGE_LAYOUT_STORAGE_VERSION) {
+  if (storageVersion !== PAGE_LAYOUT_STORAGE_VERSION) {
+    return buildExamPageLayout();
+  }
+
+  return normalizeExamPageLayout(source);
+}
+
+function buildStoredStandardPageLayout(source = {}, storageVersion = PAGE_LAYOUT_STORAGE_VERSION) {
+  const resolved = buildStandardPageLayout(source);
+
+  if (storageVersion !== PAGE_LAYOUT_STORAGE_VERSION || isA3LikePageLayout(resolved)) {
+    return buildStandardPageLayout();
+  }
+
+  return resolved;
 }
 
 function resolvePageOptions(options = {}) {
@@ -5645,6 +5921,48 @@ function applyPageBackgroundStyleProperties(target, options = {}) {
   target.style.setProperty("--page-background-image", buildCssUrlValue(resolved.exportBackgroundSrc));
   target.dataset.backgroundMode = resolved.exportBackgroundSrc ? "custom" : "theme";
   return resolved;
+}
+
+function ensureDynamicPrintPageStyle() {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  let style = document.getElementById("dynamicPrintPageStyle");
+
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "dynamicPrintPageStyle";
+    document.head.appendChild(style);
+  }
+
+  return style;
+}
+
+function syncDynamicPrintPageStyle(options = {}) {
+  const style = ensureDynamicPrintPageStyle();
+
+  if (!style) {
+    return;
+  }
+
+  const resolved = resolvePageOptions(options);
+  style.textContent = `
+    @page {
+      size: ${resolved.pageWidth}mm ${resolved.pageHeight}mm;
+      margin: 0;
+    }
+
+    @media print {
+      .page-sheet {
+        width: ${resolved.pageWidth}mm !important;
+        min-width: ${resolved.pageWidth}mm !important;
+        max-width: ${resolved.pageWidth}mm !important;
+        min-height: ${resolved.pageHeight}mm !important;
+        height: ${resolved.pageHeight}mm !important;
+      }
+    }
+  `;
 }
 
 function normalizeTableLayouts(rawValue) {
@@ -6711,7 +7029,7 @@ function resolveHeaderText(documentTitle, options) {
     return trimmedTitle;
   }
 
-  const modeMeta = MODE_METADATA[options.mode];
+  const modeMeta = MODE_METADATA[options.mode] || DEFAULT_MODE_METADATA[options.mode];
   return modeMeta ? modeMeta.title : "Markdown Document";
 }
 
@@ -6808,6 +7126,7 @@ function decoratePageHeaderShell(header, family, headerText, pageLabel) {
 function createPaginatedPage(options, pageNumber, documentTitle) {
   const resolved = getResolvedDocumentOptions(options);
   const sourceMode = getSourceModeValue(options);
+  const sourceModeAttribute = getSourceModeAttributeValue(sourceMode);
   const page = document.createElement("section");
   const frame = document.createElement("div");
   const article = document.createElement("article");
@@ -6816,7 +7135,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
 
   page.className = "page-sheet";
   page.dataset.pageNumber = String(pageNumber);
-  page.dataset.sourceMode = sourceMode;
+  page.dataset.sourceMode = sourceModeAttribute;
   page.dataset.layoutPreset = resolved.layoutPreset;
   page.dataset.layoutFamily = getLayoutPresetFamilyKey(resolved.layoutPreset);
   applyPageShellStyleProperties(page, resolved);
@@ -6853,7 +7172,7 @@ function createPaginatedPage(options, pageNumber, documentTitle) {
   body.className = "page-sheet-body";
   article.className = "article-canvas page-sheet-article";
   article.dataset.mode = resolved.mode;
-  article.dataset.sourceMode = sourceMode;
+  article.dataset.sourceMode = sourceModeAttribute;
   article.dataset.layoutPreset = resolved.layoutPreset;
   article.dataset.layoutFamily = page.dataset.layoutFamily;
   article.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
@@ -6892,6 +7211,382 @@ function getPaginatedArticleHeightLimit(pageContext, fallbackPx) {
   }
 
   return Math.max(1, measuredLimit);
+}
+
+function shouldUseExamColumnPagination(sourceRoot, options = {}) {
+  const sourceMode = getSourceModeValue(options);
+
+  return Boolean(
+    isModeRenderedAs(sourceMode, EXAM_MODE)
+    && sourceRoot?.classList?.contains("question-body-layout")
+  );
+}
+
+function createExamColumnSpreadArticle(sourceArticle, options = {}) {
+  const article = document.createElement("article");
+  const full = document.createElement("div");
+  const grid = document.createElement("div");
+  const columnCount = Math.max(1, Number(options.columnCount) || EXAM_PAGE_COLUMN_COUNT);
+  const sourceClassNames = sourceArticle?.classList ? Array.from(sourceArticle.classList) : [];
+
+  article.className = sourceClassNames.filter((className) => className !== "article-measure-canvas").join(" ");
+  if (!article.classList.contains("article-canvas")) {
+    article.classList.add("article-canvas");
+  }
+  article.classList.add("exam-column-spread");
+  article.dataset.mode = sourceArticle?.dataset?.mode || QUESTION_STYLE_MODE;
+  article.dataset.sourceMode = sourceArticle?.dataset?.sourceMode || EXAM_MODE;
+  article.dataset.layoutPreset = sourceArticle?.dataset?.layoutPreset || "question-proof";
+  article.dataset.layoutFamily = sourceArticle?.dataset?.layoutFamily || getLayoutPresetFamilyKey(article.dataset.layoutPreset);
+  article.dataset.questionAnswerLayout = sourceArticle?.dataset?.questionAnswerLayout || DEFAULT_QUESTION_ANSWER_LAYOUT;
+
+  full.className = "exam-column-spread-full";
+  grid.className = "exam-column-spread-grid";
+  article.appendChild(full);
+  article.appendChild(grid);
+
+  for (let index = 0; index < columnCount; index += 1) {
+    const column = document.createElement("div");
+
+    column.className = "exam-column-spread-column";
+    column.dataset.examColumn = String(index + 1);
+    grid.appendChild(column);
+  }
+
+  return article;
+}
+
+function getExamColumnSpreadColumns(article) {
+  return Array.from(article?.querySelectorAll?.(":scope > .exam-column-spread-grid > .exam-column-spread-column") || []);
+}
+
+function getExamColumnSpreadBlockCount(article) {
+  const fullCount = article?.querySelector?.(":scope > .exam-column-spread-full")?.childElementCount || 0;
+  return fullCount + getExamColumnSpreadColumns(article).reduce((count, column) => count + column.childElementCount, 0);
+}
+
+function getExamColumnSpreadColumnBlockCount(article) {
+  return getExamColumnSpreadColumns(article).reduce((count, column) => count + column.childElementCount, 0);
+}
+
+function getExamColumnSpreadHeight(article) {
+  return article?.scrollHeight || 0;
+}
+
+function getExamColumnSpreadFullHeight(article) {
+  const full = article?.querySelector?.(":scope > .exam-column-spread-full");
+
+  if (!full || !full.childElementCount) {
+    return 0;
+  }
+
+  const rectHeight = full.getBoundingClientRect?.().height || 0;
+  return Math.max(full.scrollHeight || 0, rectHeight);
+}
+
+function getExamColumnSpreadColumnHeight(article, columnIndex = 0) {
+  const column = getExamColumnSpreadColumns(article)[columnIndex];
+
+  if (!column) {
+    return 0;
+  }
+
+  const columnRect = column.getBoundingClientRect?.();
+  const measuredElements = [
+    ...Array.from(column.children || []),
+    ...Array.from(column.querySelectorAll?.("*") || []),
+  ];
+  const childHeights = measuredElements.map((child) => {
+    const childRect = child.getBoundingClientRect?.();
+
+    if (!columnRect || !childRect) {
+      return 0;
+    }
+
+    const childStyle = window.getComputedStyle ? window.getComputedStyle(child) : null;
+    const marginBottom = Number.parseFloat(childStyle?.marginBottom || "0") || 0;
+    return Math.max(0, childRect.bottom - columnRect.top + marginBottom);
+  });
+  const measuredChildrenHeight = childHeights.length ? Math.max(...childHeights) : 0;
+  const rectHeight = column.getBoundingClientRect?.().height || 0;
+  return Math.max(measuredChildrenHeight, column.scrollHeight || 0, rectHeight);
+}
+
+function getExamColumnSpreadColumnHeightLimit(article, pageHeightLimit, columnIndex = 0) {
+  const column = getExamColumnSpreadColumns(article)[columnIndex];
+  const renderedLimit = Math.max(
+    column?.clientHeight || 0,
+    column?.getBoundingClientRect?.().height || 0,
+  );
+
+  if (renderedLimit > 0) {
+    return renderedLimit;
+  }
+
+  return Math.max(1, pageHeightLimit - getExamColumnSpreadFullHeight(article));
+}
+
+function appendToExamColumnSpread(article, block, columnIndex = 0) {
+  const columns = getExamColumnSpreadColumns(article);
+  const targetColumn = columns[Math.max(0, Math.min(columns.length - 1, columnIndex))] || article;
+
+  targetColumn.appendChild(block);
+  return targetColumn;
+}
+
+function appendToExamColumnSpreadFull(article, block) {
+  const full = article?.querySelector?.(":scope > .exam-column-spread-full") || article;
+
+  full.appendChild(block);
+  return full;
+}
+
+function removeFromExamColumnSpread(block) {
+  if (
+    block?.parentElement?.classList?.contains("exam-column-spread-column")
+    || block?.parentElement?.classList?.contains("exam-column-spread-full")
+  ) {
+    block.remove();
+  }
+}
+
+function isExamColumnFullWidthBlock(block) {
+  if (!block || !block.tagName) {
+    return false;
+  }
+
+  return block.tagName === "H1"
+    || isQuestionAnswerBankBlock(block)
+    || block.classList?.contains("question-answer-bank-title");
+}
+
+function buildExamColumnPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
+  const resolved = getResolvedDocumentOptions(options);
+  const sourceMode = getSourceModeValue(options);
+  const sourceModeAttribute = getSourceModeAttributeValue(sourceMode);
+  const pageMetrics = getPageMetrics(resolved);
+  const workbench = getPageLayoutWorkbench();
+  const measurementRoot = document.createElement("div");
+  const preview = document.createElement("div");
+  const pendingBlocks = collectPaginatedBlocks(sourceRoot);
+  const pages = [];
+  const sourceClassNames = sourceRoot?.classList ? Array.from(sourceRoot.classList) : [];
+
+  workbench.innerHTML = "";
+  measurementRoot.className = "live-preview-canvas";
+  measurementRoot.dataset.mode = resolved.mode;
+  measurementRoot.dataset.sourceMode = sourceModeAttribute;
+  measurementRoot.dataset.layoutPreset = resolved.layoutPreset;
+  measurementRoot.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
+  workbench.appendChild(measurementRoot);
+  preview.className = "live-preview-canvas page-preview";
+  preview.dataset.mode = resolved.mode;
+  preview.dataset.sourceMode = sourceModeAttribute;
+  preview.dataset.layoutPreset = resolved.layoutPreset;
+  preview.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
+  applyPageBackgroundStyleProperties(preview, resolved);
+
+  const createPageContext = () => {
+    const pageContext = createPaginatedPage(resolved, pages.length + 1, documentTitle);
+    const article = createExamColumnSpreadArticle(sourceRoot, {
+      columnCount: EXAM_PAGE_COLUMN_COUNT,
+    });
+
+    article.classList.add(...sourceClassNames.filter((className) => (
+      className !== "article-canvas"
+      && className !== "article-measure-canvas"
+      && !article.classList.contains(className)
+    )));
+    article.classList.add("page-sheet-article");
+    applyArticleStyleProperties(article, resolved);
+    article.style.margin = "0";
+    pageContext.article.replaceWith(article);
+    pageContext.article = article;
+    measurementRoot.appendChild(pageContext.page);
+    return pageContext;
+  };
+
+  let currentPage = createPageContext();
+  let pageHeightLimit = getPaginatedArticleHeightLimit(currentPage, pageMetrics.contentHeightPx);
+  let currentColumnIndex = 0;
+  let hasSeenExamSectionHeading = false;
+
+  const commitPage = () => {
+    if (!currentPage) {
+      return;
+    }
+
+    pages.push(currentPage.page);
+    preview.appendChild(currentPage.page);
+    currentPage = null;
+  };
+
+  const startNewPage = () => {
+    currentPage = createPageContext();
+    pageHeightLimit = getPaginatedArticleHeightLimit(currentPage, pageMetrics.contentHeightPx);
+    currentColumnIndex = 0;
+    return currentPage;
+  };
+
+  const ensureCurrentPage = () => {
+    if (!currentPage) {
+      startNewPage();
+    }
+
+    return currentPage;
+  };
+
+  const appendFullWidthBlock = (block) => {
+    ensureCurrentPage();
+
+    if (getExamColumnSpreadColumnBlockCount(currentPage.article) > 0) {
+      commitPage();
+      startNewPage();
+    }
+
+    appendToExamColumnSpreadFull(currentPage.article, block);
+    applyMathLayout(block);
+    return true;
+  };
+
+  const appendBlock = (block) => {
+    ensureCurrentPage();
+
+    while (currentColumnIndex < EXAM_PAGE_COLUMN_COUNT) {
+      appendToExamColumnSpread(currentPage.article, block, currentColumnIndex);
+      applyMathLayout(block);
+
+      const columnHeightLimit = getExamColumnSpreadColumnHeightLimit(
+        currentPage.article,
+        pageHeightLimit,
+        currentColumnIndex,
+      );
+      const columnHeight = getExamColumnSpreadColumnHeight(currentPage.article, currentColumnIndex);
+
+      if (columnHeight <= columnHeightLimit + PAGE_LAYOUT_FIT_TOLERANCE_PX) {
+        return true;
+      }
+
+      removeFromExamColumnSpread(block);
+      currentColumnIndex += 1;
+    }
+
+    return false;
+  };
+
+  const appendBlockWithNextProbe = (block, nextBlock) => {
+    ensureCurrentPage();
+
+    while (currentColumnIndex < EXAM_PAGE_COLUMN_COUNT) {
+      const probeBlock = nextBlock.cloneNode(true);
+
+      appendToExamColumnSpread(currentPage.article, block, currentColumnIndex);
+      appendToExamColumnSpread(currentPage.article, probeBlock, currentColumnIndex);
+      applyMathLayout(block);
+      applyMathLayout(probeBlock);
+
+      const columnHeightLimit = getExamColumnSpreadColumnHeightLimit(
+        currentPage.article,
+        pageHeightLimit,
+        currentColumnIndex,
+      );
+      const columnHeight = getExamColumnSpreadColumnHeight(currentPage.article, currentColumnIndex);
+
+      removeFromExamColumnSpread(probeBlock);
+
+      if (columnHeight <= columnHeightLimit + PAGE_LAYOUT_FIT_TOLERANCE_PX) {
+        return true;
+      }
+
+      removeFromExamColumnSpread(block);
+      currentColumnIndex += 1;
+    }
+
+    return false;
+  };
+
+  while (pendingBlocks.length) {
+    const block = pendingBlocks.shift();
+
+    if (!block) {
+      continue;
+    }
+
+    if (isManualPageBreakBlock(block)) {
+      if (currentPage && getExamColumnSpreadBlockCount(currentPage.article) > 0) {
+        commitPage();
+      }
+
+      if (pendingBlocks.length) {
+        startNewPage();
+      }
+
+      continue;
+    }
+
+    const isFullWidthBlock = isExamColumnFullWidthBlock(block);
+    const isSectionHeading = isQuestionTypeHeading(block);
+    if (isSectionHeading || isQuestionAnswerBankBlock(block)) {
+      hasSeenExamSectionHeading = true;
+    }
+
+    if (isFullWidthBlock || !hasSeenExamSectionHeading) {
+      appendFullWidthBlock(block);
+      continue;
+    }
+
+    if (
+      shouldKeepPaginatedBlockWithNext(block)
+      && pendingBlocks.length
+      && !isManualPageBreakBlock(pendingBlocks[0])
+      && !isExamColumnFullWidthBlock(pendingBlocks[0])
+    ) {
+      if (appendBlockWithNextProbe(block, pendingBlocks[0])) {
+        continue;
+      }
+
+      const hasContent = currentPage && getExamColumnSpreadBlockCount(currentPage.article) > 0;
+
+      if (hasContent) {
+        commitPage();
+        startNewPage();
+
+        if (appendBlockWithNextProbe(block, pendingBlocks[0])) {
+          continue;
+        }
+      }
+    }
+
+    if (appendBlock(block)) {
+      continue;
+    }
+
+    const hasContent = currentPage && getExamColumnSpreadBlockCount(currentPage.article) > 0;
+
+    if (hasContent) {
+      commitPage();
+      startNewPage();
+
+      if (appendBlock(block)) {
+        continue;
+      }
+    }
+
+    appendToExamColumnSpread(currentPage.article, block, 0);
+    applyMathLayout(block);
+  }
+
+  if (currentPage) {
+    commitPage();
+  }
+
+  workbench.innerHTML = "";
+
+  return {
+    element: preview,
+    pageCount: Math.max(1, pages.length),
+    metrics: pageMetrics,
+  };
 }
 
 function shouldForcePageBreakBeforeBlock(block) {
@@ -7555,6 +8250,73 @@ function expandKnowledgeClusterForPagination(cluster) {
   return fragments;
 }
 
+function expandLectureSubsectionForPagination(subsection) {
+  if (!subsection) {
+    return [];
+  }
+
+  const fragments = [];
+  const title = subsection.querySelector(":scope > .lecture-subsection-title");
+  const body = subsection.querySelector(":scope > .lecture-subsection-body");
+
+  if (title) {
+    fragments.push(cloneBlockWithClasses(title, ["lecture-section-fragment", "lecture-subsection-fragment-title"]));
+  }
+
+  if (body) {
+    Array.from(body.children).forEach((child, index) => {
+      const fragment = document.createElement("div");
+      fragment.className = "lecture-subsection-body lecture-subsection-body-fragment lecture-section-fragment";
+      if (index === body.children.length - 1) {
+        fragment.classList.add("lecture-subsection-fragment-end");
+      }
+      fragment.appendChild(child.cloneNode(true));
+      fragments.push(fragment);
+    });
+  }
+
+  return fragments.length ? fragments : [subsection.cloneNode(true)];
+}
+
+function expandLectureSectionForPagination(section) {
+  if (!section) {
+    return [];
+  }
+
+  const fragments = [];
+  const header = section.querySelector(":scope > .lecture-section-header");
+  const body = section.querySelector(":scope > .lecture-section-body");
+
+  if (header) {
+    fragments.push(cloneBlockWithClasses(header, ["lecture-section-fragment", "lecture-section-fragment-header"]));
+  }
+
+  if (body) {
+    Array.from(body.children).forEach((child) => {
+      if (child.classList && child.classList.contains("lecture-subsection")) {
+        fragments.push(...expandLectureSubsectionForPagination(child));
+        return;
+      }
+
+      const fragment = cloneBlockWithClasses(child, ["lecture-section-fragment"]);
+      if (fragment) {
+        fragments.push(fragment);
+      }
+    });
+  }
+
+  if (!fragments.length) {
+    return [section.cloneNode(true)];
+  }
+
+  const lastFragment = fragments[fragments.length - 1];
+  if (lastFragment.classList) {
+    lastFragment.classList.add("lecture-section-fragment-end");
+  }
+
+  return fragments;
+}
+
 function removePaginationFragmentIdentity(fragment) {
   if (!fragment || fragment.nodeType !== Node.ELEMENT_NODE) {
     return;
@@ -7849,6 +8611,7 @@ function expandQuestionBodyListForPagination(list) {
   const items = getPaginatedListItems(list);
   const fragments = [];
   let rangeStart = 0;
+  let hasItemFragments = false;
 
   const flushRange = (rangeEnd) => {
     if (rangeEnd <= rangeStart) {
@@ -7871,26 +8634,27 @@ function expandQuestionBodyListForPagination(list) {
       return;
     }
 
+    hasItemFragments = true;
     flushRange(itemIndex);
     fragments.push(...itemFragments);
     rangeStart = itemIndex + 1;
   });
 
+  if (!hasItemFragments) {
+    if (items.length > 1) {
+      return items.map((_, itemIndex) => createPaginatedListSlice(
+        list,
+        itemIndex,
+        1,
+        itemIndex === items.length - 1,
+      ));
+    }
+
+    return [list.cloneNode(true)];
+  }
+
   flushRange(items.length);
-  if (fragments.length) {
-    return fragments;
-  }
-
-  if (items.length > 1) {
-    return items.map((_, itemIndex) => createPaginatedListSlice(
-      list,
-      itemIndex,
-      1,
-      itemIndex === items.length - 1,
-    ));
-  }
-
-  return [list.cloneNode(true)];
+  return fragments.length ? fragments : [list.cloneNode(true)];
 }
 
 function getQuestionPaginationContentSlices(block) {
@@ -8137,6 +8901,11 @@ function collectPaginatedBlocks(sourceRoot) {
       return;
     }
 
+    if (block.classList && block.classList.contains("lecture-section")) {
+      blocks.push(...expandLectureSectionForPagination(block));
+      return;
+    }
+
     blocks.push(block.cloneNode(true));
   });
 
@@ -8144,8 +8913,13 @@ function collectPaginatedBlocks(sourceRoot) {
 }
 
 function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
+  if (shouldUseExamColumnPagination(sourceRoot, options)) {
+    return buildExamColumnPaginatedPreview(sourceRoot, options, documentTitle);
+  }
+
   const resolved = getResolvedDocumentOptions(options);
   const sourceMode = getSourceModeValue(options);
+  const sourceModeAttribute = getSourceModeAttributeValue(sourceMode);
   const pageMetrics = getPageMetrics(resolved);
   const workbench = getPageLayoutWorkbench();
   const measurementRoot = document.createElement("div");
@@ -8164,13 +8938,13 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
   workbench.innerHTML = "";
   measurementRoot.className = "live-preview-canvas";
   measurementRoot.dataset.mode = resolved.mode;
-  measurementRoot.dataset.sourceMode = sourceMode;
+  measurementRoot.dataset.sourceMode = sourceModeAttribute;
   measurementRoot.dataset.layoutPreset = resolved.layoutPreset;
   measurementRoot.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
   workbench.appendChild(measurementRoot);
   preview.className = "live-preview-canvas page-preview";
   preview.dataset.mode = resolved.mode;
-  preview.dataset.sourceMode = sourceMode;
+  preview.dataset.sourceMode = sourceModeAttribute;
   preview.dataset.layoutPreset = resolved.layoutPreset;
   preview.dataset.questionAnswerLayout = resolved.questionAnswerLayout;
   applyPageBackgroundStyleProperties(preview, resolved);
@@ -8220,6 +8994,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     commitCurrentPage();
     startNewPage();
     currentPage.article.appendChild(block);
+    applyMathLayout(block);
     return true;
   };
 
@@ -8240,6 +9015,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     );
 
     currentPage.article.appendChild(candidate);
+    applyMathLayout(candidate);
     const fits = pageHasRoom();
     candidate.remove();
     return fits;
@@ -8279,6 +9055,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     );
 
     currentPage.article.appendChild(candidate);
+    applyMathLayout(candidate);
     const fits = pageHasRoom();
     candidate.remove();
     return fits;
@@ -8319,6 +9096,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     );
 
     currentPage.article.appendChild(candidate);
+    applyMathLayout(candidate);
     const fits = pageHasRoom();
     candidate.remove();
     return fits;
@@ -8405,6 +9183,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       const slice = createPaginatedTableBlockSlice(block, table, startRowIndex, rowCount, isLastSlice);
 
       currentPage.article.appendChild(slice);
+      applyMathLayout(slice);
       groupIndex += fittingGroupCount;
 
       if (groupIndex < groups.length) {
@@ -8459,6 +9238,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       const slice = createPaginatedListBlockSlice(block, list, itemIndex, fittingItemCount, isLastSlice);
 
       currentPage.article.appendChild(slice);
+      applyMathLayout(slice);
       itemIndex += fittingItemCount;
 
       if (itemIndex < items.length) {
@@ -8513,6 +9293,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
       const slice = createPaginatedParagraphBlockSlice(block, paragraph, offset, fittingEndOffset, isLastSlice);
 
       currentPage.article.appendChild(slice);
+      applyMathLayout(slice);
       offset = fittingEndOffset;
 
       if (offset < textLength) {
@@ -8575,6 +9356,8 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
 
       currentPage.article.appendChild(block);
       currentPage.article.appendChild(nextProbeBlock);
+      applyMathLayout(block);
+      applyMathLayout(nextProbeBlock);
 
       const pairFits = pageHasRoom();
 
@@ -8588,6 +9371,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     }
 
     currentPage.article.appendChild(block);
+    applyMathLayout(block);
 
     if (pageHasRoom()) {
       continue;
@@ -8625,6 +9409,7 @@ function buildPaginatedPreview(sourceRoot, options = {}, documentTitle = "") {
     commitCurrentPage();
     startNewPage();
     currentPage.article.appendChild(block);
+    applyMathLayout(block);
   }
 
   commitCurrentPage();
@@ -9288,22 +10073,41 @@ const pendingMindmapSvgRoots = new Set();
 let pendingMindmapSvgFrame = null;
 let mindmapResizeHandlerBound = false;
 let mindmapMeasureCanvas = null;
+let mindmapResizeObserver = null;
+const observedMindmapLayoutElements = new WeakSet();
 
 function createMindmapSvgElement(tagName) {
   return document.createElementNS(MINDMAP_SVG_NS, tagName);
 }
 
-function getMindmapRelativeRect(element, baseRect) {
-  const rect = element.getBoundingClientRect();
+function getMindmapLayoutScale(shell, baseRect) {
+  const layoutWidth = Math.max(shell?.offsetWidth || shell?.clientWidth || baseRect.width || 1, 1);
+  const layoutHeight = Math.max(shell?.offsetHeight || shell?.clientHeight || baseRect.height || 1, 1);
+
   return {
-    left: rect.left - baseRect.left,
-    right: rect.right - baseRect.left,
-    top: rect.top - baseRect.top,
-    bottom: rect.bottom - baseRect.top,
-    width: rect.width,
-    height: rect.height,
-    centerX: rect.left - baseRect.left + rect.width / 2,
-    centerY: rect.top - baseRect.top + rect.height / 2,
+    x: baseRect.width > 0 ? layoutWidth / baseRect.width : 1,
+    y: baseRect.height > 0 ? layoutHeight / baseRect.height : 1,
+  };
+}
+
+function getMindmapRelativeRect(element, baseRect, scale = { x: 1, y: 1 }) {
+  const rect = element.getBoundingClientRect();
+  const scaleX = Number.isFinite(scale.x) && scale.x > 0 ? scale.x : 1;
+  const scaleY = Number.isFinite(scale.y) && scale.y > 0 ? scale.y : 1;
+  const left = (rect.left - baseRect.left) * scaleX;
+  const top = (rect.top - baseRect.top) * scaleY;
+  const width = rect.width * scaleX;
+  const height = rect.height * scaleY;
+
+  return {
+    left,
+    right: left + width,
+    top,
+    bottom: top + height,
+    width,
+    height,
+    centerX: left + width / 2,
+    centerY: top + height / 2,
   };
 }
 
@@ -9319,6 +10123,42 @@ function createMindmapConnectorPath(segments) {
   return segments
     .map((segment) => segment.map(formatMindmapPathNumber).join(" "))
     .join(" ");
+}
+
+function getMindmapConnectorClearance(svg) {
+  if (!svg || typeof window === "undefined") {
+    return 4;
+  }
+
+  const styleTarget = svg.closest?.(".mindmap-card.mindmap-card-axis") || svg.parentElement;
+  const computedStyle = styleTarget ? window.getComputedStyle(styleTarget) : null;
+  const value = computedStyle
+    ? parseFloat(computedStyle.getPropertyValue("--mindmap-connector-clearance"))
+    : NaN;
+
+  return clampNumber(value, 0, 12, 4);
+}
+
+function getMindmapConnectorOverlap(svg) {
+  if (!svg || typeof window === "undefined") {
+    return 2;
+  }
+
+  const styleTarget = svg.closest?.(".mindmap-card.mindmap-card-axis") || svg.parentElement;
+  const computedStyle = styleTarget ? window.getComputedStyle(styleTarget) : null;
+  const overlapValue = computedStyle
+    ? parseFloat(computedStyle.getPropertyValue("--mindmap-line-overlap"))
+    : NaN;
+
+  if (Number.isFinite(overlapValue)) {
+    return clampNumber(overlapValue, 0, 8, 2);
+  }
+
+  const strokeValue = computedStyle
+    ? parseFloat(computedStyle.getPropertyValue("--mindmap-line-size"))
+    : NaN;
+
+  return clampNumber((strokeValue || 2) / 2 + 0.5, 0, 8, 2);
 }
 
 function getDirectMindmapChildNodes(list) {
@@ -9387,6 +10227,83 @@ function getMindmapNodeWidthLimit(card) {
   return clampNumber(parseFloat(rawValue), 90, 320, DEFAULT_MINDMAP_NODE_WIDTH);
 }
 
+function getMindmapCssPixelValue(computedStyle, propertyName, min, max, fallback = 0) {
+  if (!computedStyle || !propertyName) {
+    return fallback;
+  }
+
+  const value = parseFloat(computedStyle.getPropertyValue(propertyName));
+  return clampNumber(value, min, max, fallback);
+}
+
+function getMindmapContainerControlValue(computedStyle, elementPropertyName, userPropertyName, max) {
+  const elementValue = getMindmapCssPixelValue(computedStyle, elementPropertyName, 0, max, 0);
+
+  if (elementValue > 0) {
+    return elementValue;
+  }
+
+  return getMindmapCssPixelValue(computedStyle, userPropertyName, 0, max, 0);
+}
+
+function applyMindmapContainerSizing(card) {
+  if (!card || typeof window === "undefined") {
+    return;
+  }
+
+  const computedStyle = window.getComputedStyle(card);
+  const targetWidth = getMindmapContainerControlValue(
+    computedStyle,
+    "--element-mindmap-container-width",
+    "--user-mindmap-container-width",
+    960,
+  );
+  const targetHeight = getMindmapContainerControlValue(
+    computedStyle,
+    "--element-mindmap-container-height",
+    "--user-mindmap-container-height",
+    720,
+  );
+
+  if (targetWidth > 0) {
+    card.style.setProperty("--mindmap-card-width", `${Math.round(targetWidth)}px`);
+    card.dataset.mindmapWidthMode = "fixed";
+  } else {
+    card.style.removeProperty("--mindmap-card-width");
+    delete card.dataset.mindmapWidthMode;
+  }
+
+  if (targetHeight > 0) {
+    card.style.setProperty("--mindmap-card-min-height", `${Math.round(targetHeight)}px`);
+    card.dataset.mindmapHeightMode = "fixed";
+  } else {
+    card.style.removeProperty("--mindmap-card-min-height");
+    delete card.dataset.mindmapHeightMode;
+  }
+}
+
+function applyAdaptiveMindmapNodeLimits(card, shell) {
+  if (!card || !shell || typeof window === "undefined") {
+    return;
+  }
+
+  const shellRect = shell.getBoundingClientRect();
+  const nodeLimit = getMindmapNodeWidthLimit(card);
+  const computedShellStyle = window.getComputedStyle(shell);
+  const contentLeft = parseFloat(computedShellStyle.paddingLeft) || 0;
+  const availableContentWidth = Math.max(
+    96,
+    Math.floor((shell.clientWidth || shellRect.width || nodeLimit) - contentLeft),
+  );
+  const topicMax = Math.min(nodeLimit, Math.max(92, Math.floor(availableContentWidth * 0.44)));
+  const detailMax = Math.min(nodeLimit, Math.max(86, Math.floor(availableContentWidth * 0.5)));
+
+  card.style.setProperty("--mindmap-topic-max", `${Math.round(topicMax)}px`);
+  card.style.setProperty("--mindmap-detail-max", `${Math.round(detailMax)}px`);
+  shell.style.setProperty("--mindmap-topic-max", `${Math.round(topicMax)}px`);
+  shell.style.setProperty("--mindmap-detail-max", `${Math.round(detailMax)}px`);
+}
+
 function applyAdaptiveMindmapRootWidth(card, shell) {
   if (!card || !shell) {
     return;
@@ -9402,14 +10319,18 @@ function applyAdaptiveMindmapRootWidth(card, shell) {
 
   if (computedRootStyle.writingMode && computedRootStyle.writingMode.startsWith("vertical")) {
     const nextHeight = Math.max(88, Math.ceil(root.scrollHeight || root.getBoundingClientRect().height || 0));
+    const cardStyle = window.getComputedStyle(card);
+    const elementRootWidth = getMindmapCssPixelValue(cardStyle, "--element-mindmap-root-width", 40, 160, 56);
+    const currentRootWidth = parseFloat(computedRootStyle.width) || elementRootWidth;
+    const nextWidth = Math.round(elementRootWidth !== 56 ? elementRootWidth : currentRootWidth);
 
     if (nextHeight) {
       card.style.setProperty("--mindmap-root-height", `${nextHeight}px`);
       shell.style.setProperty("--mindmap-root-height", `${nextHeight}px`);
     }
 
-    card.style.removeProperty("--mindmap-root-width");
-    shell.style.removeProperty("--mindmap-root-width");
+    card.style.setProperty("--mindmap-root-width", `${nextWidth}px`);
+    shell.style.setProperty("--mindmap-root-width", `${nextWidth}px`);
     return;
   }
 
@@ -9424,41 +10345,102 @@ function applyAdaptiveMindmapRootWidth(card, shell) {
   shell.style.setProperty("--mindmap-root-width", `${Math.round(nextWidth)}px`);
 }
 
-function drawMindmapConnector(svg, shellRect, parentNode, childNodes) {
+function drawMindmapConnector(svg, shellRect, coordinateScale, parentNode, childNodes) {
   if (!svg || !parentNode || !childNodes.length) {
     return;
   }
 
-  const parentRect = getMindmapRelativeRect(parentNode, shellRect);
+  const parentRect = getMindmapRelativeRect(parentNode, shellRect, coordinateScale);
+
+  if (parentRect.width <= 0 || parentRect.height <= 0) {
+    return;
+  }
+
   const childRects = childNodes
-    .map((childNode) => getMindmapRelativeRect(childNode, shellRect))
+    .map((childNode) => getMindmapRelativeRect(childNode, shellRect, coordinateScale))
     .filter((rect) => rect.width > 0 && rect.height > 0);
 
   if (!childRects.length) {
     return;
   }
 
-  const startX = parentRect.right - 1;
+  const connectorClearance = getMindmapConnectorClearance(svg);
+  const connectorOverlap = getMindmapConnectorOverlap(svg);
+  const startX = parentRect.right - connectorOverlap;
   const startY = parentRect.centerY;
-  const endX = Math.min(...childRects.map((rect) => rect.left)) + 1;
-  const childYs = childRects.map((rect) => rect.centerY);
+  const minChildLeft = Math.min(...childRects.map((rect) => rect.left));
+  const childAnchors = childRects.map((rect) => ({
+    x: rect.left + connectorOverlap,
+    y: rect.centerY,
+  }));
+  const childYs = childAnchors.map((anchor) => anchor.y);
   const minY = Math.min(startY, ...childYs);
   const maxY = Math.max(startY, ...childYs);
-  const distance = endX - startX;
-  const midX = distance > 8
-    ? startX + distance / 2
-    : startX + Math.max(6, distance / 2);
+  const edgeDistance = minChildLeft - parentRect.right;
+  const midX = edgeDistance > connectorClearance * 2
+    ? parentRect.right + edgeDistance / 2
+    : parentRect.right + Math.max(4, connectorClearance, edgeDistance / 2);
 
   const segments = [
     ["M", startX, startY, "H", midX],
     ["M", midX, minY, "V", maxY],
-    ...childYs.map((childY) => ["M", midX, childY, "H", endX]),
+    ...childAnchors.map((anchor) => ["M", midX, anchor.y, "H", anchor.x]),
   ];
   const path = createMindmapSvgElement("path");
 
   path.setAttribute("class", "mindmap-link-path");
   path.setAttribute("d", createMindmapConnectorPath(segments));
   svg.appendChild(path);
+}
+
+function getMindmapCards(root = document) {
+  if (!root) {
+    return [];
+  }
+
+  const cards = [];
+
+  if (root.matches?.(".mindmap-card.mindmap-card-axis")) {
+    cards.push(root);
+  }
+
+  if (root.querySelectorAll) {
+    cards.push(...Array.from(root.querySelectorAll(".mindmap-card.mindmap-card-axis")));
+  }
+
+  return Array.from(new Set(cards));
+}
+
+function observeMindmapLayoutElement(element) {
+  if (!element || typeof window === "undefined" || typeof window.ResizeObserver === "undefined") {
+    return;
+  }
+
+  if (!mindmapResizeObserver) {
+    mindmapResizeObserver = new window.ResizeObserver((entries) => {
+      const cards = new Set();
+
+      entries.forEach((entry) => {
+        const target = entry.target;
+        const card = target.matches?.(".mindmap-card.mindmap-card-axis")
+          ? target
+          : target.closest?.(".mindmap-card.mindmap-card-axis");
+
+        if (card && card.isConnected) {
+          cards.add(card);
+        }
+      });
+
+      cards.forEach((card) => scheduleSvgMindmapUpdate(card));
+    });
+  }
+
+  if (observedMindmapLayoutElements.has(element)) {
+    return;
+  }
+
+  observedMindmapLayoutElements.add(element);
+  mindmapResizeObserver.observe(element);
 }
 
 function mountSvgMindmap(card) {
@@ -9472,7 +10454,11 @@ function mountSvgMindmap(card) {
     return;
   }
 
+  applyMindmapContainerSizing(card);
   applyAdaptiveMindmapRootWidth(card, shell);
+  applyAdaptiveMindmapNodeLimits(card, shell);
+  observeMindmapLayoutElement(card);
+  observeMindmapLayoutElement(shell);
 
   let svg = shell.querySelector(":scope > .mindmap-link-layer");
 
@@ -9490,6 +10476,7 @@ function mountSvgMindmap(card) {
   const shellRect = shell.getBoundingClientRect();
   const width = Math.max(1, Math.ceil(shell.scrollWidth || shellRect.width));
   const height = Math.max(1, Math.ceil(shell.scrollHeight || shellRect.height));
+  const coordinateScale = getMindmapLayoutScale(shell, shellRect);
 
   svg.setAttribute("width", String(width));
   svg.setAttribute("height", String(height));
@@ -9498,15 +10485,18 @@ function mountSvgMindmap(card) {
   const root = shell.querySelector(":scope > .mindmap-root");
   const axisList = shell.querySelector(":scope > .mindmap-axis-list");
 
+  observeMindmapLayoutElement(root);
+  Array.from(shell.querySelectorAll(".mindmap-node")).forEach(observeMindmapLayoutElement);
+
   if (root && axisList) {
-    drawMindmapConnector(svg, shellRect, root, getDirectMindmapChildNodes(axisList));
+    drawMindmapConnector(svg, shellRect, coordinateScale, root, getDirectMindmapChildNodes(axisList));
   }
 
   Array.from(shell.querySelectorAll(".mindmap-item-branch")).forEach((item) => {
     const parentNode = item.querySelector(":scope > .mindmap-node");
     const childList = item.querySelector(":scope > .mindmap-list");
 
-    drawMindmapConnector(svg, shellRect, parentNode, getDirectMindmapChildNodes(childList));
+    drawMindmapConnector(svg, shellRect, coordinateScale, parentNode, getDirectMindmapChildNodes(childList));
   });
 }
 
@@ -9515,7 +10505,7 @@ function mountSvgMindmaps(root = document) {
     return;
   }
 
-  Array.from(root.querySelectorAll(".mindmap-card.mindmap-card-axis")).forEach(mountSvgMindmap);
+  getMindmapCards(root).forEach(mountSvgMindmap);
 }
 
 function scheduleSvgMindmapUpdate(root = document) {
@@ -9544,6 +10534,9 @@ function bindMindmapSvgResizeUpdates() {
 
   mindmapResizeHandlerBound = true;
   window.addEventListener("resize", () => scheduleSvgMindmapUpdate(document));
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(() => scheduleSvgMindmapUpdate(document)).catch(() => {});
+  }
 }
 
 async function mountSvgMindmapsForDetachedRoot(root) {
@@ -9569,6 +10562,96 @@ async function mountSvgMindmapsForDetachedRoot(root) {
   mountSvgMindmaps(root);
   host.removeChild(root);
   host.remove();
+}
+
+const MATH_BLOCK_FIT_TOLERANCE_PX = 2;
+const MATH_BLOCK_MIN_SCALE = 0.24;
+
+function getMathBlockLayoutParts(block) {
+  if (!block || typeof block.querySelector !== "function") {
+    return {
+      display: null,
+      katex: null,
+      html: null,
+    };
+  }
+
+  const display = block.querySelector(":scope > .katex-display");
+  const katex = display?.querySelector(":scope > .katex") || null;
+  const html = katex?.querySelector(":scope > .katex-html") || null;
+  return {
+    display,
+    katex,
+    html,
+  };
+}
+
+function resetMathBlockLayout(block) {
+  if (!block || !(block instanceof Element)) {
+    return;
+  }
+
+  block.style.removeProperty("--math-fit-scale");
+  delete block.dataset.mathFitState;
+  delete block.dataset.mathFitScale;
+}
+
+function fitMathBlockToContainer(block) {
+  if (!block || !(block instanceof Element)) {
+    return;
+  }
+
+  resetMathBlockLayout(block);
+
+  const { display, katex, html } = getMathBlockLayoutParts(block);
+
+  if (!display || !katex) {
+    return;
+  }
+
+  const availableWidth = Math.max(0, Math.floor(display.clientWidth || 0));
+  const naturalWidth = Math.max(
+    0,
+    Math.ceil(html?.scrollWidth || 0),
+    Math.ceil(katex.scrollWidth || 0),
+    Math.ceil(katex.getBoundingClientRect().width || 0),
+  );
+
+  if (!availableWidth || !naturalWidth) {
+    return;
+  }
+
+  if (naturalWidth <= availableWidth + MATH_BLOCK_FIT_TOLERANCE_PX) {
+    block.dataset.mathFitState = "natural";
+    block.dataset.mathFitScale = "1";
+    return;
+  }
+
+  const scale = Math.max(
+    MATH_BLOCK_MIN_SCALE,
+    Math.min(1, (availableWidth - MATH_BLOCK_FIT_TOLERANCE_PX) / naturalWidth),
+  );
+
+  block.style.setProperty("--math-fit-scale", scale.toFixed(3));
+  block.dataset.mathFitState = "scaled";
+  block.dataset.mathFitScale = scale.toFixed(3);
+}
+
+function applyMathLayout(root = document) {
+  if (!root) {
+    return;
+  }
+
+  if (root instanceof Element && root.classList.contains("math-block")) {
+    fitMathBlockToContainer(root);
+    return;
+  }
+
+  if (typeof root.querySelectorAll !== "function") {
+    return;
+  }
+
+  Array.from(root.querySelectorAll(".math-block")).forEach(fitMathBlockToContainer);
 }
 
 function renderCustomBlock(lines, startIndex, context, options = {}) {
@@ -11343,7 +12426,7 @@ function collectPreviewLayoutDiagnostics(root, options = {}) {
     });
   });
 
-  if (sanitizeChoice(options.mode, MODE_METADATA, DEFAULT_MODE) === EXAM_MODE) {
+  if (getModeRenderMode(sanitizeChoice(options.mode, MODE_METADATA, DEFAULT_MODE)) === EXAM_MODE) {
     diagnostics.push(...collectExamPreviewDiagnostics(root, options));
   }
 
@@ -11857,7 +12940,7 @@ function buildExportHtml(articleHtml, title, options = {}) {
   <style>${customFontCss ? `${customFontCss}\n` : ""}${getExportStyles()}</style>
 </head>
 <body data-theme="${escapeAttribute(resolved.theme)}">
-  <main class="article-export article-canvas" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildArticleStyleAttribute(resolved))}">
+  <main class="article-export article-canvas" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceModeAttribute || resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildArticleStyleAttribute(resolved))}">
     ${articleHtml}
   </main>
 </body>
@@ -11934,7 +13017,7 @@ function buildPagedExportHtml(pagesHtml, title, options = {}) {
   <style>${pageCss}</style>
 </head>
 <body data-theme="${escapeAttribute(resolved.theme)}">
-  <main class="live-preview-canvas page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
+  <main class="live-preview-canvas page-preview page-export" data-mode="${escapeAttribute(resolved.mode)}" data-source-mode="${escapeAttribute(resolved.sourceModeAttribute || resolved.sourceMode || resolved.mode)}" data-layout-preset="${escapeAttribute(resolved.layoutPreset)}" data-question-answer-layout="${escapeAttribute(resolved.questionAnswerLayout)}" style="${escapeAttribute(buildPageBackgroundStyleAttribute(resolved))}">
     ${pagesHtml}
   </main>
 </body>
@@ -13191,6 +14274,55 @@ async function requestStudyNotesGeneration({ subject, topic, sourceText }) {
   return markdown;
 }
 
+function normalizeReceivedMarkdownDocument(payload) {
+  const data = payload?.data || payload?.document || payload;
+  const markdown = normalizeMarkdown(normalizeRedundantHtmlBreaksOutsideFences(data && data.markdown));
+
+  if (!markdown) {
+    throw new Error("接口没有返回可用的 Markdown。");
+  }
+
+  const modeId = sanitizeChoice(data && (data.modeId || data.mode), MODE_METADATA, DEFAULT_MODE);
+
+  return {
+    ...data,
+    markdown,
+    modeId,
+  };
+}
+
+async function submitMarkdownDocument({ markdown, modeId = DEFAULT_MODE, title = "", source = "app", metadata = {} }) {
+  const response = await fetch(MARKDOWN_DOCUMENTS_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: JSON.stringify({
+      markdown,
+      modeId,
+      title,
+      source,
+      metadata,
+    }),
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    const message = payload?.error?.message || payload?.error || `提交 Markdown 失败，状态码 ${response.status}`;
+    throw new Error(message);
+  }
+
+  return normalizeReceivedMarkdownDocument(payload);
+}
+
 async function requestLayoutHistoryEntries() {
   const response = await fetch(LAYOUT_HISTORY_API_URL, {
     method: "GET",
@@ -13282,9 +14414,87 @@ async function clearLayoutHistoryEntriesRemote() {
   }
 }
 
+async function requestElementStylePresets() {
+  const response = await fetch(ELEMENT_STYLE_PRESETS_API_URL, {
+    method: "GET",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `加载预设失败，状态码 ${response.status}`);
+  }
+
+  return groupElementStylePresetList(payload && payload.presets);
+}
+
+async function saveElementStylePresetRemote(preset) {
+  const response = await fetch(ELEMENT_STYLE_PRESETS_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      preset,
+    }),
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `保存预设失败，状态码 ${response.status}`);
+  }
+
+  return groupElementStylePresetList([payload && payload.preset]);
+}
+
+async function deleteElementStylePresetRemote(presetId) {
+  const response = await fetch(`${ELEMENT_STYLE_PRESETS_API_URL}?id=${encodeURIComponent(String(presetId || ""))}`, {
+    method: "DELETE",
+    headers: {
+      "Accept": "application/json",
+    },
+  });
+
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch (_error) {
+    // Ignore non-JSON error bodies.
+  }
+
+  if (!response.ok) {
+    throw new Error(payload && payload.error ? payload.error : `删除预设失败，状态码 ${response.status}`);
+  }
+}
+
 function clearLegacyLayoutHistoryEntries() {
   try {
     window.localStorage.removeItem(STORAGE_KEYS.layoutHistoryEntries);
+  } catch (_error) {
+    // Ignore storage failures in restricted browsers.
+  }
+}
+
+function clearLegacyElementStylePresets() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEYS.elementStylePresets);
   } catch (_error) {
     // Ignore storage failures in restricted browsers.
   }
@@ -13950,6 +15160,171 @@ function enhanceKnowledgeMode(root) {
   root.appendChild(fragment);
 }
 
+function createLectureSubsection(title = null) {
+  const subsection = document.createElement("section");
+  subsection.className = "lecture-subsection";
+
+  if (title) {
+    title.classList.add("lecture-subsection-title");
+    subsection.classList.add("lecture-subsection-topic");
+    subsection.appendChild(title);
+  } else {
+    subsection.classList.add("lecture-subsection-root");
+  }
+
+  const body = document.createElement("div");
+  body.className = "lecture-subsection-body";
+  subsection.appendChild(body);
+
+  return { subsection, body };
+}
+
+function classifyLectureBlock(block) {
+  if (!block || !block.tagName) {
+    return "lecture-block-flow";
+  }
+
+  if (block.classList && block.classList.contains("lecture-role-summary")) {
+    return "lecture-block-summary";
+  }
+
+  if (block.classList && (
+    block.classList.contains("lecture-role-concept")
+    || block.classList.contains("lecture-role-example")
+    || block.classList.contains("lecture-role-caution")
+  )) {
+    return "lecture-block-note";
+  }
+
+  if (block.tagName === "TABLE") {
+    return "lecture-block-table";
+  }
+
+  if (["UL", "OL"].includes(block.tagName)) {
+    return "lecture-block-list";
+  }
+
+  if (block.tagName === "BLOCKQUOTE") {
+    return "lecture-block-note";
+  }
+
+  if (["FIGURE", "PRE"].includes(block.tagName) || block.classList.contains("math-block")) {
+    return "lecture-block-feature";
+  }
+
+  if (block.tagName === "SECTION") {
+    if (block.classList.contains("mindmap-card")) {
+      return "lecture-block-feature";
+    }
+
+    if (block.classList.contains("callout-box") || block.classList.contains("brush-block")) {
+      return "lecture-block-note";
+    }
+  }
+
+  return "lecture-block-flow";
+}
+
+function decorateLectureRoles(root) {
+  root.querySelectorAll("p, li > .list-item-copy > p").forEach((paragraph) => {
+    decorateLeadingLabel(paragraph, [
+      { labels: ["导读", "背景", "目标", "问题"], classNames: ["lecture-role", "lecture-role-leading"] },
+      { labels: ["概念", "定义", "原理", "机制", "逻辑"], classNames: ["lecture-role", "lecture-role-concept"] },
+      { labels: ["例子", "示例", "案例", "应用"], classNames: ["lecture-role", "lecture-role-example"] },
+      { labels: ["注意", "提示", "易错", "误区"], classNames: ["lecture-role", "lecture-role-caution"] },
+      { labels: ["结论", "总结", "要点", "核心"], classNames: ["lecture-role", "lecture-role-summary"] },
+    ]);
+  });
+}
+
+function enhanceLectureMode(root) {
+  decorateLectureRoles(root);
+
+  const firstParagraph = Array.from(root.children).find((element) => element.tagName === "P");
+  if (firstParagraph) {
+    firstParagraph.classList.add("lecture-lead");
+  }
+
+  root.querySelectorAll("blockquote").forEach((blockquote) => {
+    blockquote.classList.add("lecture-pullnote");
+  });
+
+  const children = Array.from(root.children);
+  const fragment = document.createDocumentFragment();
+  let index = 0;
+
+  while (index < children.length) {
+    const element = children[index];
+
+    if (element.tagName !== "H2") {
+      fragment.appendChild(element);
+      index += 1;
+      continue;
+    }
+
+    const section = document.createElement("section");
+    section.className = "lecture-section";
+    const header = document.createElement("div");
+    header.className = "lecture-section-header";
+    element.classList.add("lecture-section-title");
+    header.appendChild(element);
+    section.appendChild(header);
+
+    const blocks = [];
+    index += 1;
+
+    while (index < children.length && !["H1", "H2"].includes(children[index].tagName)) {
+      blocks.push(children[index]);
+      index += 1;
+    }
+
+    const body = document.createElement("div");
+    body.className = "lecture-section-body";
+    let currentSubsection = createLectureSubsection();
+
+    const commitSubsection = () => {
+      if (currentSubsection.body.childElementCount) {
+        body.appendChild(currentSubsection.subsection);
+      }
+    };
+
+    blocks.forEach((block) => {
+      if (block.tagName === "H3") {
+        commitSubsection();
+        currentSubsection = createLectureSubsection(block);
+        return;
+      }
+
+      if (block.tagName === "HR") {
+        commitSubsection();
+        block.classList.add("lecture-divider");
+        body.appendChild(block);
+        currentSubsection = createLectureSubsection();
+        return;
+      }
+
+      if (block.tagName === "H4") {
+        block.classList.add("lecture-minor-title");
+      }
+
+      block.classList.add("lecture-block", classifyLectureBlock(block));
+      currentSubsection.body.appendChild(block);
+    });
+
+    commitSubsection();
+
+    if (body.children.length) {
+      body.classList.toggle("lecture-section-body-single", body.children.length === 1);
+      section.appendChild(body);
+    }
+
+    fragment.appendChild(section);
+  }
+
+  root.innerHTML = "";
+  root.appendChild(fragment);
+}
+
 function getQuestionRoleKind(element) {
   if (!element || !element.classList) {
     return null;
@@ -14009,7 +15384,7 @@ const QUESTION_ANSWER_LAYOUT_SEPARATED = "separated";
 const QUESTION_TYPE_HEADING_REGEX = /^(?:[一二三四五六七八九十]+[、.．]\s*)?(?:单选题|单项选择题|多选题|多项选择题|不定项选择题|判断题|填空题|简答题|问答题|计算题|计算分析题|综合题|案例分析题|材料题|名词解释|辨析题|选择题|客观题|主观题|真题|练习题|模拟题)(?:[\s（(：:：、].*)?$/;
 const QUESTION_ANSWER_BANK_HEADING_REGEX = /^(?:参考答案|答案解析|答案与解析|答案及解析|答案|解析)(?:[\s：:、].*)?$/;
 const QUESTION_ANSWER_BANK_BLOCK_REGEX = /^(?:参考答案|答案解析|答案与解析|答案及解析|答案|解析)$/;
-const QUESTION_NUMBER_PREFIX_REGEX = /^(?:第\s*)?([0-9０-９一二三四五六七八九十百]+)\s*(?:题|[、.．)）:：])/;
+const QUESTION_NUMBER_PREFIX_REGEX = /^(?:第\s*)?([0-9０-９一二三四五六七八九十百]+)\s*(?:题|\\?[、.．)）:：])/;
 
 function extractPlainTextFromHtml(html) {
   const probe = document.createElement("div");
@@ -14968,7 +16343,7 @@ function enhanceQuestionMode(root) {
   groupQuestionCards(root);
   applyQuestionLayoutPreset(root);
 
-  if (root.dataset?.sourceMode === EXAM_MODE) {
+  if (isModeRenderedAs(root.dataset?.sourceMode, EXAM_MODE)) {
     groupExamBodyQuestions(root);
   }
 }
@@ -15210,6 +16585,8 @@ function enhanceRenderedArticle(root, mode) {
 
   if (mode === "knowledge") {
     enhanceKnowledgeMode(root);
+  } else if (mode === LECTURE_MODE) {
+    enhanceLectureMode(root);
   } else if (isQuestionLikeMode(mode)) {
     enhanceQuestionMode(root);
   } else {
@@ -15236,6 +16613,28 @@ function replaceSelection(textarea, start, end, replacement) {
   textarea.value = `${value.slice(0, start)}${replacement}${value.slice(end)}`;
   textarea.focus();
   textarea.setSelectionRange(start, start + replacement.length);
+}
+
+function buildStandaloneBlockInsertion(value, start, end, blockText) {
+  const source = String(value || "");
+  const before = source.slice(0, start);
+  const after = source.slice(end);
+  const prefix = before.length === 0
+    ? ""
+    : before.endsWith("\n\n")
+      ? ""
+      : before.endsWith("\n")
+        ? "\n"
+        : "\n\n";
+  const suffix = after.length === 0
+    ? "\n"
+    : after.startsWith("\n\n")
+      ? ""
+      : after.startsWith("\n")
+        ? "\n"
+        : "\n\n";
+
+  return `${prefix}${blockText}${suffix}`;
 }
 
 function insertManualPageBreakAtTextarea(textarea) {
@@ -15443,6 +16842,7 @@ function updatePreviewMathElement(element, latex, mode, rawInput = "") {
   element.classList.toggle("chem-inline", !isBlock && variant === "chem");
   element.classList.toggle("chem-block", isBlock && variant === "chem");
   element.innerHTML = renderMathContent(normalizedLatex, isBlock);
+  applyMathLayout(element);
   return true;
 }
 
@@ -15552,6 +16952,7 @@ function openFormulaEditor(options = {}) {
     preview.innerHTML = mode === "block"
       ? renderMathBlockElement(latex)
       : renderMathInline(latex, { variant: mode === "chem" ? "chem" : "math" });
+    window.requestAnimationFrame(() => applyMathLayout(preview));
   };
 
   const closeDialog = () => {
@@ -15582,8 +16983,11 @@ function openFormulaEditor(options = {}) {
     } else if (textarea) {
       const replaceStart = clampNumber(dialog.dataset.selectionStart, 0, textarea.value.length, start);
       const replaceEnd = clampNumber(dialog.dataset.selectionEnd, replaceStart, textarea.value.length, end);
+      const replacement = getMode() === "block"
+        ? buildStandaloneBlockInsertion(textarea.value, replaceStart, replaceEnd, markdown)
+        : markdown;
 
-      replaceSelection(textarea, replaceStart, replaceEnd, markdown);
+      replaceSelection(textarea, replaceStart, replaceEnd, replacement);
     }
 
     closeDialog();
@@ -15696,6 +17100,7 @@ function getLayoutPresetPreviewKind(presetId, mode) {
     if (id.includes("journal") || id.includes("study") || id.includes("cream")) return "journal";
     return "article";
   }
+  if (mode === LECTURE_MODE || id.includes("lecture-")) return "research";
   if (id.includes("chrome") || id.includes("circuit") || id.includes("atelier")) return "blueprint";
   if (id.includes("museum") || id.includes("solar")) return "research";
   if (id.includes("prism")) return "journal";
@@ -15871,7 +17276,7 @@ function createLayoutPresetPreviewSvg(preset, mode) {
     card(63, 18, 36, 12);
     card(63, 38, 42, 14, "layout-preset-svg-muted");
     svg.appendChild(createSvgElement("path", { d: "M18 51H101", class: "layout-preset-svg-rule" }));
-  } else if (sourceMode === EXAM_MODE && preset?.id === "question-proof") {
+  } else if (isModeRenderedAs(sourceMode, EXAM_MODE) && preset?.id === "question-proof") {
     svg.appendChild(createSvgElement("rect", { x: 10, y: 10, width: 16, height: 52, rx: 2, class: "layout-preset-svg-ticket" }));
     svg.appendChild(createSvgElement("rect", { x: 15, y: 10, width: 6, height: 52, rx: 1, class: "layout-preset-svg-card" }));
     [18, 30, 42, 54].forEach((cy) => {
@@ -16150,6 +17555,8 @@ async function initPagedApp() {
   const modeBenefitTitle = document.getElementById("modeBenefitTitle");
   const modeBenefitSummary = document.getElementById("modeBenefitSummary");
   const modeBenefitList = document.getElementById("modeBenefitList");
+  const modePicker = document.getElementById("modePicker");
+  await loadRemoteModeRegistry();
   const layoutPresetPicker = ensureLayoutPresetPicker();
   const questionAnswerLayoutPicker = ensureQuestionAnswerLayoutPicker();
   const articleStyleControls = ARTICLE_STYLE_CONTROLS.map((control) => ({
@@ -16281,7 +17688,7 @@ async function initPagedApp() {
   const ribbonTabs = Array.from(document.querySelectorAll("[data-ribbon-tab]"));
   const ribbonPanels = Array.from(document.querySelectorAll("[data-ribbon-panel]"));
   const themeButtons = Array.from(document.querySelectorAll("[data-theme-option]"));
-  const modeButtons = Array.from(document.querySelectorAll("[data-mode-option]"));
+  let modeButtons = [];
   const brushButtons = Array.from(document.querySelectorAll("[data-brush-style]"));
   const inlineStyleButtons = Array.from(document.querySelectorAll("[data-inline-style]"));
   const formulaEditorBtn = document.getElementById("formulaEditorBtn");
@@ -16561,6 +17968,8 @@ async function initPagedApp() {
     tableFontSize: DEFAULT_TABLE_FONT_SIZE,
     accentFontSize: DEFAULT_ACCENT_FONT_SIZE,
     mindmapNodeWidth: DEFAULT_MINDMAP_NODE_WIDTH,
+    mindmapContainerWidth: DEFAULT_MINDMAP_CONTAINER_WIDTH,
+    mindmapContainerHeight: DEFAULT_MINDMAP_CONTAINER_HEIGHT,
     lineHeight: DEFAULT_LINE_HEIGHT,
     letterSpacing: DEFAULT_LETTER_SPACING,
     paragraphSpacing: DEFAULT_PARAGRAPH_SPACING,
@@ -16603,6 +18012,63 @@ async function initPagedApp() {
     examPageLayout: buildExamPageLayout(),
     standardPageLayout: buildStandardPageLayout(),
   };
+
+  function isExamSourceMode(mode = state.mode) {
+    return getModeRenderMode(sanitizeChoice(mode, MODE_METADATA, DEFAULT_MODE)) === EXAM_MODE;
+  }
+
+  function switchMode(nextMode) {
+    if (isLayoutPresetForMode(state.layoutPreset, state.mode)) {
+      state.layoutPresetByMode[state.mode] = state.layoutPreset;
+    }
+
+    const resolvedNextMode = sanitizeChoice(nextMode, MODE_METADATA, DEFAULT_MODE);
+
+    if (isExamSourceMode()) {
+      state.examPageLayout = readCurrentPageLayout(state);
+    } else {
+      state.standardPageLayout = buildStandardPageLayout(state);
+    }
+
+    state.mode = resolvedNextMode;
+    state.layoutPreset = sanitizeLayoutPresetForMode(state.layoutPresetByMode[state.mode], state.mode);
+
+    if (isExamSourceMode()) {
+      applyPageLayoutToState(state, state.examPageLayout, EXAM_MODE);
+    } else {
+      applyPageLayoutToState(state, state.standardPageLayout, "standard");
+    }
+
+    applyUiState({ rerender: true });
+  }
+
+  function createModeButton(modeId) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "segmented-chip";
+    button.dataset.modeOption = modeId;
+    button.dataset.renderMode = getModeRenderMode(modeId);
+    button.textContent = getModeDisplayName(modeId);
+    button.addEventListener("click", () => {
+      switchMode(button.getAttribute("data-mode-option"));
+    });
+    return button;
+  }
+
+  function renderModePicker() {
+    if (!modePicker) {
+      modeButtons = Array.from(document.querySelectorAll("[data-mode-option]"));
+      return;
+    }
+
+    modePicker.replaceChildren(
+      ...Object.entries(MODE_METADATA)
+        .sort((left, right) => (left[1].sort || 1000) - (right[1].sort || 1000) || left[0].localeCompare(right[0]))
+        .map(([modeId]) => createModeButton(modeId)),
+    );
+    modeButtons = Array.from(modePicker.querySelectorAll("[data-mode-option]"));
+    syncOptionButtons(modeButtons, "data-mode-option", state.mode);
+  }
 
   function mountExportBackgroundPresets() {
     if (!exportBackgroundPresetGrid) {
@@ -16813,6 +18279,7 @@ async function initPagedApp() {
     const snapshot = {
       theme: state.theme,
       mode: state.mode,
+      pageLayoutVersion: PAGE_LAYOUT_STORAGE_VERSION,
       questionAnswerLayout: state.questionAnswerLayout,
       layoutPreset: state.layoutPreset,
       layoutPresetByMode: state.layoutPresetByMode,
@@ -16867,6 +18334,13 @@ async function initPagedApp() {
   async function refreshLayoutHistoryEntries() {
     state.layoutHistoryEntries = filterManualLayoutHistoryEntries(await requestLayoutHistoryEntries());
     return state.layoutHistoryEntries;
+  }
+
+  async function refreshElementStylePresets() {
+    state.elementStylePresets = normalizeElementStylePresets(await requestElementStylePresets());
+    clearLegacyElementStylePresets();
+    syncElementStylePanel();
+    return state.elementStylePresets;
   }
 
   async function addLayoutHistoryEntry(options = {}) {
@@ -16967,6 +18441,11 @@ async function initPagedApp() {
     PAGE_STYLE_CONTROLS.forEach((control) => {
       state[control.key] = snapshot[control.key];
     });
+    if (isExamSourceMode(state.mode)) {
+      applyPageLayoutToState(state, state.examPageLayout, EXAM_MODE);
+    } else {
+      applyPageLayoutToState(state, state.standardPageLayout, "standard");
+    }
 
     applyUiState();
     renderNow();
@@ -17084,7 +18563,9 @@ async function initPagedApp() {
     list.innerHTML = state.layoutHistoryEntries.map((entry) => {
       const label = LAYOUT_HISTORY_MANUAL_LABEL;
       const savedAt = formatLayoutHistoryTime(entry.savedAt);
-      const modeLabel = MODE_METADATA[entry.snapshot.mode]?.title || "排版";
+      const modeLabel = MODE_METADATA[entry.snapshot.mode]?.title
+        || DEFAULT_MODE_METADATA[entry.snapshot.mode]?.title
+        || "排版";
       const themeLabel = THEME_LABELS[entry.snapshot.theme] || "";
 
       return `
@@ -17202,7 +18683,7 @@ async function initPagedApp() {
       max: control.max,
       step: control.range ? Number(control.range.step || 1) : 1,
       defaultValue: control.defaultValue,
-      formatValue: formatPixelValue,
+      formatValue: control.formatValue || formatPixelValue,
     })),
     ...paragraphControls.map((control) => ({
       rangeInput: control.range,
@@ -17528,7 +19009,7 @@ async function initPagedApp() {
     });
 
     presetBtn.addEventListener("click", () => {
-      openElementStylePresetDialog();
+      void openElementStylePresetDialog();
     });
 
     resetBtn.addEventListener("click", () => {
@@ -17557,16 +19038,133 @@ async function initPagedApp() {
     syncElementStylePanel();
   }
 
-  function openElementStylePresetDialog() {
+  async function openElementStylePresetDialog() {
     const dialog = ensureElementStylePresetDialog();
     const title = dialog.querySelector("#elementStylePresetTitle");
     const input = dialog.querySelector("#elementStylePresetNameInput");
     const list = dialog.querySelector("#elementStylePresetList");
     const activeGroup = getElementStyleGroup(state.activeElementStyleGroup);
 
+    dialog.hidden = false;
+    if (list) {
+      list.innerHTML = "<p class=\"formula-editor-note\">正在加载预设...</p>";
+    }
+
+    try {
+      await refreshElementStylePresets();
+    } catch (error) {
+      console.error(error);
+      flashStatus(error && error.message ? error.message : "加载预设失败，请检查服务端");
+    }
+
+    const renderRemoteList = () => {
+      const presets = normalizeElementStylePresets(state.elementStylePresets)[activeGroup.id] || [];
+
+      if (!list) {
+        return;
+      }
+
+      list.replaceChildren();
+
+      if (!presets.length) {
+        list.innerHTML = "<p class=\"formula-editor-note\">还没有预设，保存当前组后会显示在这里。</p>";
+        return;
+      }
+
+      presets.forEach((preset) => {
+        const row = document.createElement("div");
+        const applyBtn = document.createElement("button");
+        const deleteBtn = document.createElement("button");
+
+        row.className = "card-layout-head";
+        applyBtn.type = "button";
+        applyBtn.className = "element-style-chip";
+        applyBtn.textContent = preset.name;
+        deleteBtn.type = "button";
+        deleteBtn.className = "element-style-reset";
+        deleteBtn.textContent = "删除";
+
+        applyBtn.addEventListener("click", () => {
+          const normalizedStyles = normalizeElementStyles(state.elementStyles);
+          normalizedStyles[activeGroup.id] = { ...preset.styles };
+          state.elementStyles = normalizedStyles;
+          dialog.hidden = true;
+          syncElementStylePanel();
+          applyUiState({ rerender: true });
+          flashStatus(`已应用 ${preset.name}`);
+        });
+
+        deleteBtn.addEventListener("click", async () => {
+          try {
+            await deleteElementStylePresetRemote(preset.id);
+            await refreshElementStylePresets();
+            renderRemoteList();
+            flashStatus(`已删除 ${preset.name}`);
+          } catch (error) {
+            console.error(error);
+            flashStatus(error && error.message ? error.message : "删除预设失败，请检查服务端");
+          }
+        });
+
+        row.append(applyBtn, deleteBtn);
+        list.appendChild(row);
+      });
+    };
+
+    title.textContent = `${activeGroup.label}预设`;
+    input.value = "";
+    renderRemoteList();
+
+    dialog.querySelectorAll("[data-element-style-preset-close]").forEach((button) => {
+      button.onclick = () => {
+        dialog.hidden = true;
+      };
+    });
+
+    const remoteSaveBtn = dialog.querySelector("[data-element-style-preset-save]");
+    remoteSaveBtn.onclick = async () => {
+      const name = String(input.value || "").trim();
+      if (!name) {
+        flashStatus("请先输入预设名称");
+        input.focus();
+        return;
+      }
+
+      const nextEntry = {
+        id: sanitizeBlockToken(`${activeGroup.id}-${name}`, `${activeGroup.id}-${Date.now()}`),
+        groupId: activeGroup.id,
+        name,
+        styles: { ...normalizeElementStyles(state.elementStyles)[activeGroup.id] },
+      };
+
+      try {
+        await saveElementStylePresetRemote(nextEntry);
+        await refreshElementStylePresets();
+        renderRemoteList();
+        input.value = "";
+        flashStatus(`已保存 ${name}`);
+      } catch (error) {
+        console.error(error);
+        flashStatus(error && error.message ? error.message : "保存预设失败，请检查服务端");
+      }
+    };
+
+    dialog.onclick = (event) => {
+      if (event.target === dialog) {
+        dialog.hidden = true;
+      }
+    };
+
+    return;
+
     const syncList = () => {
       const presets = normalizeElementStylePresets(state.elementStylePresets)[activeGroup.id] || [];
       list.replaceChildren();
+
+      if (!presets.length) {
+        list.innerHTML = "<p class=\"formula-editor-note\">还没有预设，保存当前组后会显示在这里。</p>";
+        return;
+      }
 
       presets.forEach((preset) => {
         const row = document.createElement("div");
@@ -18123,7 +19721,7 @@ async function initPagedApp() {
   }
 
   function updateStatusText() {
-    const modeLabel = MODE_METADATA[state.mode].title;
+    const modeLabel = MODE_METADATA[state.mode]?.title || DEFAULT_MODE_METADATA[DEFAULT_MODE].title;
     const themeLabel = THEME_LABELS[state.theme];
 
     statusText.textContent = state.latestCharacterCount
@@ -19101,6 +20699,7 @@ async function initPagedApp() {
     try {
       window.localStorage.setItem(STORAGE_KEYS.theme, state.theme);
       window.localStorage.setItem(STORAGE_KEYS.mode, state.mode);
+      window.localStorage.setItem(STORAGE_KEYS.pageLayoutVersion, PAGE_LAYOUT_STORAGE_VERSION);
       window.localStorage.setItem(STORAGE_KEYS.questionAnswerLayout, state.questionAnswerLayout);
       window.localStorage.setItem(STORAGE_KEYS.layoutPreset, state.layoutPreset);
       window.localStorage.setItem(STORAGE_KEYS.layoutPresetByMode, JSON.stringify(state.layoutPresetByMode));
@@ -19132,7 +20731,7 @@ async function initPagedApp() {
       window.localStorage.setItem(STORAGE_KEYS.paginationStrategy, state.paginationStrategy);
       window.localStorage.setItem(STORAGE_KEYS.typographyVersion, TYPOGRAPHY_BASELINE_VERSION);
       window.localStorage.setItem(STORAGE_KEYS.elementStyles, JSON.stringify(normalizeElementStyles(state.elementStyles)));
-      window.localStorage.setItem(STORAGE_KEYS.elementStylePresets, JSON.stringify(normalizeElementStylePresets(state.elementStylePresets)));
+      window.localStorage.removeItem(STORAGE_KEYS.elementStylePresets);
       window.localStorage.setItem(STORAGE_KEYS.tableLayouts, JSON.stringify(state.tableLayouts));
       window.localStorage.setItem(STORAGE_KEYS.cardLayouts, JSON.stringify(normalizeCardLayouts(state.cardLayouts)));
       window.localStorage.setItem(STORAGE_KEYS.cardOrder, JSON.stringify(normalizeCardOrder(state.cardOrder)));
@@ -19146,7 +20745,7 @@ async function initPagedApp() {
   }
 
   function updateModeBenefitCard() {
-    const meta = MODE_METADATA[state.mode];
+    const meta = MODE_METADATA[state.mode] || DEFAULT_MODE_METADATA[DEFAULT_MODE];
 
     if (!meta || !modeBenefitTitle || !modeBenefitSummary || !modeBenefitList) {
       return;
@@ -19154,13 +20753,20 @@ async function initPagedApp() {
 
     modeBenefitTitle.textContent = meta.title;
     modeBenefitSummary.textContent = meta.summary;
-    modeBenefitList.innerHTML = meta.highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    modeBenefitList.innerHTML = (meta.highlights || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   }
 
   function applyUiState({ rerender = false } = {}) {
     state.examPageLayout = buildExamPageLayout(state.examPageLayout);
     state.standardPageLayout = buildStandardPageLayout(state.standardPageLayout);
     syncLayoutPresetWithMode(state);
+    if (isExamSourceMode()) {
+      state.examPageLayout = normalizeExamPageLayout(state.examPageLayout);
+      applyPageLayoutToState(state, state.examPageLayout, EXAM_MODE);
+    } else {
+      state.standardPageLayout = buildStandardPageLayout(state.standardPageLayout);
+      applyPageLayoutToState(state, state.standardPageLayout, "standard");
+    }
     state.paginationStrategy = sanitizeChoice(
       state.paginationStrategy,
       PAGINATION_STRATEGIES,
@@ -19171,14 +20777,18 @@ async function initPagedApp() {
     state.cardLayouts = normalizeCardLayouts(state.cardLayouts);
     state.cardOrder = normalizeCardOrder(state.cardOrder);
     enforceTypeScale(state);
+    syncDynamicPrintPageStyle(state);
     const pageMetrics = getPageMetrics(state);
 
     document.body.dataset.theme = state.theme;
     document.body.dataset.layoutPreset = state.layoutPreset;
     canvas.dataset.mode = state.mode;
+    canvas.dataset.renderMode = getModeRenderMode(state.mode);
     canvas.dataset.layoutPreset = state.layoutPreset;
     canvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     measureCanvas.dataset.mode = getRenderMode(state.mode);
+    measureCanvas.dataset.sourceMode = getSourceModeAttributeValue(state.mode);
+    measureCanvas.dataset.renderMode = getModeRenderMode(state.mode);
     measureCanvas.dataset.layoutPreset = state.layoutPreset;
     measureCanvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     applyPageBackgroundStyleProperties(canvas, state);
@@ -19196,7 +20806,7 @@ async function initPagedApp() {
         updateNumericDisplay(
           control.value,
           state[control.key],
-          formatPixelValue,
+          control.formatValue || formatPixelValue,
           control.range ? Number(control.range.step || 1) : 1,
           Boolean(control.range && control.range.disabled),
         );
@@ -19411,6 +21021,7 @@ async function initPagedApp() {
 
     measureCanvas.innerHTML = html;
     measureCanvas.dataset.mode = state.mode;
+    measureCanvas.dataset.renderMode = getModeRenderMode(state.mode);
     measureCanvas.dataset.layoutPreset = state.layoutPreset;
     measureCanvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     applyArticleStyleProperties(measureCanvas, state, pageMetrics.contentWidthPx);
@@ -19423,6 +21034,8 @@ async function initPagedApp() {
     applyManagedTableLayoutsToTables(measureCanvas, state);
 
     canvas.dataset.mode = getRenderMode(state.mode);
+    canvas.dataset.sourceMode = getSourceModeAttributeValue(state.mode);
+    canvas.dataset.renderMode = getModeRenderMode(state.mode);
     canvas.dataset.layoutPreset = state.layoutPreset;
     canvas.dataset.questionAnswerLayout = state.questionAnswerLayout;
     canvas.style.margin = "0";
@@ -19430,6 +21043,7 @@ async function initPagedApp() {
     canvas.replaceChildren(...Array.from(paginated.element.childNodes));
     markPreviewEditableNodes(canvas);
     applyCardLayouts(canvas, state.cardLayouts);
+    applyMathLayout(canvas);
     mountCardDragHandles(canvas);
     syncCardLayoutSelection();
     fitCardTextToFixedHeight(canvas);
@@ -19451,6 +21065,7 @@ async function initPagedApp() {
     updateStatusText();
     schedulePreviewWorkbenchRefresh();
     window.requestAnimationFrame(() => {
+      applyMathLayout(canvas);
       syncMountedTableEditors(canvas);
       mountSvgMindmaps(canvas);
       mountCardDragHandles(canvas);
@@ -19565,7 +21180,7 @@ async function initPagedApp() {
   pageStyleControls.forEach((control) => {
     control.range?.addEventListener("input", (event) => {
       state[control.key] = clampNumber(event.target.value, control.min, control.max, control.defaultValue);
-      if (state.mode === EXAM_MODE) {
+      if (isExamSourceMode()) {
         state.examPageLayout = readCurrentPageLayout(state);
       } else {
         state.standardPageLayout = buildStandardPageLayout(state);
@@ -19875,33 +21490,6 @@ async function initPagedApp() {
   themeButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.theme = sanitizeChoice(button.getAttribute("data-theme-option"), THEME_LABELS, DEFAULT_THEME);
-      applyUiState({ rerender: true });
-    });
-  });
-
-  modeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      if (isLayoutPresetForMode(state.layoutPreset, state.mode)) {
-        state.layoutPresetByMode[state.mode] = state.layoutPreset;
-      }
-
-      const nextMode = sanitizeChoice(button.getAttribute("data-mode-option"), MODE_METADATA, DEFAULT_MODE);
-
-      if (state.mode === EXAM_MODE) {
-        state.examPageLayout = readCurrentPageLayout(state);
-      } else {
-        state.standardPageLayout = buildStandardPageLayout(state);
-      }
-
-      state.mode = nextMode;
-      state.layoutPreset = sanitizeLayoutPresetForMode(state.layoutPresetByMode[state.mode], state.mode);
-
-      if (state.mode === EXAM_MODE) {
-        applyPageLayoutToState(state, state.examPageLayout);
-      } else {
-        applyPageLayoutToState(state, state.standardPageLayout);
-      }
-
       applyUiState({ rerender: true });
     });
   });
@@ -20619,11 +22207,13 @@ async function initPagedApp() {
   }
 
   let initialText = SAMPLE_MARKDOWN;
+  let savedElementStylePresets = "";
 
   try {
     const savedMarkdown = window.localStorage.getItem(STORAGE_KEYS.markdown);
     const savedTheme = window.localStorage.getItem(STORAGE_KEYS.theme);
     const savedMode = window.localStorage.getItem(STORAGE_KEYS.mode);
+    const savedPageLayoutVersion = window.localStorage.getItem(STORAGE_KEYS.pageLayoutVersion);
     const savedQuestionAnswerLayout = window.localStorage.getItem(STORAGE_KEYS.questionAnswerLayout);
     const savedLayoutPreset = window.localStorage.getItem(STORAGE_KEYS.layoutPreset);
     const savedLayoutPresetByMode = window.localStorage.getItem(STORAGE_KEYS.layoutPresetByMode);
@@ -20643,7 +22233,7 @@ async function initPagedApp() {
     const savedRibbonTab = window.localStorage.getItem(STORAGE_KEYS.ribbonTab);
     const savedTypographyVersion = window.localStorage.getItem(STORAGE_KEYS.typographyVersion);
     const savedElementStyles = window.localStorage.getItem(STORAGE_KEYS.elementStyles);
-    const savedElementStylePresets = window.localStorage.getItem(STORAGE_KEYS.elementStylePresets);
+    savedElementStylePresets = window.localStorage.getItem(STORAGE_KEYS.elementStylePresets);
     const savedTableLayouts = window.localStorage.getItem(STORAGE_KEYS.tableLayouts);
     const savedCardLayouts = window.localStorage.getItem(STORAGE_KEYS.cardLayouts);
     const savedCardOrder = window.localStorage.getItem(STORAGE_KEYS.cardOrder);
@@ -20706,7 +22296,10 @@ async function initPagedApp() {
     const savedStandardPageLayout = window.localStorage.getItem(STORAGE_KEYS.standardPageLayout);
     if (savedExamPageLayout) {
       try {
-        state.examPageLayout = buildExamPageLayout(JSON.parse(savedExamPageLayout));
+        state.examPageLayout = buildStoredExamPageLayout(
+          JSON.parse(savedExamPageLayout),
+          savedPageLayoutVersion,
+        );
       } catch (_error) {
         state.examPageLayout = buildExamPageLayout();
       }
@@ -20715,31 +22308,40 @@ async function initPagedApp() {
     }
     if (savedStandardPageLayout) {
       try {
-        state.standardPageLayout = buildStandardPageLayout(JSON.parse(savedStandardPageLayout));
+        state.standardPageLayout = buildStoredStandardPageLayout(
+          JSON.parse(savedStandardPageLayout),
+          savedPageLayoutVersion,
+        );
       } catch (_error) {
-        state.standardPageLayout = buildStandardPageLayout({
+        state.standardPageLayout = buildStoredStandardPageLayout(
+          {
+            pageWidth: state.pageWidth,
+            pageHeight: state.pageHeight,
+            pageMarginTop: state.pageMarginTop,
+            pageMarginRight: state.pageMarginRight,
+            pageMarginBottom: state.pageMarginBottom,
+            pageMarginLeft: state.pageMarginLeft,
+          },
+          savedPageLayoutVersion,
+        );
+      }
+    } else {
+      state.standardPageLayout = buildStoredStandardPageLayout(
+        {
           pageWidth: state.pageWidth,
           pageHeight: state.pageHeight,
           pageMarginTop: state.pageMarginTop,
           pageMarginRight: state.pageMarginRight,
           pageMarginBottom: state.pageMarginBottom,
           pageMarginLeft: state.pageMarginLeft,
-        });
-      }
-    } else {
-      state.standardPageLayout = buildStandardPageLayout({
-        pageWidth: state.pageWidth,
-        pageHeight: state.pageHeight,
-        pageMarginTop: state.pageMarginTop,
-        pageMarginRight: state.pageMarginRight,
-        pageMarginBottom: state.pageMarginBottom,
-        pageMarginLeft: state.pageMarginLeft,
-      });
+        },
+        savedPageLayoutVersion,
+      );
     }
-    if (state.mode === EXAM_MODE) {
-      applyPageLayoutToState(state, state.examPageLayout);
+    if (isExamSourceMode()) {
+      applyPageLayoutToState(state, state.examPageLayout, EXAM_MODE);
     } else {
-      applyPageLayoutToState(state, state.standardPageLayout);
+      applyPageLayoutToState(state, state.standardPageLayout, "standard");
     }
 
     state.lineHeight = clampNumber(
@@ -20786,7 +22388,7 @@ async function initPagedApp() {
     state.elementStyles = hadSavedElementStyles
       ? normalizeElementStyles(savedElementStyles)
       : getElementStyleDefaults(state);
-    state.elementStylePresets = normalizeElementStylePresets(savedElementStylePresets);
+    state.elementStylePresets = {};
     state.exportBackgroundSrc = normalizeBackgroundSource(savedExportBackgroundSrc, DEFAULT_EXPORT_BACKGROUND_SRC);
     state.exportBackgroundName = state.exportBackgroundSrc
       ? normalizeBackgroundName(savedExportBackgroundName, DEFAULT_EXPORT_BACKGROUND_NAME)
@@ -20823,7 +22425,31 @@ async function initPagedApp() {
     console.error(error);
   }
 
+  try {
+    const remotePresets = await requestElementStylePresets();
+    const legacyPresets = normalizeElementStylePresets(savedElementStylePresets);
+
+    if (Object.keys(legacyPresets).length) {
+      for (const preset of flattenElementStylePresets(legacyPresets)) {
+        try {
+          await saveElementStylePresetRemote(preset);
+        } catch (_error) {
+          // Continue migrating remaining presets.
+        }
+      }
+      state.elementStylePresets = normalizeElementStylePresets(await requestElementStylePresets());
+    } else {
+      state.elementStylePresets = remotePresets;
+    }
+
+    clearLegacyElementStylePresets();
+  } catch (error) {
+    console.error(error);
+    clearLegacyElementStylePresets();
+  }
+
   textarea.value = initialText;
+  renderModePicker();
   setupRibbonTabIcons(ribbonTabs);
   setupWorkspaceViewTabs();
   setupSettingsSections();

@@ -8,12 +8,18 @@ const { chromium } = require("playwright-core");
 const HOST = "127.0.0.1";
 const PORT = Number(process.env.PORT || 3210);
 const ROOT = __dirname;
+const DATA_DIR = path.join(ROOT, "data");
+const MODE_REGISTRY_DIR = path.join(DATA_DIR, "modes");
+const MODE_TEMPLATE_DIR = path.join(DATA_DIR, "mode-templates");
+const MODE_SYNTAX_TEMPLATE_PATH = path.join(MODE_TEMPLATE_DIR, "_syntax.md");
+const MODE_SYNTAX_VERSION = "2026-05-04.1";
 const ACCESS_CONFIG_PATH = path.join(ROOT, ".access-password.json");
 loadLocalEnvFile(path.join(ROOT, ".env.local"));
 loadLocalEnvFile(path.join(ROOT, ".env"));
 const AUTH_COOKIE_NAME = "layout_for_xhs_auth";
 const AUTH_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const MAX_REQUEST_BODY_BYTES = 80 * 1024 * 1024;
+const MAX_MARKDOWN_DOCUMENT_BYTES = 5 * 1024 * 1024;
 const MAX_STUDY_NOTES_SOURCE_CHARS = 60000;
 const PDF_EXPORT_TIMEOUT_MS = Math.max(30000, Number(process.env.PDF_EXPORT_TIMEOUT_MS) || 180000);
 const PDF_ASSET_READY_TIMEOUT_MS = Math.max(3000, Number(process.env.PDF_ASSET_READY_TIMEOUT_MS) || 12000);
@@ -40,6 +46,11 @@ const MYSQL_CHARSET = String(process.env.MYSQL_CHARSET || "utf8mb4").trim() || "
 const MYSQL_CONNECT_TIMEOUT_MS = Math.max(1000, Number(process.env.MYSQL_CONNECT_TIMEOUT_MS || 10000) || 10000);
 const LAYOUT_HISTORY_TABLE = "layout_history_entries";
 const LAYOUT_HISTORY_MAX_ENTRIES = 24;
+const ELEMENT_STYLE_PRESETS_TABLE = "element_style_presets";
+const ELEMENT_STYLE_PRESET_MAX_ENTRIES = 120;
+const DEFAULT_MARKDOWN_MODE_ID = "knowledge";
+const MODE_ID_PATTERN = /^[a-z][a-z0-9-]{0,63}$/;
+const RENDER_MODE_IDS = new Set(["knowledge", "lecture", "question", "exam", "article"]);
 const EDGE_CANDIDATES = [
   "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
   "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
@@ -66,6 +77,7 @@ const MIME_TYPES = {
 const BLOCKED_PATH_SEGMENTS = new Set([
   ".git",
   ".npm-cache",
+  "data",
   "deploy",
   "node_modules",
   "scripts",
@@ -78,11 +90,13 @@ const BLOCKED_FILE_NAMES = new Set([
   "server.js",
 ]);
 
-const ACCESS_CONFIG = loadAccessConfig();
-const AUTH_SESSION_SECRET = crypto
-  .createHash("sha256")
-  .update(`${ACCESS_CONFIG.salt}:${ACCESS_CONFIG.hash}`)
-  .digest();
+// Access password is temporarily disabled for the frontend page.
+// Restore by uncommenting this config block, the login routes, and the auth gate below.
+// const ACCESS_CONFIG = loadAccessConfig();
+// const AUTH_SESSION_SECRET = crypto
+//   .createHash("sha256")
+//   .update(`${ACCESS_CONFIG.salt}:${ACCESS_CONFIG.hash}`)
+//   .digest();
 let pdfBrowserPromise = null;
 let mysqlReadyPromise = null;
 
@@ -238,8 +252,25 @@ function quoteMysqlIdentifier(value) {
   return `\`${String(value || "").replace(/`/g, "``")}\``;
 }
 
+function parseJsonObject(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    } catch (_error) {
+      return {};
+    }
+  }
+
+  return {};
+}
+
 function normalizeLayoutHistorySnapshot(snapshot = {}) {
-  return snapshot && typeof snapshot === "object" && !Array.isArray(snapshot) ? snapshot : {};
+  return parseJsonObject(snapshot);
 }
 
 function normalizeLayoutHistoryEntryPayload(entry = {}) {
@@ -268,6 +299,285 @@ function normalizeLayoutHistoryEntryPayload(entry = {}) {
   };
 }
 
+function normalizeElementStylePresetPayload(preset = {}) {
+  const groupId = String(preset.groupId || preset.group || "").trim().slice(0, 64);
+  const name = String(preset.name || "").trim().slice(0, 120);
+
+  if (!groupId || !name) {
+    return null;
+  }
+
+  const idCandidate = String(preset.id || "").trim().slice(0, 128);
+  const styles = preset.styles && typeof preset.styles === "object" && !Array.isArray(preset.styles)
+    ? preset.styles
+    : {};
+  const now = new Date();
+
+  return {
+    id: idCandidate || `element-style-preset-${groupId}-${crypto.randomBytes(6).toString("hex")}`,
+    groupId,
+    name,
+    styles,
+    updatedAt: now,
+  };
+}
+
+function readJsonFile(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function normalizeModeRegistryEntry(rawEntry, filePath) {
+  if (!rawEntry || typeof rawEntry !== "object" || Array.isArray(rawEntry)) {
+    throw new Error(`Invalid mode registry entry at ${filePath}.`);
+  }
+
+  const id = sanitizeModeId(rawEntry.id);
+
+  if (!id) {
+    throw new Error(`Invalid mode id at ${filePath}.`);
+  }
+
+  const title = normalizeTextField(rawEntry.title, 80, id);
+  const name = normalizeTextField(rawEntry.name, 40, title.replace(/模式$/, "") || id);
+  const sort = Number.isFinite(Number(rawEntry.sort)) ? Number(rawEntry.sort) : 1000;
+
+  return {
+    id,
+    name,
+    title,
+    summary: normalizeTextField(rawEntry.summary, 240),
+    highlights: normalizeStringList(rawEntry.highlights),
+    sort,
+    enabled: rawEntry.enabled !== false,
+    renderMode: sanitizeRenderMode(rawEntry.renderMode || id),
+    templateFile: sanitizeTemplateFileName(rawEntry.templateFile, id),
+    templateVersion: normalizeTextField(rawEntry.templateVersion, 80, "1"),
+    updatedAt: normalizeTextField(rawEntry.updatedAt, 40, "2026-05-04T00:00:00.000Z"),
+    placeholders: normalizePlaceholders(rawEntry.placeholders),
+  };
+}
+
+function listModeRegistryEntries() {
+  if (!fs.existsSync(MODE_REGISTRY_DIR)) {
+    return [];
+  }
+
+  return fs.readdirSync(MODE_REGISTRY_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".json"))
+    .map((entry) => normalizeModeRegistryEntry(
+      readJsonFile(path.join(MODE_REGISTRY_DIR, entry.name)),
+      path.join(MODE_REGISTRY_DIR, entry.name),
+    ))
+    .sort((left, right) => left.sort - right.sort || left.id.localeCompare(right.id));
+}
+
+function listEnabledModes() {
+  return listModeRegistryEntries().filter((mode) => mode.enabled);
+}
+
+function findModeRegistryEntry(modeId, options = {}) {
+  const id = sanitizeModeId(modeId);
+  const modes = options.includeDisabled ? listModeRegistryEntries() : listEnabledModes();
+  return modes.find((mode) => mode.id === id) || null;
+}
+
+function publicModeSummary(mode, request) {
+  return {
+    id: mode.id,
+    name: mode.name,
+    title: mode.title,
+    summary: mode.summary,
+    highlights: mode.highlights,
+    sort: mode.sort,
+    enabled: mode.enabled,
+    renderMode: mode.renderMode,
+    templateVersion: mode.templateVersion,
+    updatedAt: mode.updatedAt,
+    templateUrl: `/api/v1/modes/${encodeURIComponent(mode.id)}/markdown-template`,
+    ...(request ? {
+      templateAbsoluteUrl: new URL(
+        `/api/v1/modes/${encodeURIComponent(mode.id)}/markdown-template`,
+        getRequestOrigin(request),
+      ).toString(),
+    } : {}),
+  };
+}
+
+function readModeTemplate(mode) {
+  const templatePath = path.join(MODE_TEMPLATE_DIR, mode.templateFile);
+  const resolvedTemplateDir = path.resolve(MODE_TEMPLATE_DIR) + path.sep;
+  const resolvedTemplatePath = path.resolve(templatePath);
+
+  if (!resolvedTemplatePath.startsWith(resolvedTemplateDir)) {
+    throw new Error(`Invalid template path for mode ${mode.id}.`);
+  }
+
+  if (!fs.existsSync(resolvedTemplatePath)) {
+    throw new Error(`Missing markdown template for mode ${mode.id}.`);
+  }
+
+  return fs.readFileSync(resolvedTemplatePath, "utf8").replace(/\r\n?/g, "\n").trimEnd();
+}
+
+function readModeSyntaxTemplate() {
+  if (!fs.existsSync(MODE_SYNTAX_TEMPLATE_PATH)) {
+    throw new Error("Missing markdown syntax template.");
+  }
+
+  return fs.readFileSync(MODE_SYNTAX_TEMPLATE_PATH, "utf8").replace(/\r\n?/g, "\n").trimEnd();
+}
+
+function buildModeTemplatePayload(mode) {
+  const syntax = readModeSyntaxTemplate();
+  const modeTemplate = readModeTemplate(mode);
+
+  return {
+    modeId: mode.id,
+    modeName: mode.name,
+    modeTitle: mode.title,
+    renderMode: mode.renderMode,
+    templateVersion: mode.templateVersion,
+    syntaxVersion: MODE_SYNTAX_VERSION,
+    updatedAt: mode.updatedAt,
+    syntax,
+    modeTemplate,
+    template: `${syntax}\n\n# ${mode.title}生成模板\n\n${modeTemplate}`,
+    placeholders: mode.placeholders,
+  };
+}
+
+function parseMarkdownDocumentPayload(rawBody, contentType) {
+  const normalizedType = String(contentType || "").toLowerCase();
+
+  if (!normalizedType || normalizedType.includes("application/json")) {
+    const payload = JSON.parse(rawBody || "{}");
+    return {
+      markdown: normalizeMarkdownInput(payload.markdown),
+      modeId: sanitizeModeId(payload.modeId || payload.mode),
+      title: normalizeTextField(payload.title, 120),
+      source: normalizeTextField(payload.source, 80, "api"),
+      metadata: payload.metadata && typeof payload.metadata === "object" && !Array.isArray(payload.metadata)
+        ? payload.metadata
+        : {},
+    };
+  }
+
+  if (
+    normalizedType.includes("text/markdown")
+    || normalizedType.includes("text/plain")
+  ) {
+    return {
+      markdown: normalizeMarkdownInput(rawBody),
+      modeId: "",
+      title: "",
+      source: "api",
+      metadata: {},
+    };
+  }
+
+  throw new Error("Unsupported markdown document content type.");
+}
+
+function getMarkdownDocumentTitle(markdown, fallback = "未命名文档") {
+  const firstHeading = String(markdown || "")
+    .split("\n")
+    .map((line) => line.match(/^\s{0,3}#{1,6}\s+(.+?)\s*#*\s*$/)?.[1])
+    .find(Boolean);
+
+  return normalizeTextField(firstHeading, 120, fallback);
+}
+
+async function handleV1ModesRequest(request, response, requestUrl) {
+  if (request.method !== "GET") {
+    sendApiError(response, 405, "Method not allowed.");
+    return;
+  }
+
+  const pathname = requestUrl.pathname;
+
+  if (pathname === "/api/v1/modes") {
+    sendApiSuccess(response, listEnabledModes().map((mode) => publicModeSummary(mode, request)));
+    return;
+  }
+
+  const templateMatch = pathname.match(/^\/api\/v1\/modes\/([^/]+)\/markdown-template$/);
+
+  if (templateMatch) {
+    const mode = findModeRegistryEntry(decodeURIComponent(templateMatch[1]));
+
+    if (!mode) {
+      sendApiError(response, 404, "Mode not found.");
+      return;
+    }
+
+    sendApiSuccess(response, buildModeTemplatePayload(mode));
+    return;
+  }
+
+  sendApiError(response, 404, "Not found.");
+}
+
+async function handleV1MarkdownTemplatesRequest(request, response) {
+  if (request.method !== "GET") {
+    sendApiError(response, 405, "Method not allowed.");
+    return;
+  }
+
+  sendApiSuccess(response, listEnabledModes().map(buildModeTemplatePayload));
+}
+
+async function handleV1MarkdownDocumentsRequest(request, response) {
+  if (request.method !== "POST") {
+    sendApiError(response, 405, "Method not allowed.");
+    return;
+  }
+
+  const rawBody = await collectRequestBody(request);
+
+  if (Buffer.byteLength(rawBody || "", "utf8") > MAX_MARKDOWN_DOCUMENT_BYTES) {
+    sendApiError(response, 413, `Markdown 文档过大，请控制在 ${MAX_MARKDOWN_DOCUMENT_BYTES} bytes 以内。`);
+    return;
+  }
+
+  let payload = null;
+
+  try {
+    payload = parseMarkdownDocumentPayload(rawBody, request.headers["content-type"]);
+  } catch (error) {
+    sendApiError(response, 400, error.message || "Invalid markdown document payload.");
+    return;
+  }
+
+  if (!payload.markdown.trim()) {
+    sendApiError(response, 400, "缺少 markdown 内容。");
+    return;
+  }
+
+  const requestedMode = payload.modeId ? findModeRegistryEntry(payload.modeId) : null;
+  const fallbackMode = findModeRegistryEntry(DEFAULT_MARKDOWN_MODE_ID) || listEnabledModes()[0] || null;
+  const mode = requestedMode || fallbackMode;
+
+  if (!mode) {
+    sendApiError(response, 500, "No enabled modes are configured.");
+    return;
+  }
+
+  const createdAt = new Date().toISOString();
+  const title = payload.title || getMarkdownDocumentTitle(payload.markdown);
+
+  sendApiSuccess(response, {
+    id: buildMarkdownDocumentId(),
+    title,
+    modeId: mode.id,
+    modeName: mode.name,
+    markdown: payload.markdown,
+    stats: getMarkdownStats(payload.markdown),
+    source: payload.source,
+    metadata: payload.metadata,
+    createdAt,
+  }, 201);
+}
+
 function mapLayoutHistoryRow(row = {}) {
   return {
     id: String(row.id || ""),
@@ -282,6 +592,20 @@ function mapLayoutHistoryRow(row = {}) {
         : Date.now(),
     source: row.source === "manual" ? "manual" : "auto",
     snapshot: normalizeLayoutHistorySnapshot(row.snapshot_json),
+  };
+}
+
+function mapElementStylePresetRow(row = {}) {
+  return {
+    id: String(row.id || ""),
+    groupId: String(row.group_id || ""),
+    name: String(row.name || ""),
+    styles: parseJsonObject(row.styles_json),
+    updatedAt: row.updated_at instanceof Date
+      ? row.updated_at.getTime()
+      : Number.isFinite(Number(row.updated_at))
+        ? Number(row.updated_at)
+        : Date.now(),
   };
 }
 
@@ -346,6 +670,20 @@ function ensureMysqlReady() {
             updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY idx_layout_history_saved_at (saved_at DESC)
+          ) ENGINE=InnoDB DEFAULT CHARSET=${MYSQL_CHARSET} COLLATE=${MYSQL_CHARSET}_unicode_ci
+        `);
+
+        await connection.query(`
+          CREATE TABLE IF NOT EXISTS ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)} (
+            id VARCHAR(128) NOT NULL,
+            group_id VARCHAR(64) NOT NULL,
+            name VARCHAR(120) NOT NULL DEFAULT '',
+            styles_json JSON NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uq_element_style_preset_group_name (group_id, name),
+            KEY idx_element_style_preset_group_updated (group_id, updated_at DESC)
           ) ENGINE=InnoDB DEFAULT CHARSET=${MYSQL_CHARSET} COLLATE=${MYSQL_CHARSET}_unicode_ci
         `);
       });
@@ -477,6 +815,99 @@ async function clearLayoutHistoryEntries() {
   });
 }
 
+async function listElementStylePresets() {
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    const [rows] = await connection.query(`
+      SELECT id, group_id, name, styles_json, updated_at
+      FROM ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+      ORDER BY group_id ASC, updated_at DESC
+      LIMIT ${ELEMENT_STYLE_PRESET_MAX_ENTRIES}
+    `);
+    return rows.map(mapElementStylePresetRow);
+  });
+}
+
+async function upsertElementStylePreset(preset) {
+  const normalized = normalizeElementStylePresetPayload(preset);
+
+  if (!normalized) {
+    throw new Error("Missing element style preset group or name.");
+  }
+
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    await connection.query(`
+      INSERT INTO ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+        (id, group_id, name, styles_json)
+      VALUES (?, ?, ?, CAST(? AS JSON))
+      ON DUPLICATE KEY UPDATE
+        id = VALUES(id),
+        name = VALUES(name),
+        styles_json = VALUES(styles_json)
+    `, [
+      normalized.id,
+      normalized.groupId,
+      normalized.name,
+      JSON.stringify(normalized.styles),
+    ]);
+
+    await connection.query(`
+      DELETE FROM ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+      WHERE id NOT IN (
+        SELECT id FROM (
+          SELECT id
+          FROM ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+          ORDER BY updated_at DESC
+          LIMIT ${ELEMENT_STYLE_PRESET_MAX_ENTRIES}
+        ) AS latest_presets
+      )
+    `);
+
+    const [rows] = await connection.query(`
+      SELECT id, group_id, name, styles_json, updated_at
+      FROM ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+      WHERE id = ?
+      LIMIT 1
+    `, [normalized.id]);
+
+    return rows.length ? mapElementStylePresetRow(rows[0]) : {
+      id: normalized.id,
+      groupId: normalized.groupId,
+      name: normalized.name,
+      styles: normalized.styles,
+      updatedAt: normalized.updatedAt.getTime(),
+    };
+  });
+}
+
+async function deleteElementStylePreset(presetId) {
+  const normalizedId = String(presetId || "").trim();
+
+  if (!normalizedId) {
+    throw new Error("Missing element style preset id.");
+  }
+
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    await connection.query(`
+      DELETE FROM ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}
+      WHERE id = ?
+    `, [normalizedId]);
+  });
+}
+
+async function clearElementStylePresets() {
+  await ensureMysqlReady();
+
+  return withMysqlConnection(getMysqlRuntimeConfig(true), async (connection) => {
+    await connection.query(`TRUNCATE TABLE ${quoteMysqlIdentifier(ELEMENT_STYLE_PRESETS_TABLE)}`);
+  });
+}
+
 async function handleLayoutHistoryRequest(request, response, requestUrl) {
   if (request.method === "GET") {
     sendJson(response, 200, {
@@ -519,6 +950,48 @@ async function handleLayoutHistoryRequest(request, response, requestUrl) {
   });
 }
 
+async function handleElementStylePresetsRequest(request, response, requestUrl) {
+  if (request.method === "GET") {
+    sendJson(response, 200, {
+      presets: await listElementStylePresets(),
+    });
+    return;
+  }
+
+  if (request.method === "POST") {
+    const rawBody = await collectRequestBody(request);
+    const payload = JSON.parse(rawBody || "{}");
+    const preset = await upsertElementStylePreset(payload.preset || payload);
+
+    sendJson(response, 200, {
+      preset,
+    });
+    return;
+  }
+
+  if (request.method === "DELETE") {
+    const presetId = String(requestUrl.searchParams.get("id") || "").trim();
+
+    if (presetId) {
+      await deleteElementStylePreset(presetId);
+      sendJson(response, 200, {
+        ok: true,
+      });
+      return;
+    }
+
+    await clearElementStylePresets();
+    sendJson(response, 200, {
+      ok: true,
+    });
+    return;
+  }
+
+  sendJson(response, 405, {
+    error: "Method not allowed.",
+  });
+}
+
 function getPublicErrorMessage(error) {
   if (!error) {
     return "Unexpected server error.";
@@ -529,6 +1002,7 @@ function getPublicErrorMessage(error) {
       error.message.includes("MYSQL_")
       || error.message.includes("MySQL")
       || error.message.includes("layout history")
+      || error.message.includes("element style preset")
     ) {
       return error.message;
     }
@@ -599,6 +1073,23 @@ function sendJson(response, statusCode, payload) {
   response.end(body);
 }
 
+function sendApiSuccess(response, data, statusCode = 200) {
+  sendJson(response, statusCode, {
+    success: true,
+    data,
+  });
+}
+
+function sendApiError(response, statusCode, message, details) {
+  sendJson(response, statusCode, {
+    success: false,
+    error: {
+      message,
+      ...(details ? { details } : {}),
+    },
+  });
+}
+
 function redirect(response, location, statusCode = 302, headers = {}) {
   setCorsHeaders(response);
   response.writeHead(statusCode, {
@@ -616,6 +1107,99 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function normalizeTextField(value, maxLength = 200, fallback = "") {
+  const normalized = String(value == null ? "" : value).replace(/\s+/g, " ").trim();
+  return normalized ? normalized.slice(0, maxLength) : fallback;
+}
+
+function normalizeMarkdownInput(value) {
+  return String(value == null ? "" : value).replace(/\r\n?/g, "\n").trimEnd();
+}
+
+function sanitizeModeId(value) {
+  const id = String(value || "").trim().toLowerCase();
+  return MODE_ID_PATTERN.test(id) ? id : "";
+}
+
+function sanitizeRenderMode(value) {
+  const id = sanitizeModeId(value);
+  return RENDER_MODE_IDS.has(id) ? id : "article";
+}
+
+function sanitizeTemplateFileName(value, fallbackId) {
+  const normalized = String(value || "").trim().replace(/\\/g, "/");
+
+  if (
+    !normalized
+    || normalized.includes("/")
+    || normalized.startsWith(".")
+    || path.extname(normalized).toLowerCase() !== ".md"
+  ) {
+    return `${fallbackId}.md`;
+  }
+
+  return normalized;
+}
+
+function normalizeStringList(value, fallback = []) {
+  const source = Array.isArray(value) ? value : fallback;
+  return source
+    .map((item) => normalizeTextField(item, 80))
+    .filter(Boolean)
+    .slice(0, 8);
+}
+
+function normalizePlaceholders(value) {
+  if (!Array.isArray(value)) {
+    return [
+      {
+        key: "sourceContent",
+        label: "原始资料",
+        required: true,
+      },
+    ];
+  }
+
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) {
+        return null;
+      }
+
+      const key = String(item.key || "").trim();
+
+      if (!/^[a-zA-Z][a-zA-Z0-9_]{0,63}$/.test(key)) {
+        return null;
+      }
+
+      return {
+        key,
+        label: normalizeTextField(item.label, 80, key),
+        required: item.required !== false,
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 12);
+}
+
+function getRequestOrigin(request) {
+  const protocol = request.socket && request.socket.encrypted ? "https" : "http";
+  return `${protocol}://${request.headers.host || `${HOST}:${PORT}`}`;
+}
+
+function buildMarkdownDocumentId() {
+  const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+  return `doc_${timestamp}_${crypto.randomBytes(4).toString("hex")}`;
+}
+
+function getMarkdownStats(markdown) {
+  const text = String(markdown || "");
+  return {
+    characters: text.trim().length,
+    lines: text ? text.split("\n").length : 0,
+  };
 }
 
 function getRequestUrl(request) {
@@ -1678,11 +2262,19 @@ function handleStaticFile(requestUrl, response) {
     "Content-Type": mimeType,
     "Content-Length": fileBuffer.length,
     "Cache-Control": "no-store",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Surrogate-Control": "no-store",
   });
   response.end(fileBuffer);
 }
 
 function handleAuthenticationGate(request, response, requestUrl) {
+  // Access password is temporarily disabled. Remove this return and uncomment the
+  // original gate below when password protection should be restored.
+  return false;
+
+  /*
   if (shouldBypassAuth(requestUrl.pathname)) {
     return false;
   }
@@ -1702,6 +2294,7 @@ function handleAuthenticationGate(request, response, requestUrl) {
   const next = normalizeNextPath(`${requestUrl.pathname}${requestUrl.search || ""}`);
   redirect(response, `${LOGIN_PATH}?next=${encodeURIComponent(next)}`);
   return true;
+  */
 }
 
 const server = http.createServer(async (request, response) => {
@@ -1729,6 +2322,10 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
+    /*
+    Access password is temporarily disabled for the frontend page.
+    Uncomment these login/logout routes together with the auth config and gate to restore.
+
     if (request.method === "GET" && requestUrl.pathname === LOGIN_PATH) {
       if (isAuthenticated(request)) {
         redirect(response, normalizeNextPath(requestUrl.searchParams.get("next")));
@@ -1748,8 +2345,27 @@ const server = http.createServer(async (request, response) => {
       handleLogout(request, response);
       return;
     }
+    */
 
     if (handleAuthenticationGate(request, response, requestUrl)) {
+      return;
+    }
+
+    if (requestUrl.pathname === "/api/v1/markdown-documents") {
+      await handleV1MarkdownDocumentsRequest(request, response);
+      return;
+    }
+
+    if (requestUrl.pathname === "/api/v1/markdown-templates") {
+      await handleV1MarkdownTemplatesRequest(request, response);
+      return;
+    }
+
+    if (
+      requestUrl.pathname === "/api/v1/modes"
+      || requestUrl.pathname.startsWith("/api/v1/modes/")
+    ) {
+      await handleV1ModesRequest(request, response, requestUrl);
       return;
     }
 
@@ -1770,6 +2386,11 @@ const server = http.createServer(async (request, response) => {
 
     if (requestUrl.pathname === "/api/layout-history") {
       await handleLayoutHistoryRequest(request, response, requestUrl);
+      return;
+    }
+
+    if (requestUrl.pathname === "/api/element-style-presets") {
+      await handleElementStylePresetsRequest(request, response, requestUrl);
       return;
     }
 

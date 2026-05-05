@@ -1,0 +1,24 @@
+{
+  "id": "exam",
+  "name": "试卷模式",
+  "title": "试卷模式",
+  "summary": "切换后自动进入 A3 预览布局，适合整版打印试卷和长大题页面。",
+  "highlights": [
+    "A3 预览",
+    "试卷节奏",
+    "打印友好"
+  ],
+  "sort": 40,
+  "enabled": true,
+  "renderMode": "exam",
+  "templateFile": "exam.md",
+  "templateVersion": "2026-05-04.1",
+  "updatedAt": "2026-05-04T00:00:00.000Z",
+  "placeholders": [
+    {
+      "key": "sourceContent",
+      "label": "原始资料",
+      "required": true
+    }
+  ]
+}

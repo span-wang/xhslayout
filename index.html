@@ -2,9 +2,45 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Markdown 自动排版工具</title>
   <link rel="stylesheet" href="vendor/katex/katex.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2026-05-05-page-layout-v3">
+  <script>
+    (() => {
+      const cacheVersion = "2026-05-05-page-layout-v3";
+      const versionKey = "layout-for-xhs-cache-reset-version";
+      try {
+        const previousVersion = window.localStorage.getItem(versionKey);
+        if (previousVersion !== cacheVersion) {
+          window.localStorage.removeItem("layout-for-xhs-element-style-presets");
+          window.localStorage.removeItem("layout-for-xhs-layout-history-entries");
+          window.localStorage.removeItem("layout-for-xhs-page-layout-version");
+          window.localStorage.removeItem("layout-for-xhs-exam-page-layout");
+          window.localStorage.removeItem("layout-for-xhs-standard-page-layout");
+          window.localStorage.removeItem("layout-for-xhs-page-width");
+          window.localStorage.removeItem("layout-for-xhs-page-height");
+          window.localStorage.setItem(versionKey, cacheVersion);
+        }
+      } catch (_error) {
+        // Ignore storage failures in restricted browsers.
+      }
+
+      if ("caches" in window) {
+        window.caches.keys()
+          .then((names) => Promise.all(names.map((name) => window.caches.delete(name))))
+          .catch(() => {});
+      }
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+          .catch(() => {});
+      }
+    })();
+  </script>
 </head>
 <body data-theme="oat">
   <div class="app-shell">
@@ -88,6 +124,7 @@
             </div>
             <div id="modePicker" class="segmented-control" role="group" aria-label="选择排版模式">
               <button type="button" class="segmented-chip is-active" data-mode-option="knowledge">知识卡片</button>
+              <button type="button" class="segmented-chip" data-mode-option="lecture">精读讲义</button>
               <button type="button" class="segmented-chip" data-mode-option="question">题目模式</button>
               <button type="button" class="segmented-chip" data-mode-option="exam">试卷模式</button>
               <button type="button" class="segmented-chip" data-mode-option="article">文章模式</button>
@@ -233,6 +270,22 @@
                     <span id="mindmapNodeWidthValue" class="range-value">220 px</span>
                   </span>
                   <input id="mindmapNodeWidthRange" type="range" min="90" max="320" step="2" value="220">
+                </label>
+                <label class="range-field" for="mindmapContainerWidthRange">
+                  <span class="range-title-row">
+                    <span class="range-title">脑图容器宽</span>
+                    <span class="range-help">0 为自动</span>
+                    <span id="mindmapContainerWidthValue" class="range-value">自动</span>
+                  </span>
+                  <input id="mindmapContainerWidthRange" type="range" min="0" max="960" step="10" value="0">
+                </label>
+                <label class="range-field" for="mindmapContainerHeightRange">
+                  <span class="range-title-row">
+                    <span class="range-title">脑图容器高</span>
+                    <span class="range-help">内容自适应</span>
+                    <span id="mindmapContainerHeightValue" class="range-value">自动</span>
+                  </span>
+                  <input id="mindmapContainerHeightRange" type="range" min="0" max="720" step="10" value="0">
                 </label>
               </div>
             </div>
@@ -786,6 +839,6 @@
   <script src="vendor/katex/contrib/mhchem.min.js" defer></script>
   <script src="vendor/html2canvas.min.js" defer></script>
   <script src="vendor/jspdf.umd.min.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=2026-05-05-page-layout-v3" defer></script>
 </body>
 </html>

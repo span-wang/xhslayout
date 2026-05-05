@@ -1,0 +1,24 @@
+{
+  "id": "question",
+  "name": "题目模式",
+  "title": "题目模式",
+  "summary": "题干、答案、解析分层展开，适合逐题复盘。",
+  "highlights": [
+    "题号清楚",
+    "答案分层",
+    "复盘更快"
+  ],
+  "sort": 30,
+  "enabled": true,
+  "renderMode": "question",
+  "templateFile": "question.md",
+  "templateVersion": "2026-05-04.1",
+  "updatedAt": "2026-05-04T00:00:00.000Z",
+  "placeholders": [
+    {
+      "key": "sourceContent",
+      "label": "原始资料",
+      "required": true
+    }
+  ]
+}
